@@ -23,11 +23,15 @@ The RFP describes these roles as "Content Creators/Editors" who can "manage or r
 - *Expected format:* short list of content types each role creates, or "they only review, they don't originate content." If regional landing pages turn out to be in scope, see also `§L12` for the related question on the current site's `/regions/*` content.
 
 **C2. When a user logs in via OKTA, what attributes will OKTA send to the new site?**
-- *Why we ask:* We need OKTA-sent metadata to drive three things on the new site:
-  - **(a) Role assignment** — which Drupal role each user lands in (Adviser / REAC / REAC Assistant / IIE Admin). Usually mapped from an OKTA group membership, custom attribute, or job-title field.
-  - **(b) Adviser-to-Center mapping** — which advising center an Adviser is assigned to, so the site can route their update submissions to the right center record and the right REAC. This is the most granular requirement and we want to flag it early — OKTA tenants sometimes carry basic identity attributes (email, group, job title) without the per-center detail needed to drive content routing. If OKTA doesn't carry this, we'd maintain the mapping inside Drupal instead (manual onboarding step, or imported from an IIE-maintained source).
-  - **(c) Region-to-REAC mapping** — which regional REAC reviews submissions from which Advisers. Each Adviser reports to a regional REAC; we need to know whether that hierarchy lives in OKTA (as group memberships, e.g., "EUR Region") or only in internal systems and spreadsheets. If OKTA already knows it, we use it. If not, we maintain the mapping inside Drupal.
-- *Expected format:* list of attributes / groups OKTA can send today, especially noting whether any of them reflect the user's assigned advising center or region. If unsure, "let's coordinate with our IT team during Strategy."
+
+We need OKTA-sent metadata to drive three things on the new site:
+
+- **Role assignment** — which Drupal role each user lands in (Adviser / REAC / REAC Assistant / IIE Admin). Usually mapped from an OKTA group, custom attribute, or job-title field.
+- **Adviser-to-Center mapping** — which advising center an Adviser is assigned to, so submissions route to the right center record and the right REAC. The most granular requirement; if OKTA doesn't carry it, we'd maintain the mapping inside Drupal instead.
+- **Region-to-REAC mapping** — which regional REAC reviews submissions from which Advisers. If OKTA carries this (e.g., an "EUR Region" group), we use it; otherwise we maintain it in Drupal.
+
+- *Why we ask:* Each Drupal feature above depends on corresponding OKTA data. We want to confirm what's available before designing the integration.
+- *Expected format:* list of attributes / groups OKTA can send today, especially noting any that reflect the user's assigned advising center or region. If unsure, "let's coordinate with our IT team during Strategy."
 
 **C3. Is MFA (multi-factor authentication) enforced on your OKTA tenant?**
 - *Why we ask:* This is enforced at the OKTA level, not Drupal — but we need to confirm so we don't design any flow that assumes single-factor authentication.
