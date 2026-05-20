@@ -8,10 +8,10 @@ order: 8
 
 The new build has **two distinct search experiences** (detail in `technical-analysis.md §3.11`):
 
-- **Per-content-type finders** — the existing `/find-advising-center`, `/find-event`, `/find-financial-aid`, and `/videos-0` pattern. Used by visitors browsing a specific content type. **Keeps the traditional faceted sidebar** with the filters already on the current site (Region, Country, Degree Level, Audience, Center Level — depending on the finder).
-- **Sitewide unified search** (`/search`) — AI-driven semantic search across all content types. Handles natural-language queries like *"scholarships for graduate students in Europe"* via the AI/NLP layer; the LLM extracts intent and ranks results. **No traditional faceted sidebar** here — the AI layer makes per-facet filtering redundant. The LOA §G "filters by content type, topic, region, or role" requirement is satisfied by the per-finder pattern.
+- **Per-content-type finders** (`/find-advising-center`, `/find-event`, `/find-financial-aid`, `/videos-0`). For visitors browsing a specific content type. Keeps the **traditional faceted sidebar** with the filters already on the current site (Region, Country, Degree Level, Audience, Center Level — per finder).
+- **Sitewide unified search** (`/search`). AI-driven semantic search across all content types, handling natural-language queries like *"scholarships for graduate students in Europe"*. **No faceted sidebar** — the AI layer makes per-facet filtering redundant. The LOA §G "filters by content type, topic, region, or role" requirement is satisfied by the per-finder pattern.
 
-Permissioned content (e.g., HEI contact information held behind a privacy "wall") is excluded from both surfaces.
+Permissioned content (e.g., HEI contact info behind a privacy wall) is excluded from both surfaces.
 
 ### Questions for you
 

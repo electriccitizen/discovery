@@ -7,10 +7,10 @@ order: 5
 ### What we currently understand
 
 - The LOA names "Interactive map" as a deliverable integrating advising centers, success stories, U.S. regional geography, and HEIs. The RFP expands the wishlist to include country/territory demographics, country education-system info, and outbound links to local adviser-created websites.
-- The RFP refers separately to *"an interactive world map"* and *"an interactive United States map"* — whether that resolves to one integrated experience or two distinct views is something to settle in discovery (E1).
-- The Q&A defers implementation to vendor judgment; no reference examples were provided. Architectural decisions (library choice, basemap, tile-cost model) stay with EC and resolve during Strategy + Design.
-- **The largest open item is data provenance — where each layer actually comes from, who maintains it, and how it stays current (E3).**
-- **Tagging and geocoding for map display is IIE's editorial work where the data doesn't already exist.** We can geocode advising-center and HEI addresses automatically (we have those). But for layers where the new map needs data the current site doesn't have — country tags on existing success stories, per-country demographic figures, country education-system writeups, the outbound adviser-site URL list — that content has to be authored or assembled by IIE (see E4 for per-layer specifics). Same expectations as the §B "manual recreation" framing, applied to map data.
+- The RFP refers separately to *"an interactive world map"* and *"an interactive United States map"* — whether that resolves to one integrated experience or two distinct views needs to be settled in discovery (E1).
+- The Q&A defers implementation to vendor judgment; no reference examples were provided. Library choice, basemap, and tile-cost model stay with EC and resolve during Strategy + Design.
+- **The largest open item is data provenance — where each layer comes from, who maintains it, how it stays current (E3).**
+- **Tagging and geocoding for map display is IIE's editorial work where the data doesn't already exist.** We auto-geocode addresses we have (advising centers, HEIs). New layers — country tags on success stories, per-country demographics, education-system writeups, outbound adviser-site URLs — must be authored or assembled by IIE (see E4). Same "manual recreation" framing as §B applied to map data.
 
 ### Questions for you
 

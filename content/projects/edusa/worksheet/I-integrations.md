@@ -7,10 +7,10 @@ order: 9
 ### What we currently understand
 
 - Per Q&A, the only required external API integration is OKTA. Other "integrations" are content embeds, exports, or one-way data pulls — not bidirectional APIs.
-- MailChimp is IIE's email tool. We'll integrate using the standard Drupal MailChimp contrib module (`drupal/mailchimp`) configured against IIE's MailChimp account.
+- MailChimp is IIE's email tool. We'll integrate using the standard Drupal MailChimp contrib module (`drupal/mailchimp`) configured against IIE's account.
 - Social media in scope: Facebook, X (Twitter), Instagram, LinkedIn, YouTube (Q&A).
-- Analytics tooling is in this section too: GA4 + Google Tag Manager (committed), Google Looker Studio (committed; EC connects to GA4), and a heat-map tool (LOA-committed but vendor unnamed; see I2).
-- Worth flagging for this section: a few of these tools (MailChimp, SMTP, the heat-map tool) are ones your team will keep using day-to-day after launch. Our build wires each one up to the new site; your team keeps ownership of the ongoing pieces — email templates, subscriber lists, dashboards, capture rules, and any subscription costs. This keeps the tools fully in your hands post-launch and mirrors how the LOA handles AI token costs.
+- Analytics: GA4 + Google Tag Manager (committed), Google Looker Studio (committed; EC connects to GA4), and a heat-map tool (LOA-committed but vendor unnamed; see I2).
+- **Ongoing ownership stays with IIE.** Day-to-day tools (MailChimp, SMTP, heat-map) get wired up by EC at build; your team owns the ongoing pieces — email templates, subscriber lists, dashboards, capture rules, subscription costs. Mirrors the LOA pattern for AI token costs.
 
 ### Questions for you
 
