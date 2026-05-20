@@ -99,7 +99,15 @@ function sectionStats(sectionId: string) {
 ---
 <BaseLayout title={project.title}>
   {userIsEC && (
-    <p class="breadcrumb"><a href="/">Discovery Portal</a></p>
+    <div class="page-meta">
+      <p class="breadcrumb"><a href="/">Discovery Portal</a></p>
+      <a
+        class="edit-on-github"
+        href={`https://github.com/electriccitizen/discovery/edit/main/content/projects/${projectSlug}/_intro.md`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >Edit intro on GitHub <span class="edit-on-github-arrow" aria-hidden="true">↗</span></a>
+    </div>
   )}
   <h1>{project.title}</h1>
 

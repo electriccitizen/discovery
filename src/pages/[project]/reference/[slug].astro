@@ -18,20 +18,30 @@ if (!userEmail || !canAccessProject(userEmail, project)) {
 const userIsEC = isEC(userEmail);
 ---
 <BaseLayout title={ref.title}>
-  <p class="breadcrumb">
+  <div class="page-meta">
+    <p class="breadcrumb">
+      {userIsEC && (
+        <>
+          <a href="/">Discovery Portal</a>
+          <span class="sep">›</span>
+          <a href={`/${projectSlug}`}>{project.title}</a>
+          <span class="sep">›</span>
+          <span>Reference</span>
+        </>
+      )}
+      {!userIsEC && (
+        <a href={`/${projectSlug}`}>← {project.title}</a>
+      )}
+    </p>
     {userIsEC && (
-      <>
-        <a href="/">Discovery Portal</a>
-        <span class="sep">›</span>
-        <a href={`/${projectSlug}`}>{project.title}</a>
-        <span class="sep">›</span>
-        <span>Reference</span>
-      </>
+      <a
+        class="edit-on-github"
+        href={`https://github.com/electriccitizen/discovery/edit/main/content/projects/${projectSlug}/references/${refSlug}.md`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >Edit doc on GitHub <span class="edit-on-github-arrow" aria-hidden="true">↗</span></a>
     )}
-    {!userIsEC && (
-      <a href={`/${projectSlug}`}>← {project.title}</a>
-    )}
-  </p>
+  </div>
 
   <article class="reference-doc" set:html={ref.html} />
 </BaseLayout>

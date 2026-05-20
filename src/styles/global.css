@@ -365,6 +365,44 @@ img { max-width: 100%; height: auto; }
 .muted { color: var(--ink-muted); }
 .small { font-size: 0.85rem; }
 
+/* === Page-meta row (breadcrumb + EC-only Edit on GitHub) === */
+
+.page-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-3);
+  flex-wrap: wrap;
+}
+.page-meta .breadcrumb { margin: 0; }
+
+.edit-on-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+  text-decoration: none;
+  padding: 0.28rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+  transition: border-color 0.12s ease, color 0.12s ease;
+  white-space: nowrap;
+}
+.edit-on-github:hover {
+  border-color: var(--navy);
+  color: var(--navy);
+  text-decoration: none;
+}
+.edit-on-github-arrow {
+  font-size: 0.9em;
+  opacity: 0.7;
+}
+
 /* === Breadcrumb === */
 
 .breadcrumb {

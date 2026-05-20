@@ -55,15 +55,25 @@ const prev = idx > 0 ? allSections[idx - 1] : null;
 const next = idx < allSections.length - 1 ? allSections[idx + 1] : null;
 ---
 <BaseLayout title={`${section.id}. ${section.title}`}>
-  <p class="breadcrumb">
+  <div class="page-meta">
+    <p class="breadcrumb">
+      {userIsEC && (
+        <>
+          <a href="/">Discovery Portal</a>
+          <span class="sep">›</span>
+        </>
+      )}
+      <a href={`/${projectSlug}`}>{userIsEC ? project.title : `← ${project.title}`}</a>
+    </p>
     {userIsEC && (
-      <>
-        <a href="/">Discovery Portal</a>
-        <span class="sep">›</span>
-      </>
+      <a
+        class="edit-on-github"
+        href={`https://github.com/electriccitizen/discovery/edit/main/content/projects/${projectSlug}/worksheet/${sectionSlug}.md`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >Edit section on GitHub <span class="edit-on-github-arrow" aria-hidden="true">↗</span></a>
     )}
-    <a href={`/${projectSlug}`}>{userIsEC ? project.title : `← ${project.title}`}</a>
-  </p>
+  </div>
 
   <h1>
     <span class="section-id-large">{section.id}</span>
