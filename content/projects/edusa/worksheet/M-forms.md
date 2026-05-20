@@ -14,7 +14,7 @@ order: 13
 **M1. Campus Hosting submission workflow — currently four external Google Forms power four distinct application paths** (2 Virtual Visit + 2 In-Person Visit) on `/us-higher-education-professionals/fairs-and-events/educationusa-campus-hosting-opportunities`. For the new build:
 - (a) **Move into Drupal as native submission forms** (better integration, deeper editorial tooling, harder to evolve quickly), or
 - (b) **Keep on Google Forms** (operationally lightweight, IIE already comfortable, but data lives outside the system of record)?
-- *Why we ask:* If (a), it adds form-build and workflow scope; if (b), the new site is a routing surface for these submissions and we'd build a small CMS feature for managing the embedded link / season / deadline metadata.
+- *Why we ask:* Option (a) keeps submissions inside Drupal. Our standard approach is to enable the Webform module and train your team to build and manage their own forms, rather than building each one for you — clients tend to find it more flexible long-term. Option (b) keeps the forms on Google Forms; the new site just links out to them, and we'd add a small editor tool so IIE staff can update each form's link, season, and deadline without our help.
 
 **M2. Event registration is uniformly routed off-site** via per-event bit.ly links on every event record we sampled. Confirm this stays the pattern for the new build — i.e., Event content type has a "Registration URL" field, and we are **not** building event registration into Drupal.
 
