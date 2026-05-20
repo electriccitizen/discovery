@@ -20,11 +20,19 @@
   --navy-soft: #e1e7ef;
   --navy-tint: #eef2f7;
 
-  /* Yellow — the warm note, used sparingly for highlights/priority */
+  /* Yellow — the warm note. Reserved for the Welcome callout. */
   --yellow: #d4a017;         /* deeper yellow for borders/accents */
   --yellow-soft: #fef9c3;    /* pale fill */
   --yellow-tint: #fefce8;    /* pale tint surface */
   --yellow-deep: #713f12;    /* dark text-on-yellow */
+
+  /* Sky — priority accent. Distinct from the EC navy and from the
+     yellow welcome callout so the two callouts don't compete on
+     the project overview. */
+  --sky: #0ea5e9;            /* sky-500 — accent / left rule */
+  --sky-soft: #bae6fd;       /* sky-200 — chip fill, borders */
+  --sky-tint: #f0f9ff;       /* sky-50 — panel bg */
+  --sky-deep: #075985;       /* sky-800 — text on sky-soft */
 
   /* Kept for status semantics */
   --amber: #b88728;          /* legacy — no longer used directly */
@@ -867,15 +875,15 @@ img { max-width: 100%; height: auto; }
   letter-spacing: 0.08em;
   padding: 0.18rem 0.5rem;
   border-radius: 3px;
-  background: var(--yellow-soft);
-  color: var(--yellow-deep);
+  background: var(--sky-soft);
+  color: var(--sky-deep);
   flex-shrink: 0;
   white-space: nowrap;
 }
 
 .question-card.priority-flagged {
-  border-color: var(--yellow-soft);
-  box-shadow: inset 3px 0 0 0 var(--yellow);
+  border-color: var(--sky-soft);
+  box-shadow: inset 3px 0 0 0 var(--sky);
 }
 
 /* === Status chip (in card header — visible only for explicit states) === */
@@ -925,17 +933,17 @@ img { max-width: 100%; height: auto; }
   transition: all 0.15s ease;
 }
 .priority-flag-button:hover {
-  border-color: var(--yellow);
-  color: var(--yellow-deep);
-  background: var(--yellow-tint);
+  border-color: var(--sky);
+  color: var(--sky-deep);
+  background: var(--sky-tint);
 }
 .priority-flag-button.selected {
-  background: var(--yellow-soft);
-  border-color: var(--yellow);
+  background: var(--sky-soft);
+  border-color: var(--sky);
   border-style: solid;
-  color: var(--yellow-deep);
+  color: var(--sky-deep);
 }
-.priority-flag-button.selected:hover { background: #fef08a; border-color: #b8860a; }
+.priority-flag-button.selected:hover { background: #7dd3fc; border-color: #0369a1; }
 
 .priority-flag-button .priority-flag-label-selected { display: none; }
 .priority-flag-button.selected .priority-flag-label-default { display: none; }
@@ -1141,9 +1149,9 @@ img { max-width: 100%; height: auto; }
 .priority-panel {
   margin: var(--space-5) 0 var(--space-6);
   padding: var(--space-4) var(--space-5);
-  background: var(--yellow-tint);
-  border: 1px solid var(--yellow-soft);
-  border-left: 3px solid var(--yellow);
+  background: var(--sky-tint);
+  border: 1px solid var(--sky-soft);
+  border-left: 3px solid var(--sky);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
 }
 .priority-panel-header {
@@ -1159,8 +1167,8 @@ img { max-width: 100%; height: auto; }
   text-transform: uppercase;
   letter-spacing: 0.09em;
   padding: 0.18rem 0.5rem;
-  background: var(--yellow-soft);
-  color: var(--yellow-deep);
+  background: var(--sky-soft);
+  color: var(--sky-deep);
   border-radius: 3px;
 }
 .priority-panel-title {
@@ -1187,21 +1195,21 @@ img { max-width: 100%; height: auto; }
   gap: var(--space-3);
   padding: 0.55rem 0.85rem;
   background: var(--paper-raised);
-  border: 1px solid var(--yellow-soft);
+  border: 1px solid var(--sky-soft);
   border-radius: var(--radius);
   text-decoration: none;
   color: var(--ink);
   transition: border-color 0.15s ease;
 }
-.priority-panel-list a:hover { border-color: var(--yellow); }
+.priority-panel-list a:hover { border-color: var(--sky); }
 .priority-panel-qid {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   padding: 0.12rem 0.45rem;
-  background: var(--yellow-soft);
-  color: var(--yellow-deep);
+  background: var(--sky-soft);
+  color: var(--sky-deep);
   border-radius: 3px;
   text-align: center;
 }
