@@ -1,11 +1,12 @@
 ## Welcome
 
-This is your interactive discovery worksheet — the questions we need answered before the build can move past the Strategy & Analysis phase. Responses save as you type; status, comments, and history are live.
+This is your interactive discovery worksheet: the questions we need answered before the build can move past the Strategy & Analysis phase. Responses save automatically as you type, and you can come back to update any answer at any time. Status, comments, and history are live.
 
 <details class="intro-section">
 <summary>How to use the portal</summary>
 
-- **Type your response** in the box on each question — it saves automatically.
+- **Type your response** in the box on each question. It saves automatically.
+- **Edit any time.** Come back tomorrow, next week, or after our next meeting and revise. The new version replaces the old one, and a full revision history is kept on every question.
 - Use the **Status** pills to mark your progress (Not started / In progress / Answered / Needs clarification).
 - The **comment thread** below each question is for back-and-forth: clarifications, push-back, follow-ups.
 - If a question doesn't apply or you don't know yet, leave a comment like *"unknown"* or *"let's discuss"* and we'll take it up live.
@@ -16,7 +17,7 @@ This is your interactive discovery worksheet — the questions we need answered 
 <details class="intro-section">
 <summary>How the worksheet is organized</summary>
 
-The structure mirrors the technical work streams of the project. Each section opens with **what we currently understand** — the assumptions we're operating from — then asks **specific questions** we need answers to. Each question explains *why we're asking* so you know what we'll do with the answer.
+The structure mirrors the technical work streams of the project. Each section opens with **what we currently understand** (the assumptions we're operating from), then asks **specific questions** we need answers to. Each question explains *why we're asking* so you know what we'll do with the answer.
 
 </details>
 
@@ -25,6 +26,6 @@ The structure mirrors the technical work streams of the project. Each section op
 
 - This worksheet covers **technical/architectural questions only**. Content strategy, design direction, and brand are handled in separate streams.
 - Questions are based on the signed LOA, the RFP, the RFP Q&A, and our preliminary exploration of the existing site at `educationusa.state.gov`. Where the LOA and Q&A diverged, we've flagged the divergence for your input.
-- A handful of items are flagged where the LOA scope and your earlier Q&A guidance pointed in different directions — those are explicit decision points, not assumptions.
+- A handful of items are flagged where the LOA scope and your earlier Q&A guidance pointed in different directions. Those are explicit decision points, not assumptions.
 
 </details>
