@@ -1,6 +1,6 @@
 ## Welcome
 
-This worksheet collects the questions we need to answer before the build can move past Strategy & Analysis. Responses save automatically as you type, and you can come back to update any answer at any time. Status, comments, and history are live.
+This worksheet collects the questions we need to answer in order to move into the build phase and finalize the longer-term technical decisions that impact the site build. Responses save automatically as you type, and you can come back to update any answer at any time. Status, comments, and history are live.
 
 This worksheet was derived largely from our [technical analysis](/edusa/reference/technical-analysis) and all of the available [source documents](/edusa/reference/source-documents).
 
