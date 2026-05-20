@@ -653,26 +653,26 @@ img { max-width: 100%; height: auto; }
 .edit-on-github {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
   font-family: var(--font-sans);
-  font-size: 0.76rem;
-  font-weight: 500;
-  color: var(--ink-muted);
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--ink-faint);
   text-decoration: none;
-  padding: 0.28rem 0.6rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--paper-raised);
-  transition: border-color 0.12s ease, color 0.12s ease;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  transition: color 0.12s ease;
   white-space: nowrap;
+  opacity: 0.55;
 }
 .edit-on-github:hover {
-  border-color: var(--navy);
   color: var(--navy);
-  text-decoration: none;
+  opacity: 1;
+  text-decoration: underline;
 }
 .edit-on-github-arrow {
-  font-size: 0.9em;
+  font-size: 0.85em;
   opacity: 0.7;
 }
 
