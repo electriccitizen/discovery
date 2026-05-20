@@ -10,6 +10,7 @@ While reviewing the current site, we surfaced content types and features that th
 
 ### What we currently understand
 
+- This section surfaces various features, content, and other anomalies that were uncovered during discovery on your live site.
 - The current site has four substantive content types: **Advising Centers** (422), **Scholarships** (270, also surfaced via the `/find-financial-aid` View as "Financial Aid"), **Events**, and **Videos** (242, YouTube-backed). Centers, Scholarships, and Events are in the LOA Scope of Work; Videos is not.
 - The Submit Content page on the current site references "campus news stories" as a third submittable type; we have not located its public URL.
 - The current site has a "Webinars" section under Online Services, but **the URL 301-redirects to the homepage** — link present in nav, page content unreachable anonymously.
