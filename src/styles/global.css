@@ -791,8 +791,8 @@ img { max-width: 100%; height: auto; }
   flex-shrink: 0;
 }
 .status-chip[hidden] { display: none !important; }
-.status-chip-answered            { background: var(--amber-soft); color: #6e4d0c; }
-.status-chip-needs_clarification { background: var(--rust-soft);  color: var(--rust); }
+.status-chip-answered            { background: var(--moss-soft); color: #2e4d24; }
+.status-chip-needs_clarification { background: var(--rust-soft); color: var(--rust); }
 
 /* Priority-only row tightens the container since only one group is inside */
 .status-pills.priority-only {
@@ -828,11 +828,11 @@ img { max-width: 100%; height: auto; }
 .status-action.selected .status-action-label-selected { display: inline; }
 
 .status-action-answered.selected {
-  background: var(--amber);
+  background: var(--moss);
   color: #fff;
-  border-color: var(--amber);
+  border-color: var(--moss);
 }
-.status-action-answered.selected:hover { background: #a0751f; border-color: #a0751f; }
+.status-action-answered.selected:hover { background: #3a5731; border-color: #3a5731; }
 
 .status-action-clarification.selected {
   background: var(--rust);
