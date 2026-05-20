@@ -136,6 +136,19 @@ export async function listComments(
   return result.results ?? [];
 }
 
+export async function listAllComments(
+  db: D1Database,
+  project: string
+): Promise<CommentRow[]> {
+  const result = await db
+    .prepare(
+      'SELECT id, project_slug, question_id, author_email, author_label, body, created_at FROM comments WHERE project_slug = ?1 ORDER BY created_at ASC, id ASC'
+    )
+    .bind(project)
+    .all<CommentRow>();
+  return result.results ?? [];
+}
+
 export async function addComment(
   db: D1Database,
   project: string,

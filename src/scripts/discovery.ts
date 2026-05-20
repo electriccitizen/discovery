@@ -129,9 +129,114 @@ class StatusPills extends HTMLElement {
   }
 }
 
+interface CommentPayload {
+  id: number;
+  author_email: string;
+  author_label: string;
+  body: string;
+  created_at: string;
+}
+
+class CommentThread extends HTMLElement {
+  private project!: string;
+  private questionId!: string;
+  private list!: HTMLElement;
+  private form!: HTMLFormElement;
+  private textarea!: HTMLTextAreaElement;
+  private statusEl!: HTMLElement;
+  private submitBtn!: HTMLButtonElement;
+
+  connectedCallback() {
+    this.project = this.dataset.project ?? '';
+    this.questionId = this.dataset.questionId ?? '';
+    this.list = this.querySelector('[data-role="list"]') as HTMLElement;
+    this.form = this.querySelector('[data-role="form"]') as HTMLFormElement;
+    this.textarea = this.form.querySelector('textarea') as HTMLTextAreaElement;
+    this.statusEl = this.form.querySelector('[data-role="status"]') as HTMLElement;
+    this.submitBtn = this.form.querySelector('button[type="submit"]') as HTMLButtonElement;
+
+    this.form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.submit();
+    });
+    this.textarea.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        this.submit();
+      }
+    });
+  }
+
+  private async submit() {
+    const body = this.textarea.value.trim();
+    if (!body) return;
+    this.submitBtn.disabled = true;
+    this.setStatus('saving', 'Posting…');
+    try {
+      const r = await fetch(
+        `/api/projects/${this.project}/questions/${this.questionId}/comments`,
+        {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ body }),
+        }
+      );
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = (await r.json()) as { comment: CommentPayload };
+      this.appendComment(data.comment);
+      this.textarea.value = '';
+      this.setStatus('saved', 'Posted');
+      window.setTimeout(() => this.setStatus('idle', ''), 1500);
+    } catch (err) {
+      console.error('comment post failed', err);
+      this.setStatus('error', 'Failed — retry?');
+    } finally {
+      this.submitBtn.disabled = false;
+    }
+  }
+
+  private appendComment(c: CommentPayload) {
+    const empty = this.list.querySelector('.comment-empty');
+    if (empty) empty.remove();
+    const role = c.author_label === 'EC' ? 'ec' : 'client';
+    const article = document.createElement('article');
+    article.className = `comment comment-${role}`;
+    article.dataset.commentId = String(c.id);
+    const time = new Date(c.created_at).toLocaleString(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+    article.innerHTML = `
+      <header class="comment-header">
+        <span class="user-role user-role-${role}"></span>
+        <span class="comment-author"><code></code></span>
+        <time class="comment-time" datetime="${escapeAttr(c.created_at)}"></time>
+      </header>
+      <p class="comment-body"></p>
+    `;
+    (article.querySelector('.user-role') as HTMLElement).textContent = c.author_label;
+    (article.querySelector('.comment-author code') as HTMLElement).textContent = c.author_email;
+    (article.querySelector('.comment-time') as HTMLElement).textContent = time;
+    (article.querySelector('.comment-body') as HTMLElement).textContent = c.body;
+    this.list.appendChild(article);
+  }
+
+  private setStatus(state: string, text: string) {
+    this.statusEl.dataset.state = state;
+    this.statusEl.textContent = text;
+  }
+}
+
+function escapeAttr(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
 if (!customElements.get('response-form')) {
   customElements.define('response-form', ResponseForm);
 }
 if (!customElements.get('status-pills')) {
   customElements.define('status-pills', StatusPills);
+}
+if (!customElements.get('comment-thread')) {
+  customElements.define('comment-thread', CommentThread);
 }

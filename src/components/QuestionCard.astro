@@ -3,18 +3,21 @@ import type { Question } from '../lib/worksheet.ts';
 import {
   PRIORITY_VALUES,
   STATUS_VALUES,
+  type CommentRow,
   type Priority,
   type ResponseRow,
   type Status,
 } from '../lib/db.ts';
+import CommentThread from './CommentThread.astro';
 
 interface Props {
   question: Question;
   projectSlug: string;
   response: ResponseRow | null;
+  comments: CommentRow[];
 }
 
-const { question, projectSlug, response } = Astro.props;
+const { question, projectSlug, response, comments } = Astro.props;
 const bodyValue = response?.body ?? '';
 const status: Status = (response?.status as Status) ?? 'not_started';
 const priority: Priority = (response?.priority as Priority) ?? 'medium';
@@ -100,4 +103,6 @@ const updatedDisplay = response
       )}
     </div>
   </response-form>
+
+  <CommentThread projectSlug={projectSlug} questionId={question.id} comments={comments} />
 </article>

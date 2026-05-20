@@ -1,0 +1,54 @@
+---
+import type { CommentRow } from '../lib/db.ts';
+
+interface Props {
+  projectSlug: string;
+  questionId: string;
+  comments: CommentRow[];
+}
+
+const { projectSlug, questionId, comments } = Astro.props;
+
+function fmtTime(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+
+function roleClass(label: string): 'ec' | 'client' {
+  return label === 'EC' ? 'ec' : 'client';
+}
+---
+<comment-thread class="comment-thread" data-project={projectSlug} data-question-id={questionId}>
+  <div class="comment-list" data-role="list">
+    {comments.length === 0 ? (
+      <p class="comment-empty">No comments yet.</p>
+    ) : (
+      comments.map((c) => (
+        <article class={`comment comment-${roleClass(c.author_label)}`} data-comment-id={c.id}>
+          <header class="comment-header">
+            <span class={`user-role user-role-${roleClass(c.author_label)}`}>{c.author_label}</span>
+            <span class="comment-author"><code>{c.author_email}</code></span>
+            <time class="comment-time" datetime={c.created_at}>{fmtTime(c.created_at)}</time>
+          </header>
+          <p class="comment-body">{c.body}</p>
+        </article>
+      ))
+    )}
+  </div>
+
+  <form class="comment-form" data-role="form">
+    <label class="comment-label">
+      <span class="comment-label-text">Add a comment</span>
+      <textarea
+        rows="2"
+        name="body"
+        placeholder="Reply or add context. Ctrl/⌘+Enter to send."
+        required
+      ></textarea>
+    </label>
+    <div class="comment-form-footer">
+      <button type="submit" class="btn btn-primary">Post comment</button>
+      <span class="comment-status" data-role="status"></span>
+    </div>
+  </form>
+</comment-thread>
