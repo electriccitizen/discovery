@@ -32,6 +32,7 @@ The RFP specifies two additional filters that **don't currently exist** on the l
 **F3. Adviser event sub-categorization — what event types within "adviser events" do you want to differentiate?** The RFP says adviser events "can be differentiated by event type" but doesn't specify what those types are, and the current site doesn't appear to have an Event Type field. Examples we'd expect to see: information session, pre-departure orientation, application workshop, webinar — or something else.
 - *Why we ask:* Determines whether the Event content type gets an "Event Type" taxonomy/list field for editorial categorization and finder filtering.
 - *Note on data backfill:* This is a new field that doesn't exist on the current site, so **existing events migrated from the current site will need IIE to back-fill event-type values manually**, and the field gets added to the adviser submission form for future events. Same pattern as the F1 backfill note.
+- **Recommendation:** go with the event types you think are valuable, and decide whether you want to back-fill old/existing events with this data or just apply it to new ones moving forward.
 
 **F4. Event migration — how far back?** The sitemap surfaces ~5,624 Event records, most historical. We need a date cutoff for migration. Options:
 - **Upcoming only at launch** — cleanest, smallest dataset, loses historical record.
