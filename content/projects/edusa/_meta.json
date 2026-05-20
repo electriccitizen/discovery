@@ -1,0 +1,24 @@
+{
+  "slug": "edusa",
+  "title": "EducationUSA — Technical Discovery",
+  "client": {
+    "name": "Institute of International Education (IIE)",
+    "label": "IIE",
+    "primary_contact": "Albino Gamez"
+  },
+  "ec_team": [
+    "tim@electriccitizen.com"
+  ],
+  "client_emails": [],
+  "status": "draft",
+  "section_order": [
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"
+  ],
+  "references": [
+    { "slug": "technical-analysis", "title": "Technical Analysis" },
+    { "slug": "site-discovery", "title": "Live Site Discovery Findings" },
+    { "slug": "sitemap-inventory", "title": "Sitemap-Derived URL Inventory" },
+    { "slug": "migration-analysis", "title": "Migration Analysis" },
+    { "slug": "source-documents", "title": "Source Documents" }
+  ]
+}

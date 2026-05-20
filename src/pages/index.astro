@@ -1,0 +1,41 @@
+---
+import '../styles/global.css';
+
+const email = Astro.request.headers.get('cf-access-authenticated-user-email');
+const accessHeaderPresent = email !== null;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Discovery Portal</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <main>
+      <h1>Discovery Portal</h1>
+      <p class="lede">Phase 0 — scaffold reachable.</p>
+
+      <section class="status">
+        <h2>Cloudflare Access</h2>
+        {accessHeaderPresent ? (
+          <p>Logged in as <strong>{email}</strong></p>
+        ) : (
+          <p class="warn">
+            <code>cf-access-authenticated-user-email</code> header not present.
+            Expected in local dev; if you see this in production,
+            Access is not gating this hostname yet.
+          </p>
+        )}
+      </section>
+
+      <section>
+        <h2>Next</h2>
+        <p>
+          See <a href="https://github.com/electriccitizen/discovery/blob/main/docs/PLAN.md">PLAN.md</a>
+          for the full build sequence. Phase 1 lands the worksheet UI.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
