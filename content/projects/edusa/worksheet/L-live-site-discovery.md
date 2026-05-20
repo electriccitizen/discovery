@@ -66,7 +66,7 @@ While reviewing the current site, we surfaced content types and features that th
 
 - **Recommendation:** We recommend swapping to honeypot + Cloudflare Turnstile + Drupal `flood` controls for all public forms. (Turnstile is free, privacy-preserving, accessible, and largely invisible to legitimate users — no checkbox or image puzzle.)
 
-**L11. Content type inventory — please review.** Our current synthesis (current-site crawl + LOA §G + RFP audience sections), consolidated in `technical-analysis.md §3.14` and reproduced here in summary:
+**L11. Content type inventory — please review.** Our current synthesis (current-site crawl + LOA §G + RFP audience sections), consolidated in [Technical Analysis](/edusa/reference/technical-analysis) §3.14 and reproduced here in summary:
 
 - **Tier 1 (crawl-confirmed):** Advising Center (422), Scholarship (270), Event, Video (242).
 - **Tier 2 (LOA-named, greenfield — does not exist on current site):** Adviser Profile, Downloadable Resource, News / Story.
@@ -91,7 +91,7 @@ If yes, **we recommend a per-story content type** — each story gets its own UR
 
 - *Expected format:* "yes, per-story content type" / "no, drop them" / "yes but keep the paginated single-page approach."
 
-**L14. The "5 Steps to U.S. Study" guide — migrate as-is or revisit in Strategy?** The current site's 5 Steps guide is the largest single content asset and the most prominent student-facing journey on the site — **71 pages**, organized as a matrix of **5 steps × 5–6 audience tracks** (Community College, Undergraduate, Graduate, Short-Term, English Language, plus Online Learning in some cases). See `technical-analysis.md §3.7` for the full structure.
+**L14. The "5 Steps to U.S. Study" guide — migrate as-is or revisit in Strategy?** The current site's 5 Steps guide is the largest single content asset and the most prominent student-facing journey on the site — **71 pages**, organized as a matrix of **5 steps × 5–6 audience tracks** (Community College, Undergraduate, Graduate, Short-Term, English Language, plus Online Learning in some cases). See [Technical Analysis](/edusa/reference/technical-analysis) §3.7 for the full structure.
 
 - **(a) Migrate as-is.** Preserve the existing 5×5 matrix and copy. Fix title-style inconsistencies and broken links during migration. Strategy/Design phase provides the visual refresh; content stays.
 - **(b) Reconsider during Content Strategy.** Keep the structural shape but revisit IA, audience-track scope, and editorial refresh during the Strategy phase.
