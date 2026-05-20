@@ -2,7 +2,6 @@
 import type { Question } from '../lib/worksheet.ts';
 import {
   PRIORITY_VALUES,
-  STATUS_VALUES,
   type AuditRow,
   type CommentRow,
   type Priority,
@@ -25,17 +24,15 @@ const bodyValue = response?.body ?? '';
 const status: Status = (response?.status as Status) ?? 'not_started';
 const priority: Priority = (response?.priority as Priority) ?? 'medium';
 
-const STATUS_LABELS: Record<Status, string> = {
-  not_started: 'Not started',
-  in_progress: 'In progress',
-  answered: 'Answered',
-  needs_clarification: 'Needs clarification',
-};
 const PRIORITY_LABELS: Record<Priority, string> = {
   high: 'High',
   medium: 'Medium',
   low: 'Low',
 };
+
+const isAnswered = status === 'answered';
+const isFlagged = status === 'needs_clarification';
+const showChip = isAnswered || isFlagged;
 
 const updatedDisplay = response
   ? new Date(response.updated_at).toLocaleString(undefined, {
@@ -48,6 +45,11 @@ const updatedDisplay = response
   <header class="question-card-header">
     <span class="question-id">{question.id}</span>
     <h3 class="question-title">{question.title}</h3>
+    <span
+      class={`status-chip status-chip-${status}`}
+      data-role="status-chip"
+      hidden={!showChip}
+    >{isAnswered ? 'Answered' : isFlagged ? 'Needs clarification' : ''}</span>
   </header>
 
   {question.bodyHtml && (
@@ -68,17 +70,7 @@ const updatedDisplay = response
     </aside>
   )}
 
-  <status-pills class="status-pills" data-project={projectSlug} data-question-id={question.id}>
-    <div class="pill-group">
-      <span class="pill-label">Status</span>
-      {STATUS_VALUES.map((s) => (
-        <button
-          type="button"
-          data-status={s}
-          class={`pill pill-status pill-status-${s}${status === s ? ' selected' : ''}`}
-        >{STATUS_LABELS[s]}</button>
-      ))}
-    </div>
+  <status-pills class="status-pills priority-only" data-project={projectSlug} data-question-id={question.id}>
     <div class="pill-group">
       <span class="pill-label">Priority</span>
       {PRIORITY_VALUES.map((p) => (
@@ -106,6 +98,30 @@ const updatedDisplay = response
       )}
     </div>
   </response-form>
+
+  <status-toggle
+    class="status-toggle"
+    data-project={projectSlug}
+    data-question-id={question.id}
+    data-status={status}
+  >
+    <button
+      type="button"
+      class={`status-action status-action-answered${isAnswered ? ' selected' : ''}`}
+      data-action="toggle-answered"
+    >
+      <span class="status-action-label-default">Mark as answered</span>
+      <span class="status-action-label-selected">Answered ✓</span>
+    </button>
+    <button
+      type="button"
+      class={`status-action status-action-clarification${isFlagged ? ' selected' : ''}`}
+      data-action="toggle-clarification"
+    >
+      <span class="status-action-label-default">Flag for clarification</span>
+      <span class="status-action-label-selected">Flagged — needs clarification</span>
+    </button>
+  </status-toggle>
 
   <AuditHistory audit={audit} />
 

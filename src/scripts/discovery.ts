@@ -129,6 +129,82 @@ class StatusPills extends HTMLElement {
   }
 }
 
+/**
+ * Status toggle — two action buttons:
+ *   - "Mark as answered" / "Answered ✓"
+ *   - "Flag for clarification" / "Flagged — needs clarification"
+ * Toggling either button sends an explicit status PATCH. Toggling off
+ * sends 'in_progress'; the server downgrades to 'not_started' if the
+ * body is empty. Also updates the small status chip in the card header.
+ */
+class StatusToggle extends HTMLElement {
+  private project!: string;
+  private questionId!: string;
+  private answeredBtn!: HTMLButtonElement;
+  private clarificationBtn!: HTMLButtonElement;
+
+  connectedCallback() {
+    this.project = this.dataset.project ?? '';
+    this.questionId = this.dataset.questionId ?? '';
+    this.answeredBtn = this.querySelector('[data-action="toggle-answered"]') as HTMLButtonElement;
+    this.clarificationBtn = this.querySelector('[data-action="toggle-clarification"]') as HTMLButtonElement;
+    this.answeredBtn?.addEventListener('click', () => this.toggle('answered'));
+    this.clarificationBtn?.addEventListener('click', () => this.toggle('needs_clarification'));
+  }
+
+  private currentStatus(): string {
+    return this.dataset.status ?? 'not_started';
+  }
+
+  private async toggle(target: 'answered' | 'needs_clarification') {
+    const current = this.currentStatus();
+    const next = current === target ? 'in_progress' : target;
+    const prev = current;
+
+    this.applyStatus(next);
+    try {
+      const r = await fetch(
+        `/api/projects/${this.project}/questions/${this.questionId}/status`,
+        {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ status: next }),
+        }
+      );
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = (await r.json()) as { response: { status: string } };
+      // Server may downgrade 'in_progress' → 'not_started' when body is empty.
+      this.applyStatus(data.response.status);
+    } catch (err) {
+      console.error('status toggle failed', err);
+      this.applyStatus(prev);
+      alert('Failed to update — please retry.');
+    }
+  }
+
+  private applyStatus(status: string) {
+    this.dataset.status = status;
+    this.answeredBtn?.classList.toggle('selected', status === 'answered');
+    this.clarificationBtn?.classList.toggle('selected', status === 'needs_clarification');
+
+    const card = this.closest('.question-card');
+    if (!card) return;
+    card.className = card.className.replace(/\bstatus-\S+/g, `status-${status}`);
+    const chip = card.querySelector<HTMLElement>('[data-role="status-chip"]');
+    if (chip) {
+      const label =
+        status === 'answered'
+          ? 'Answered'
+          : status === 'needs_clarification'
+            ? 'Needs clarification'
+            : '';
+      chip.textContent = label;
+      chip.className = `status-chip status-chip-${status}`;
+      chip.hidden = label === '';
+    }
+  }
+}
+
 interface CommentPayload {
   id: number;
   author_email: string;
@@ -236,6 +312,9 @@ if (!customElements.get('response-form')) {
 }
 if (!customElements.get('status-pills')) {
   customElements.define('status-pills', StatusPills);
+}
+if (!customElements.get('status-toggle')) {
+  customElements.define('status-toggle', StatusToggle);
 }
 if (!customElements.get('comment-thread')) {
   customElements.define('comment-thread', CommentThread);

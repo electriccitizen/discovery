@@ -80,18 +80,30 @@ export async function upsertResponseBody(
   const now = new Date().toISOString();
   const existing = await getResponse(db, project, questionId);
   const prevBody = existing?.body ?? null;
+  const prevStatus = (existing?.status ?? 'not_started') as Status;
+
+  // Auto-transition between not_started and in_progress based on whether
+  // the body has content. Explicit user states (answered,
+  // needs_clarification) survive body edits — those are intentional
+  // assertions. Auto-transitions are NOT audited; the body change itself
+  // is in audit_log and the implied status flip is derivable from it.
+  const bodyHasContent = body.trim().length > 0;
+  let nextStatus: Status = prevStatus;
+  if (prevStatus === 'not_started' && bodyHasContent) nextStatus = 'in_progress';
+  else if (prevStatus === 'in_progress' && !bodyHasContent) nextStatus = 'not_started';
 
   const statements = [
     db
       .prepare(
-        `INSERT INTO responses (project_slug, question_id, body, updated_at, updated_by)
-         VALUES (?1, ?2, ?3, ?4, ?5)
+        `INSERT INTO responses (project_slug, question_id, body, status, updated_at, updated_by)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6)
          ON CONFLICT(project_slug, question_id) DO UPDATE SET
            body = excluded.body,
+           status = excluded.status,
            updated_at = excluded.updated_at,
            updated_by = excluded.updated_by`
       )
-      .bind(project, questionId, body, now, updatedBy),
+      .bind(project, questionId, body, nextStatus, now, updatedBy),
   ];
 
   if (prevBody !== body) {
@@ -123,8 +135,17 @@ export async function upsertResponseStatus(
   const existing = await getResponse(db, project, questionId);
   const prevStatus = existing?.status ?? null;
   const prevPriority = existing?.priority ?? null;
-  const nextStatus = patch.status ?? existing?.status ?? 'not_started';
+  let nextStatus = patch.status ?? existing?.status ?? 'not_started';
   const nextPriority = patch.priority ?? existing?.priority ?? 'medium';
+
+  // Preserve the body-vs-status invariant: an empty body can never carry
+  // 'in_progress' (that's the auto-derived "you've typed something" state).
+  // If a toggle untoggles to 'in_progress' but the body is empty, store
+  // 'not_started' instead. Explicit answered / needs_clarification are
+  // honored regardless of body — they're deliberate human assertions.
+  if (nextStatus === 'in_progress' && !(existing?.body ?? '').trim()) {
+    nextStatus = 'not_started';
+  }
 
   const statements = [
     db

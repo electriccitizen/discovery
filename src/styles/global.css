@@ -771,6 +771,76 @@ img { max-width: 100%; height: auto; }
 .pill-priority-medium.selected { background: #d6cfbf; color: var(--ink); }
 .pill-priority-low.selected    { background: #ece7da; color: var(--ink-muted); }
 
+/* === Status chip (in card header — visible only for explicit states) === */
+
+.question-card-header {
+  flex-wrap: wrap;
+}
+.question-card-header .question-title { flex: 1; min-width: 0; }
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.status-chip[hidden] { display: none !important; }
+.status-chip-answered            { background: var(--amber-soft); color: #6e4d0c; }
+.status-chip-needs_clarification { background: var(--rust-soft);  color: var(--rust); }
+
+/* Priority-only row tightens the container since only one group is inside */
+.status-pills.priority-only {
+  padding: 0.55rem 0.85rem;
+  gap: var(--space-2);
+}
+
+/* === Status toggle (two action buttons below the response) === */
+
+.status-toggle {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  flex-wrap: wrap;
+}
+.status-action {
+  font: inherit;
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.status-action:hover { border-color: var(--line-strong); color: var(--ink); }
+
+.status-action .status-action-label-selected { display: none; }
+.status-action.selected .status-action-label-default { display: none; }
+.status-action.selected .status-action-label-selected { display: inline; }
+
+.status-action-answered.selected {
+  background: var(--amber);
+  color: #fff;
+  border-color: var(--amber);
+}
+.status-action-answered.selected:hover { background: #a0751f; border-color: #a0751f; }
+
+.status-action-clarification.selected {
+  background: var(--rust);
+  color: #fff;
+  border-color: var(--rust);
+}
+.status-action-clarification.selected:hover { background: #863418; border-color: #863418; }
+
 /* === Response form === */
 
 .response-form { display: block; margin-top: var(--space-4); }
