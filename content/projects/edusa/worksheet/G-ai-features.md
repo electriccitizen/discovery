@@ -21,7 +21,7 @@ order: 7
 
 **G3. What's your vision for the Greeter / chat assistant?** Sitewide for any content? Limited to certain sections (5 Steps, FAQ)? Narrowly task-focused (e.g., "find me a scholarship")? Any voice/tone preferences?
 
-**G4. What's your vision for AI-enhanced search?** Natural-language query understanding + semantic results? AI-summarized result groupings? Strict retrieval grounded in indexed site content, or also synthesize answers from external knowledge?
+**G4. What's your vision for AI-enhanced search?** Natural-language query understanding + semantic results? AI-summarized result groupings?
 
 **G5. What's your vision for AI-assisted editorial tagging?** Examples we'd expect: auto-suggest meta tags / descriptions, taxonomy terms (Region / Country / Audience), alt text for images, transcripts for videos, internal-link suggestions. Which of these are in scope?
 
