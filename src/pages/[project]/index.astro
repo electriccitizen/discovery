@@ -58,29 +58,30 @@ const statusCounts = {
   needs_clarification: 0,
 };
 
-interface FlaggedQuestion {
+interface SurfacedQuestion {
   questionId: string;
   questionTitle: string;
   sectionId: string;
   sectionTitle: string;
   sectionSlug: string;
 }
-const flaggedQuestions: FlaggedQuestion[] = [];
+const flaggedQuestions: SurfacedQuestion[] = [];
+const clarificationQuestions: SurfacedQuestion[] = [];
 
 for (const section of sections) {
   for (const q of section.questions) {
     const r = responsesById.get(q.id);
     const s = (r?.status ?? 'not_started') as keyof typeof statusCounts;
     statusCounts[s]++;
-    if ((r?.flagged ?? 0) === 1) {
-      flaggedQuestions.push({
-        questionId: q.id,
-        questionTitle: q.title,
-        sectionId: section.id,
-        sectionTitle: section.title,
-        sectionSlug: section.slug,
-      });
-    }
+    const surfaced: SurfacedQuestion = {
+      questionId: q.id,
+      questionTitle: q.title,
+      sectionId: section.id,
+      sectionTitle: section.title,
+      sectionSlug: section.slug,
+    };
+    if ((r?.flagged ?? 0) === 1) flaggedQuestions.push(surfaced);
+    if (r?.status === 'needs_clarification') clarificationQuestions.push(surfaced);
   }
 }
 
@@ -158,6 +159,30 @@ function sectionStats(sectionId: string) {
               <span class="priority-panel-qid">{q.questionId}</span>
               <span class="priority-panel-qtitle">{q.questionTitle}</span>
               <span class="priority-panel-section">{q.sectionId}. {q.sectionTitle}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
+
+  {clarificationQuestions.length > 0 && (
+    <section class="clarification-panel">
+      <div class="clarification-panel-header">
+        <span class="clarification-panel-tag">Needs clarification</span>
+        <h2 class="clarification-panel-title">
+          {clarificationQuestions.length === 1
+            ? '1 question awaiting clarification'
+            : `${clarificationQuestions.length} questions awaiting clarification`}
+        </h2>
+      </div>
+      <ol class="clarification-panel-list">
+        {clarificationQuestions.map((q) => (
+          <li>
+            <a href={`/${projectSlug}/section/${q.sectionSlug}#${q.questionId}`}>
+              <span class="clarification-panel-qid">{q.questionId}</span>
+              <span class="clarification-panel-qtitle">{q.questionTitle}</span>
+              <span class="clarification-panel-section">{q.sectionId}. {q.sectionTitle}</span>
             </a>
           </li>
         ))}
