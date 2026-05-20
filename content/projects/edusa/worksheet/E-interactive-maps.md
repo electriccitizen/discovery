@@ -16,11 +16,11 @@ order: 5
 
 **E1. We plan to deliver one integrated map per the LOA. Does that match what you envisioned?** The RFP separately mentioned a "world map" and a "U.S. map" (and described distinct map needs for HEI vs Student audiences) — the LOA collapsed that into "an interactive map." If you actually want separate maps, flag now; otherwise we proceed with one integrated experience.
 
-- **Recommendation:** we recommend a single map for a unified experience and less technical weight.
+- **Recommendation:** We recommend a single map for a unified experience and less technical weight.
 
 **E2. The current site has two parallel country lists — should the new build consolidate?** Centers and Scholarships use a Drupal Country taxonomy (177 terms); Events use the address module's ISO 2-letter list (250 codes). They don't fully overlap (ISO is more complete on territories and edge cases). Our default plan is to consolidate on a single canonical source (most likely the ISO list) and re-map existing taxonomy references during migration — that keeps the country reference clean and is what the interactive map will plot against.
 
-- **Recommendation:** we recommend a single list of countries that is maintained for all areas of the site, unless there is a specific reason you need different lists.
+- **Recommendation:** We recommend a single list of countries that is maintained for all areas of the site, unless there is a specific reason you need different lists.
 
 - **(a)** Any reason NOT to consolidate? (e.g., the current taxonomy carries IIE-specific metadata we can't see from outside, or an editorial workflow that depends on it specifically)
 - **(b)** Does IIE have a single official source for the canonical country/territory list, with names spelled the way IIE wants them surfaced? If so, please share.
@@ -33,7 +33,7 @@ order: 5
 
 **E4. The map's data layers — which do you want, and what's the source for each?** The source docs describe possible layers the map could surface — we're not committed to all of them. For each, please confirm: (a) is this layer wanted on the new site's map? and (b) if yes, where does the source data come from?
 
-- **Recommendation:** we suggest starting with a simple list of data layers from readily available sources. Fewer, better data layers beats adding everything possible.
+- **Recommendation:** We suggest starting with a simple list of data layers from readily available sources. Fewer, better data layers beat adding everything possible.
 
 - **(a) Advising-center locations** — we have ~436 records from the current site with street addresses; we'd geocode at migration.
 - **(b) HEI locations** — described as a map layer in the RFP and LOA. HEIs submit institutional info via the form (D1), accreditation-checked and REAC-reviewed; we geocode at submission. The map would show whichever HEIs have submitted — not a pre-existing directory of all accredited institutions. Two related items:
