@@ -8,8 +8,7 @@ order: 7
 
 - Per LOA §G and your Q&A, AI features to explore for launch include: a chat/greeter assistant, AI-enhanced search, translation assistance, and editorial tagging.
 - Your Q&A characterized AI as something you want "instrumental" to the site — not just present.
-- LLM token costs are IIE's responsibility (per LOA p. 30).
-- IIE has no privacy restrictions on using LLM APIs (Q&A).
+- LLM and Vector DB token costs are IIE's responsibility (per LOA p. 30).
 
 ### Questions for you
 
