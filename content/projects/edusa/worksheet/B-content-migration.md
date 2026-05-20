@@ -17,7 +17,7 @@ order: 2
 
 ### Questions for you
 
-**B1. Final effort on obtaining a D7 database dump.** We don't need backend access, accounts etc. — just an export of the database. Is there a possibility?
+**B1. Final effort on obtaining a D7 database dump.** We don't need backend access, accounts etc. — just an export of the database. Is there a possibility? :)
 - *Why it matters:* Working from public HTML alone, we lose structured nuance (taxonomy IDs, entity references, admin-only fields, draft state). An export materially improves migration quality and de-risks the timeline.
 - *Expected format:* a named contact, "we'll escalate via ECA," or "confirmed not obtainable."
 
