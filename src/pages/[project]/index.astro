@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getProject } from '../../lib/projects.ts';
 import { listSections, countQuestions } from '../../lib/worksheet.ts';
+import { listResponses } from '../../lib/db.ts';
+import { env } from 'cloudflare:workers';
 
 const projectSlug = Astro.params.project;
 if (!projectSlug) return new Response(null, { status: 404 });
@@ -11,6 +13,41 @@ if (!project) return new Response(null, { status: 404 });
 
 const sections = listSections(projectSlug);
 const totalQuestions = countQuestions(projectSlug);
+
+const db = env.DB;
+const responses = db ? await listResponses(db, projectSlug) : [];
+const responsesById = new Map(responses.map((r) => [r.question_id, r]));
+
+const statusCounts = {
+  not_started: 0,
+  in_progress: 0,
+  answered: 0,
+  needs_clarification: 0,
+};
+const priorityCounts = { high: 0, medium: 0, low: 0 };
+
+for (const section of sections) {
+  for (const q of section.questions) {
+    const r = responsesById.get(q.id);
+    const s = (r?.status ?? 'not_started') as keyof typeof statusCounts;
+    const p = (r?.priority ?? 'medium') as keyof typeof priorityCounts;
+    statusCounts[s]++;
+    priorityCounts[p]++;
+  }
+}
+
+const answeredCount = statusCounts.answered;
+const completionPct = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
+
+function sectionStats(sectionId: string) {
+  const section = sections.find((s) => s.id === sectionId);
+  if (!section) return { answered: 0, total: 0 };
+  let answered = 0;
+  for (const q of section.questions) {
+    if (responsesById.get(q.id)?.status === 'answered') answered++;
+  }
+  return { answered, total: section.questions.length };
+}
 ---
 <BaseLayout title={project.title}>
   <p class="breadcrumb"><a href="/">Discovery Portal</a></p>
@@ -23,17 +60,40 @@ const totalQuestions = countQuestions(projectSlug);
     <div><dt>Scope</dt><dd>{totalQuestions} questions · {sections.length} sections</dd></div>
   </dl>
 
+  <section class="progress-block">
+    <div class="progress-headline">
+      <span class="progress-pct">{completionPct}%</span>
+      <span class="progress-label">
+        {answeredCount} of {totalQuestions} answered
+      </span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-bar-fill" style={`width: ${completionPct}%`}></div>
+    </div>
+    <dl class="progress-status-breakdown">
+      <div><dt>Not started</dt><dd>{statusCounts.not_started}</dd></div>
+      <div><dt>In progress</dt><dd>{statusCounts.in_progress}</dd></div>
+      <div><dt>Answered</dt><dd>{statusCounts.answered}</dd></div>
+      <div><dt>Needs clarification</dt><dd>{statusCounts.needs_clarification}</dd></div>
+    </dl>
+  </section>
+
   <h2>Worksheet sections</h2>
   <ol class="section-list">
-    {sections.map((s) => (
-      <li>
-        <a href={`/${projectSlug}/section/${s.slug}`}>
-          <span class="section-id">{s.id}</span>
-          <span class="section-title">{s.title}</span>
-          <span class="section-count">{s.questions.length} {s.questions.length === 1 ? 'question' : 'questions'}</span>
-        </a>
-      </li>
-    ))}
+    {sections.map((s) => {
+      const stats = sectionStats(s.id);
+      return (
+        <li>
+          <a href={`/${projectSlug}/section/${s.slug}`}>
+            <span class="section-id">{s.id}</span>
+            <span class="section-title">{s.title}</span>
+            <span class="section-count">
+              {stats.answered}/{stats.total}
+            </span>
+          </a>
+        </li>
+      );
+    })}
   </ol>
 
   {project.references.length > 0 && (

@@ -8,7 +8,7 @@
   // Without these, the *.workers.dev URL and every preview deploy is a
   // public backdoor that bypasses Cloudflare Access.
   "workers_dev": false,
-  "preview_urls": false
+  "preview_urls": false,
 
   // Deployed via Cloudflare Workers + Static Assets. The Astro adapter
   // (@astrojs/cloudflare) emits a complete deploy config at
@@ -17,8 +17,11 @@
   // adapter copies into the generated config and which platformProxy
   // surfaces in local dev (`astro dev`).
 
-  // D1 binding (added in Phase 2):
-  // "d1_databases": [
-  //   { "binding": "DB", "database_name": "discovery", "database_id": "<uuid>" }
-  // ]
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "discovery",
+      "database_id": "ec7f201e-ca46-4aa8-a796-7f05859a363b"
+    }
+  ]
 }

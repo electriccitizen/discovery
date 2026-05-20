@@ -2,6 +2,8 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getProject } from '../../../lib/projects.ts';
 import { getSection, listSections } from '../../../lib/worksheet.ts';
+import { listResponses } from '../../../lib/db.ts';
+import { env } from 'cloudflare:workers';
 import QuestionCard from '../../../components/QuestionCard.astro';
 
 const projectSlug = Astro.params.project;
@@ -11,6 +13,10 @@ if (!projectSlug || !sectionSlug) return new Response(null, { status: 404 });
 const project = getProject(projectSlug);
 const section = getSection(projectSlug, sectionSlug);
 if (!project || !section) return new Response(null, { status: 404 });
+
+const db = env.DB;
+const responses = db ? await listResponses(db, projectSlug) : [];
+const responsesById = new Map(responses.map((r) => [r.question_id, r]));
 
 const allSections = listSections(projectSlug);
 const idx = allSections.findIndex((s) => s.slug === section.slug);
@@ -40,7 +46,13 @@ const next = idx < allSections.length - 1 ? allSections[idx + 1] : null;
     <h2>Questions for you ({section.questions.length})</h2>
     <ol class="question-list">
       {section.questions.map((q) => (
-        <li><QuestionCard question={q} /></li>
+        <li>
+          <QuestionCard
+            question={q}
+            projectSlug={projectSlug}
+            response={responsesById.get(q.id) ?? null}
+          />
+        </li>
       ))}
     </ol>
   </section>

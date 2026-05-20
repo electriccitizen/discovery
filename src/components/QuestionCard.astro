@@ -1,13 +1,44 @@
 ---
 import type { Question } from '../lib/worksheet.ts';
+import {
+  PRIORITY_VALUES,
+  STATUS_VALUES,
+  type Priority,
+  type ResponseRow,
+  type Status,
+} from '../lib/db.ts';
 
 interface Props {
   question: Question;
+  projectSlug: string;
+  response: ResponseRow | null;
 }
 
-const { question } = Astro.props;
+const { question, projectSlug, response } = Astro.props;
+const bodyValue = response?.body ?? '';
+const status: Status = (response?.status as Status) ?? 'not_started';
+const priority: Priority = (response?.priority as Priority) ?? 'medium';
+
+const STATUS_LABELS: Record<Status, string> = {
+  not_started: 'Not started',
+  in_progress: 'In progress',
+  answered: 'Answered',
+  needs_clarification: 'Needs clarification',
+};
+const PRIORITY_LABELS: Record<Priority, string> = {
+  high: 'High',
+  medium: 'Medium',
+  low: 'Low',
+};
+
+const updatedDisplay = response
+  ? new Date(response.updated_at).toLocaleString(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    })
+  : null;
 ---
-<article class="question-card" id={question.id}>
+<article class={`question-card status-${status} priority-${priority}`} id={question.id}>
   <header class="question-card-header">
     <span class="question-id">{question.id}</span>
     <h3 class="question-title">{question.title}</h3>
@@ -31,8 +62,42 @@ const { question } = Astro.props;
     </aside>
   )}
 
-  <div class="question-response-placeholder">
-    <span class="placeholder-tag">Phase 2</span>
-    Response field, status, priority, and comments land here.
-  </div>
+  <status-pills class="status-pills" data-project={projectSlug} data-question-id={question.id}>
+    <div class="pill-group">
+      <span class="pill-label">Status</span>
+      {STATUS_VALUES.map((s) => (
+        <button
+          type="button"
+          data-status={s}
+          class={`pill pill-status pill-status-${s}${status === s ? ' selected' : ''}`}
+        >{STATUS_LABELS[s]}</button>
+      ))}
+    </div>
+    <div class="pill-group">
+      <span class="pill-label">Priority</span>
+      {PRIORITY_VALUES.map((p) => (
+        <button
+          type="button"
+          data-priority={p}
+          class={`pill pill-priority pill-priority-${p}${priority === p ? ' selected' : ''}`}
+        >{PRIORITY_LABELS[p]}</button>
+      ))}
+    </div>
+  </status-pills>
+
+  <response-form class="response-form" data-project={projectSlug} data-question-id={question.id}>
+    <label class="response-label">
+      <span class="response-label-text">Your response</span>
+      <textarea
+        rows="4"
+        placeholder="Type your response. Saves automatically."
+      >{bodyValue}</textarea>
+    </label>
+    <div class="response-footer">
+      <span class="save-indicator" data-state="idle">{bodyValue ? 'Saved' : ''}</span>
+      {updatedDisplay && (
+        <span class="response-meta">Last updated {updatedDisplay} by <code>{response?.updated_by}</code></span>
+      )}
+    </div>
+  </response-form>
 </article>
