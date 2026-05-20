@@ -957,11 +957,9 @@ img { max-width: 100%; height: auto; }
   font-size: 0.68rem;
   letter-spacing: 0.08em;
 }
-.save-indicator[data-state='idle']   { color: var(--ink-faint); }
-.save-indicator[data-state='typing'] { color: var(--ink-muted); }
-.save-indicator[data-state='saving'] { color: var(--navy); }
-.save-indicator[data-state='saved']  { color: var(--moss); }
-.save-indicator[data-state='error']  { color: var(--rust); }
+.save-indicator[data-state='idle']  { color: var(--ink-faint); }
+.save-indicator[data-state='saved'] { color: var(--ink-faint); }
+.save-indicator[data-state='error'] { color: var(--rust); }
 
 .response-meta code {
   font-size: 0.85em;

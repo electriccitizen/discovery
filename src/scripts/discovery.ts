@@ -13,14 +13,20 @@ class ResponseForm extends HTMLElement {
     this.indicator = this.querySelector('.save-indicator') as HTMLElement;
     if (!this.textarea || !this.indicator) return;
     this.lastSavedBody = this.textarea.value;
+    // On load: if a body was pre-filled, the data is saved from a prior
+    // session — show "Saved" without a timestamp (the response-footer
+    // line already carries the precise last-updated timestamp).
     this.setIndicator('idle', this.lastSavedBody ? 'Saved' : '');
 
     this.textarea.addEventListener('input', () => this.scheduleSave());
     this.textarea.addEventListener('blur', () => this.flushNow());
   }
 
+  // Autosave still fires 1s after the last keystroke + on blur — but the
+  // indicator no longer chatters during typing. The user just sees their
+  // text update; when a save lands, "Saved 9:24 PM" appears and stays.
+  // This is the Notion / Google Docs pattern: safety net present, drama absent.
   private scheduleSave() {
-    this.setIndicator('typing', 'Editing…');
     if (this.saveTimer !== null) window.clearTimeout(this.saveTimer);
     this.saveTimer = window.setTimeout(() => this.save(), 1000);
   }
@@ -35,11 +41,7 @@ class ResponseForm extends HTMLElement {
 
   private async save() {
     const body = this.textarea.value;
-    if (body === this.lastSavedBody) {
-      this.setIndicator('idle', body ? 'Saved' : '');
-      return;
-    }
-    this.setIndicator('saving', 'Saving…');
+    if (body === this.lastSavedBody) return;
     try {
       const r = await fetch(
         `/api/projects/${this.project}/questions/${this.questionId}/response`,
@@ -51,11 +53,15 @@ class ResponseForm extends HTMLElement {
       );
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       this.lastSavedBody = body;
-      this.setIndicator('saved', 'Saved');
+      this.setIndicator('saved', `Saved ${this.fmtTime(new Date())}`);
     } catch (err) {
       console.error('response save failed', err);
       this.setIndicator('error', 'Save failed — retrying on next edit');
     }
+  }
+
+  private fmtTime(d: Date): string {
+    return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   }
 
   private setIndicator(state: string, text: string) {
