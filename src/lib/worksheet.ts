@@ -29,7 +29,17 @@ function parsePath(path: string): { project: string; slug: string } | null {
 }
 
 function parseQuestionBlock(raw: string): Question {
-  const headerMatch = raw.match(/^\*\*([A-M]\d+)\.\s+(.+?)\*\*\s*([\s\S]*?)$/m);
+  // Parse the header on the FIRST LINE ONLY so the regex can't accidentally
+  // consume the bullets on the next line. Earlier version used a multiline
+  // regex with `\s*` after the closing `**`, which greedily ate the trailing
+  // newline and pulled the next line into the captured "header trailing"
+  // text — causing the Why-we-ask bullet to be both prepended to the body
+  // *and* still present in the original position, rendering as a duplicate.
+  const firstNewlineIdx = raw.indexOf('\n');
+  const firstLine = firstNewlineIdx === -1 ? raw : raw.slice(0, firstNewlineIdx);
+  const restOfBlock = firstNewlineIdx === -1 ? '' : raw.slice(firstNewlineIdx + 1);
+
+  const headerMatch = firstLine.match(/^\*\*([A-M]\d+)\.\s+(.+?)\*\*[ \t]*(.*)$/);
   if (!headerMatch) {
     throw new Error(`Could not parse question header in block:\n${raw.slice(0, 120)}`);
   }
@@ -37,8 +47,7 @@ function parseQuestionBlock(raw: string): Question {
   const title = headerMatch[2].trim();
   const headerTrailing = headerMatch[3].trim();
 
-  const firstNewline = raw.indexOf('\n');
-  let body = firstNewline === -1 ? '' : raw.slice(firstNewline + 1).trim();
+  let body = restOfBlock.trim();
   if (headerTrailing) {
     body = body ? `${headerTrailing}\n\n${body}` : headerTrailing;
   }
