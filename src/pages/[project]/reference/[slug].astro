@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getProject, getReference } from '../../../lib/projects.ts';
-import { canAccessProject } from '../../../lib/access.ts';
+import { canAccessProject, isEC } from '../../../lib/access.ts';
 
 const projectSlug = Astro.params.project;
 const refSlug = Astro.params.slug;
@@ -15,14 +15,22 @@ const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email'
 if (!userEmail || !canAccessProject(userEmail, project)) {
   return new Response(null, { status: 404 });
 }
+const userIsEC = isEC(userEmail);
 ---
 <BaseLayout title={ref.title}>
   <p class="breadcrumb">
-    <a href="/">Discovery Portal</a>
-    <span class="sep">›</span>
-    <a href={`/${projectSlug}`}>{project.title}</a>
-    <span class="sep">›</span>
-    <span>Reference</span>
+    {userIsEC && (
+      <>
+        <a href="/">Discovery Portal</a>
+        <span class="sep">›</span>
+        <a href={`/${projectSlug}`}>{project.title}</a>
+        <span class="sep">›</span>
+        <span>Reference</span>
+      </>
+    )}
+    {!userIsEC && (
+      <a href={`/${projectSlug}`}>← {project.title}</a>
+    )}
   </p>
 
   <article class="reference-doc" set:html={ref.html} />

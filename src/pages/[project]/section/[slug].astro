@@ -9,7 +9,7 @@ import {
   type AuditRow,
   type CommentRow,
 } from '../../../lib/db.ts';
-import { canAccessProject } from '../../../lib/access.ts';
+import { canAccessProject, isEC } from '../../../lib/access.ts';
 import { env } from 'cloudflare:workers';
 import QuestionCard from '../../../components/QuestionCard.astro';
 
@@ -25,6 +25,7 @@ const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email'
 if (!userEmail || !canAccessProject(userEmail, project)) {
   return new Response(null, { status: 404 });
 }
+const userIsEC = isEC(userEmail);
 
 const db = env.DB;
 const [responses, comments, audit] = db
@@ -55,9 +56,13 @@ const next = idx < allSections.length - 1 ? allSections[idx + 1] : null;
 ---
 <BaseLayout title={`${section.id}. ${section.title}`}>
   <p class="breadcrumb">
-    <a href="/">Discovery Portal</a>
-    <span class="sep">›</span>
-    <a href={`/${projectSlug}`}>{project.title}</a>
+    {userIsEC && (
+      <>
+        <a href="/">Discovery Portal</a>
+        <span class="sep">›</span>
+      </>
+    )}
+    <a href={`/${projectSlug}`}>{userIsEC ? project.title : `← ${project.title}`}</a>
   </p>
 
   <h1>

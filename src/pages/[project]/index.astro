@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getIntroHtml, getProject } from '../../lib/projects.ts';
 import { listSections, countQuestions } from '../../lib/worksheet.ts';
 import { listRecentActivity, listResponses, type ActivityItem } from '../../lib/db.ts';
-import { canAccessProject } from '../../lib/access.ts';
+import { canAccessProject, isEC } from '../../lib/access.ts';
 import { env } from 'cloudflare:workers';
 
 const projectSlug = Astro.params.project;
@@ -16,6 +16,7 @@ const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email'
 if (!userEmail || !canAccessProject(userEmail, project)) {
   return new Response(null, { status: 404 });
 }
+const userIsEC = isEC(userEmail);
 
 const introHtml = getIntroHtml(projectSlug);
 
@@ -82,7 +83,9 @@ function sectionStats(sectionId: string) {
 }
 ---
 <BaseLayout title={project.title}>
-  <p class="breadcrumb"><a href="/">Discovery Portal</a></p>
+  {userIsEC && (
+    <p class="breadcrumb"><a href="/">Discovery Portal</a></p>
+  )}
   <h1>{project.title}</h1>
 
   <dl class="project-meta-block">
