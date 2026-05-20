@@ -23,6 +23,8 @@ The RFP specifies two additional filters that **don't currently exist** on the l
 
 **Note on data backfill:** Whatever IIE decides for (a) and (b), those are new fields on the Scholarship content type. We'll include them on the HEI submission form for future scholarships — but **existing scholarships migrated from the current site will need IIE to back-fill discipline and award-amount values manually** (the data isn't visible in the crawl). Same pattern as the manual-recreation framing in §B for new fields on existing content types.
 
+- **Recommendation:** go with the filters you think are valuable, and decide whether you want to back-fill old/existing nodes with this data or just apply it to new ones moving forward.
+
 **F2. Scholarship auto-expire — when and how?** The RFP commits scholarships to auto-expiry. Two related items:
 - **(a) Default expiration window** — how long after submission/publish should a scholarship auto-expire by default? (6 months, 1 year, 2 years, or fully driven by the submitter's stated application deadline?)
 - **(b) Behavior at expiration** — hard delete, soft-archive with no public display, admin alert with manual decision, or auto-hide but keep for record-keeping?
