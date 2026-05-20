@@ -393,42 +393,82 @@ img { max-width: 100%; height: auto; }
   color: var(--ink);
 }
 
-.project-intro h3 {
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 700;
-  color: var(--ink-muted);
-  margin: var(--space-5) 0 var(--space-2);
-}
-
 .project-intro p {
   margin: var(--space-2) 0;
   line-height: 1.65;
   color: var(--ink-soft);
 }
-
 .project-intro p strong { color: var(--ink); }
-
-.project-intro ul {
-  margin: var(--space-2) 0;
-  padding-left: 1.35rem;
-}
-
-.project-intro ul li {
-  margin: var(--space-2) 0;
-  line-height: 1.6;
-  color: var(--ink-soft);
-}
-
-.project-intro ul li strong { color: var(--ink); }
 
 .project-intro code {
   font-size: 0.88em;
   background: var(--paper-raised);
   color: var(--ink);
   border: 1px solid var(--line);
+}
+
+/* Collapsible sub-sections inside the intro */
+
+.intro-section {
+  margin-top: var(--space-3);
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.intro-section > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.intro-section > summary::-webkit-details-marker { display: none; }
+.intro-section > summary::before {
+  content: '▸';
+  color: var(--ink-faint);
+  font-size: 0.75em;
+  transition: transform 0.15s ease;
+  display: inline-block;
+}
+.intro-section[open] > summary::before { transform: rotate(90deg); }
+.intro-section > summary:hover { background: var(--paper-soft); }
+.intro-section[open] > summary {
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-soft);
+}
+
+.intro-section[open] { padding-bottom: var(--space-3); }
+
+.intro-section > p,
+.intro-section > ul {
+  margin: var(--space-3) var(--space-5) 0;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.intro-section > p:last-child,
+.intro-section > ul:last-child { margin-bottom: 0; }
+
+.intro-section > ul { padding-left: 1.4rem; }
+.intro-section > ul li {
+  margin: 0.35rem 0;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.intro-section > ul li strong,
+.intro-section > p strong { color: var(--ink); }
+.intro-section code {
+  font-size: 0.88em;
+  background: var(--paper-soft);
+  border: none;
 }
 
 /* === Project picker === */
