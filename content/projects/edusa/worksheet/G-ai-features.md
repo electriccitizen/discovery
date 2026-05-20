@@ -16,7 +16,7 @@ order: 7
 - **Recommendation:** We recommend OpenAI (gpt-4o-mini) as the best option for AI integrations for budget and technical reasons, but we are open to other LLMs if necessary.
 - *Why we ask:* Each has different pricing, capabilities, and SLAs. Affects build cost since you're funding token usage.
 
-**G2. The LLM contract will be held by IIE directly — confirm.** The LOA assigns token costs to IIE (p.30), so the default is that IIE provisions the OpenAI (or chosen vendor) account and pays for token usage directly. EC integrates against your API keys.
+**G2. The LLM and Vector DB contracts will be held by IIE directly — can you please confirm?** The LOA assigns these costs to IIE (p. 30), so the default is that IIE provisions both accounts (OpenAI or chosen vendor + the Vector DB) and pays usage directly. EC integrates against your API keys.
 - *Expected format:* "confirmed" / "let's discuss alternatives."
 
 **G3. What's your vision for the Greeter / chat assistant?** Sitewide for any content? Limited to certain sections (5 Steps, FAQ)? Narrowly task-focused (e.g., "find me a scholarship")? Any voice/tone preferences?
