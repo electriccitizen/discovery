@@ -87,7 +87,7 @@ Before recommending migrate / drop / rebuild-public, we'd like to understand wha
 
 **L13. Student Success Stories — do you want them on the new site?** The current site has a public stories gallery at `/experience-studying-usa/stories-international-students` (single paginated page, ~24 pages of stories rendered inline, no per-story URLs). The RFP §p.10 calls for "an engaging webpage of text and multimedia content showcasing international students."
 
-If yes, **we recommend a per-story content type** — each story gets its own URL, SEO-indexable, shareable, supports per-story metadata (country/region per E4(c), audience track, university, etc.) and feeds the map's success-story layer cleanly. The current paginated-single-page architecture would be a downgrade for the new build.
+- **Recommendation:** If yes, we recommend a per-story content type — each story gets its own URL, SEO-indexable, shareable, supports per-story metadata (country/region per E4(c), audience track, university, etc.) and feeds the map's success-story layer cleanly. The current paginated-single-page architecture would be a downgrade for the new build.
 
 - *Expected format:* "yes, per-story content type" / "no, drop them" / "yes but keep the paginated single-page approach."
 
