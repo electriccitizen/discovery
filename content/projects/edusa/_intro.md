@@ -9,7 +9,7 @@ This worksheet was derived largely from our [technical analysis](/edusa/referenc
 
 - **Type your response** in the box on each question. It saves automatically.
 - **Edit any time.** Come back tomorrow, next week, or after our next meeting and revise. The new version replaces the old one, and a full revision history is kept on every question.
-- Use the **Status** pills to mark your progress (Not started / In progress / Answered / Needs clarification).
+- Click **Mark as answered** when you're done with a question, or **Flag for clarification** if you need our input first. Both buttons sit below the response field on each question.
 - The **comment thread** below each question is for back-and-forth: clarifications, push-back, follow-ups.
 - If a question doesn't apply or you don't know yet, leave a comment like *"unknown"* or *"let's discuss"* and we'll take it up live.
 - **Reference documents** (sitemap inventory, migration analysis, technical analysis, etc.) are linked in the top-right menu of every page.
