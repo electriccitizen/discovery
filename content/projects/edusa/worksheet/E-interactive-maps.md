@@ -16,6 +16,8 @@ order: 5
 
 **E1. We plan to deliver one integrated map per the LOA. Does that match what you envisioned?** The RFP separately mentioned a "world map" and a "U.S. map" (and described distinct map needs for HEI vs Student audiences) — the LOA collapsed that into "an interactive map." If you actually want separate maps, flag now; otherwise we proceed with one integrated experience.
 
+- **Recommendation:** we recommend a single map for a unified experience and less technical weight.
+
 **E2. The current site has two parallel country lists — should the new build consolidate?** Centers and Scholarships use a Drupal Country taxonomy (177 terms); Events use the address module's ISO 2-letter list (250 codes). They don't fully overlap (ISO is more complete on territories and edge cases). Our default plan is to consolidate on a single canonical source (most likely the ISO list) and re-map existing taxonomy references during migration — that keeps the country reference clean and is what the interactive map will plot against.
 
 - **(a)** Any reason NOT to consolidate? (e.g., the current taxonomy carries IIE-specific metadata we can't see from outside, or an editorial workflow that depends on it specifically)
