@@ -1,6 +1,6 @@
 ## Welcome
 
-This is your interactive discovery worksheet: the questions we need answered before the build can move past the Strategy & Analysis phase. Responses save automatically as you type, and you can come back to update any answer at any time. Status, comments, and history are live.
+This worksheet collects the questions we need to answer before the build can move past Strategy & Analysis. Responses save automatically as you type, and you can come back to update any answer at any time. Status, comments, and history are live.
 
 <details class="intro-section">
 <summary>How to use the portal</summary>
