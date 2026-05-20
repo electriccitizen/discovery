@@ -64,67 +64,133 @@ class ResponseForm extends HTMLElement {
   }
 }
 
-class StatusPills extends HTMLElement {
+/**
+ * Status toggle — two action buttons:
+ *   - "Mark as answered" / "Answered"  (toggles to/from 'answered')
+ *   - "Flag for clarification" / "Flagged" (toggles to/from 'needs_clarification')
+ *
+ * Untoggling either reverts to 'in_progress'. The server then auto-corrects
+ * to 'not_started' if the body is empty.
+ *
+ * Also updates the small status chip in the card header to match.
+ */
+class StatusToggle extends HTMLElement {
   private project!: string;
   private questionId!: string;
+  private answeredBtn!: HTMLButtonElement;
+  private clarificationBtn!: HTMLButtonElement;
 
   connectedCallback() {
     this.project = this.dataset.project ?? '';
     this.questionId = this.dataset.questionId ?? '';
-
-    this.querySelectorAll<HTMLButtonElement>('button[data-status]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const status = btn.dataset.status;
-        if (status) this.update({ status });
-      });
-    });
-    this.querySelectorAll<HTMLButtonElement>('button[data-priority]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const priority = btn.dataset.priority;
-        if (priority) this.update({ priority });
-      });
-    });
+    this.answeredBtn = this.querySelector('[data-action="toggle-answered"]') as HTMLButtonElement;
+    this.clarificationBtn = this.querySelector('[data-action="toggle-clarification"]') as HTMLButtonElement;
+    this.answeredBtn?.addEventListener('click', () => this.toggle('answered'));
+    this.clarificationBtn?.addEventListener('click', () => this.toggle('needs_clarification'));
   }
 
-  private async update(patch: { status?: string; priority?: string }) {
-    const prevSelection = this.captureSelection();
-    this.applySelection(patch);
+  private currentStatus(): string {
+    return this.dataset.status ?? 'not_started';
+  }
+
+  private async toggle(target: 'answered' | 'needs_clarification') {
+    const current = this.currentStatus();
+    const next = current === target ? 'in_progress' : target;
+    const prev = current;
+
+    this.applyStatus(next);
     try {
       const r = await fetch(
         `/api/projects/${this.project}/questions/${this.questionId}/status`,
         {
           method: 'PATCH',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(patch),
+          body: JSON.stringify({ status: next }),
         }
       );
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = (await r.json()) as { response: { status: string } };
+      // Server may downgrade 'in_progress' → 'not_started' if body is empty;
+      // reflect whatever it actually stored.
+      this.applyStatus(data.response.status);
     } catch (err) {
-      console.error('status update failed', err);
-      this.applySelection(prevSelection);
+      console.error('status toggle failed', err);
+      this.applyStatus(prev);
       alert('Failed to update — please retry.');
     }
   }
 
-  private captureSelection(): { status?: string; priority?: string } {
-    const status = this.querySelector<HTMLButtonElement>('button[data-status].selected')?.dataset
-      .status;
-    const priority = this.querySelector<HTMLButtonElement>(
-      'button[data-priority].selected'
-    )?.dataset.priority;
-    return { status, priority };
+  private applyStatus(status: string) {
+    this.dataset.status = status;
+    this.answeredBtn?.classList.toggle('selected', status === 'answered');
+    this.clarificationBtn?.classList.toggle('selected', status === 'needs_clarification');
+
+    // Update the status chip in the parent question-card header.
+    const card = this.closest('.question-card');
+    if (card) {
+      card.className = card.className.replace(/\bstatus-\S+/g, `status-${status}`);
+      const chip = card.querySelector<HTMLElement>('[data-role="status-chip"]');
+      if (chip) {
+        const label =
+          status === 'answered'
+            ? 'Answered'
+            : status === 'needs_clarification'
+              ? 'Needs clarification'
+              : '';
+        chip.textContent = label;
+        chip.className = `status-chip status-chip-${status}`;
+        chip.hidden = label === '';
+      }
+    }
+  }
+}
+
+/**
+ * Priority strip — three mini pills (High/Med/Low), EC-only by virtue of
+ * being absent from the DOM for client users (SSR-gated).
+ */
+class PriorityStrip extends HTMLElement {
+  private project!: string;
+  private questionId!: string;
+
+  connectedCallback() {
+    this.project = this.dataset.project ?? '';
+    this.questionId = this.dataset.questionId ?? '';
+    this.querySelectorAll<HTMLButtonElement>('button[data-priority]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const p = btn.dataset.priority;
+        if (p) this.setPriority(p);
+      });
+    });
   }
 
-  private applySelection(patch: { status?: string; priority?: string }) {
-    if (patch.status !== undefined) {
-      this.querySelectorAll<HTMLButtonElement>('button[data-status]').forEach((b) => {
-        b.classList.toggle('selected', b.dataset.status === patch.status);
-      });
+  private async setPriority(priority: string) {
+    const prev = this.querySelector<HTMLButtonElement>('button[data-priority].selected')?.dataset.priority;
+    this.applySelection(priority);
+    try {
+      const r = await fetch(
+        `/api/projects/${this.project}/questions/${this.questionId}/status`,
+        {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ priority }),
+        }
+      );
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    } catch (err) {
+      console.error('priority update failed', err);
+      if (prev) this.applySelection(prev);
+      alert('Failed to update priority — please retry.');
     }
-    if (patch.priority !== undefined) {
-      this.querySelectorAll<HTMLButtonElement>('button[data-priority]').forEach((b) => {
-        b.classList.toggle('selected', b.dataset.priority === patch.priority);
-      });
+  }
+
+  private applySelection(priority: string) {
+    this.querySelectorAll<HTMLButtonElement>('button[data-priority]').forEach((b) => {
+      b.classList.toggle('selected', b.dataset.priority === priority);
+    });
+    const card = this.closest('.question-card');
+    if (card) {
+      card.className = card.className.replace(/\bpriority-\S+/g, `priority-${priority}`);
     }
   }
 }
@@ -234,8 +300,11 @@ function escapeAttr(s: string): string {
 if (!customElements.get('response-form')) {
   customElements.define('response-form', ResponseForm);
 }
-if (!customElements.get('status-pills')) {
-  customElements.define('status-pills', StatusPills);
+if (!customElements.get('status-toggle')) {
+  customElements.define('status-toggle', StatusToggle);
+}
+if (!customElements.get('priority-strip')) {
+  customElements.define('priority-strip', PriorityStrip);
 }
 if (!customElements.get('comment-thread')) {
   customElements.define('comment-thread', CommentThread);

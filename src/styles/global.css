@@ -511,55 +511,113 @@ img { max-width: 100%; height: auto; }
 .question-why { border-left-color: var(--navy); }
 .question-expected { border-left-color: var(--amber); }
 
-/* === Status + priority pills (will be replaced in next commit; keep working for now) === */
+/* === Card header right-side region (status chip + priority strip) === */
 
-.status-pills {
-  display: flex;
+.question-card-header {
   flex-wrap: wrap;
-  gap: var(--space-3) var(--space-5);
-  margin-top: var(--space-4);
-  padding: 0.85rem var(--space-4);
-  background: var(--paper-soft);
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
 }
-.pill-group { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-1); }
-.pill-label {
-  font-size: 0.66rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 700;
-  color: var(--ink-muted);
-  margin-right: var(--space-1);
+.question-card-header .question-title { flex: 1; min-width: 0; }
+.question-card-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+  margin-left: auto;
 }
-.pill {
+
+/* === Status chip (in card header — only visible when answered/flagged) === */
+
+.status-chip {
   display: inline-flex;
   align-items: center;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 500;
-  padding: 0.26rem 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.6rem;
   border-radius: 999px;
+  white-space: nowrap;
+}
+.status-chip[hidden] { display: none !important; }
+.status-chip-answered            { background: var(--amber-soft); color: #6e4d0c; }
+.status-chip-needs_clarification { background: var(--rust-soft);  color: var(--rust); }
+
+/* === Status toggle buttons (below the response) === */
+
+.status-toggle {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  flex-wrap: wrap;
+}
+.status-action {
+  font: inherit;
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--radius);
   border: 1px solid var(--line);
   background: var(--paper-raised);
-  color: var(--ink-muted);
+  color: var(--ink-soft);
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-.pill:hover { border-color: var(--line-strong); color: var(--ink); }
-.pill.selected {
-  border-color: transparent;
+.status-action:hover { border-color: var(--line-strong); color: var(--ink); }
+
+.status-action .status-action-label-selected { display: none; }
+.status-action.selected .status-action-label-default { display: none; }
+.status-action.selected .status-action-label-selected { display: inline; }
+
+.status-action-answered.selected {
+  background: var(--amber);
+  color: #fff;
+  border-color: var(--amber);
+}
+.status-action-answered.selected:hover { background: #a0751f; border-color: #a0751f; }
+
+.status-action-clarification.selected {
+  background: var(--rust);
+  color: #fff;
+  border-color: var(--rust);
+}
+.status-action-clarification.selected:hover { background: #863418; border-color: #863418; }
+
+/* === Priority strip (EC-only, in card header) === */
+
+.priority-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+.priority-strip-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ink-faint);
+  margin-right: var(--space-2);
+}
+.priority-mini {
+  font: inherit;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
   font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: var(--ink-faint);
+  cursor: pointer;
+  transition: all 0.12s ease;
+  min-width: 1.6rem;
+  text-align: center;
 }
-
-.pill-status-not_started.selected         { background: #e5e0d2; color: var(--ink); }
-.pill-status-in_progress.selected         { background: var(--moss-soft); color: var(--moss); }
-.pill-status-answered.selected            { background: var(--amber-soft); color: #6e4d0c; }
-.pill-status-needs_clarification.selected { background: var(--rust-soft); color: var(--rust); }
-
-.pill-priority-high.selected   { background: var(--rust); color: #fff; }
-.pill-priority-medium.selected { background: #d6cfbf; color: var(--ink); }
-.pill-priority-low.selected    { background: #ece7da; color: var(--ink-muted); }
+.priority-mini:hover { color: var(--ink); border-color: var(--line); }
+.priority-mini.selected { font-weight: 700; }
+.priority-mini-high.selected   { background: var(--rust);       color: #fff; border-color: var(--rust); }
+.priority-mini-medium.selected { background: var(--paper-soft); color: var(--ink); border-color: var(--line-strong); }
+.priority-mini-low.selected    { background: transparent;       color: var(--ink-muted); border-color: var(--line-strong); }
 
 /* === Response form === */
 
@@ -626,9 +684,14 @@ img { max-width: 100%; height: auto; }
   padding: 0;
 }
 
-/* status-driven card accent — keep subtle, replace in next commit */
+/* Subtle card accent when explicitly marked */
 .question-card.status-answered            { border-color: var(--amber-soft); }
 .question-card.status-needs_clarification { border-color: var(--rust-soft); }
+
+/* For EC view, a faint warning border on high-priority items */
+.question-card.priority-high {
+  box-shadow: inset 3px 0 0 0 var(--rust);
+}
 
 /* === Progress block === */
 
@@ -682,6 +745,7 @@ img { max-width: 100%; height: auto; }
   font-size: 0.85rem;
 }
 .progress-priority-breakdown { grid-template-columns: 1fr; }
+.progress-grids.progress-grids-status-only { grid-template-columns: 1fr; }
 .progress-status-breakdown > .grid-header,
 .progress-priority-breakdown > .grid-header {
   grid-column: 1 / -1;
@@ -1049,8 +1113,8 @@ img { max-width: 100%; height: auto; }
   .section-nav-next { grid-column: 1; text-align: left; }
   .question-card { padding: var(--space-4); }
   .reference-doc { padding: var(--space-4) var(--space-5); }
-  .status-pills { flex-direction: column; align-items: stretch; gap: var(--space-2); padding: 0.7rem 0.85rem; }
-  .pill-group { flex-wrap: wrap; }
+  .question-card-header-right { width: 100%; margin-left: 0; }
+  .status-toggle .status-action { flex: 1; }
   .progress-headline { flex-direction: column; gap: 0.1rem; align-items: flex-start; }
   .progress-grids { grid-template-columns: 1fr; }
   .activity-time { margin-left: 0; flex-basis: 100%; }
