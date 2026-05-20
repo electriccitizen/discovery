@@ -42,6 +42,11 @@ const referenceFiles = import.meta.glob<string>(
   { query: '?raw', import: 'default', eager: true }
 );
 
+const introFiles = import.meta.glob<string>(
+  '/content/projects/*/_intro.md',
+  { query: '?raw', import: 'default', eager: true }
+);
+
 function metaProjectFromPath(path: string): string | null {
   return path.match(/\/content\/projects\/([^/]+)\/_meta\.json$/)?.[1] ?? null;
 }
@@ -65,6 +70,16 @@ export function listProjects(): ProjectIndexEntry[] {
 export function getProject(slug: string): ProjectMeta | null {
   for (const [path, mod] of Object.entries(metaFiles)) {
     if (metaProjectFromPath(path) === slug) return mod.default;
+  }
+  return null;
+}
+
+export function getIntroHtml(projectSlug: string): string | null {
+  for (const [path, raw] of Object.entries(introFiles)) {
+    const m = path.match(/\/content\/projects\/([^/]+)\/_intro\.md$/);
+    if (m?.[1] === projectSlug) {
+      return String(marked.parse(raw));
+    }
   }
   return null;
 }

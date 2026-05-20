@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getProject } from '../../lib/projects.ts';
+import { getIntroHtml, getProject } from '../../lib/projects.ts';
 import { listSections, countQuestions } from '../../lib/worksheet.ts';
 import { listRecentActivity, listResponses, type ActivityItem } from '../../lib/db.ts';
 import { canAccessProject } from '../../lib/access.ts';
@@ -16,6 +16,8 @@ const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email'
 if (!userEmail || !canAccessProject(userEmail, project)) {
   return new Response(null, { status: 404 });
 }
+
+const introHtml = getIntroHtml(projectSlug);
 
 const sections = listSections(projectSlug);
 const totalQuestions = countQuestions(projectSlug);
@@ -89,6 +91,10 @@ function sectionStats(sectionId: string) {
     <div><dt>Status</dt><dd>{project.status}</dd></div>
     <div><dt>Scope</dt><dd>{totalQuestions} questions · {sections.length} sections</dd></div>
   </dl>
+
+  {introHtml && (
+    <section class="project-intro" set:html={introHtml} />
+  )}
 
   <section class="progress-block">
     <div class="progress-headline">
