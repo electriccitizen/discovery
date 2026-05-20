@@ -1,6 +1,6 @@
 ## Welcome
 
-This worksheet collects the questions we need to answer in order to move into the build phase and finalize the longer-term technical decisions that impact the site build. The worksheet was derived largely from our [technical analysis](/edusa/reference/technical-analysis) and all of the available [source documents](/edusa/reference/source-documents).
+This worksheet collects the questions we need to answer in order to move into the build phase and finalize the longer-term technical decisions that impact the site build. The worksheet was derived largely from our [technical analysis](/edusa/reference/technical-analysis) and all of the available source documents.
 
 <details class="intro-section">
 <summary>How to use the portal</summary>
