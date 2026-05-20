@@ -16,9 +16,9 @@ order: 10
 
 - **Recommendation:** It is probably not necessary to run them in parallel unless you want a "testing" period on the new site before traffic is redirected.
 
-**J2. Permanent 301 redirects for legacy `.state.gov` URLs + the State Dept POC who can implement them.** Our recommendation is straightforward: permanent 301 redirects from every `.state.gov` URL to its `.org` equivalent (per the J3 redirect map). This is the standard pattern that preserves search-engine traffic, social-media links, partner-site references, and accumulated bookmarks. The alternative options (time-bounded redirect then teardown, immediate teardown, parallel-running for some period) all sacrifice some portion of that accumulated equity.
+**J2. Permanent 301 redirects for legacy `educationusa.state.gov` URLs + the State Dept POC who can implement them.** EC can prepare and deliver the redirect map; only State Dept IT can deploy it on the legacy domain. The earlier we have the contact name, the more time we have to coordinate.
 
-EC can prepare and deliver the redirect map; only State Dept IT can deploy it on the legacy domain. The earlier we have the contact name, the more time we have to coordinate.
+- **Recommendation:** Permanent 301 redirects from every URL on the legacy `educationusa.state.gov` site to its `educationusa.org` equivalent (per the J3 redirect map). The standard pattern for preserving SEO and accumulated link equity.
 
 - **(a)** Confirm permanent 301 redirects are the intended pattern.
 - **(b)** Provide the State Department contact (name, role, how to reach them), or escalate via ECA to find one.
