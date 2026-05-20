@@ -1,11 +1,9 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { canAccessProject, requireUser } from '../../../../../../lib/access.ts';
+import { canAccessProject, isEC, requireUser } from '../../../../../../lib/access.ts';
 import {
-  isPriority,
   isStatus,
   upsertResponseStatus,
-  type Priority,
   type Status,
 } from '../../../../../../lib/db.ts';
 import { getProject } from '../../../../../../lib/projects.ts';
@@ -30,9 +28,9 @@ export const PATCH: APIRoute = async ({ params, request }) => {
 
   if (!canAccessProject(user.email, meta)) return json({ error: 'not found' }, 404);
 
-  let payload: { status?: unknown; priority?: unknown };
+  let payload: { status?: unknown; flagged?: unknown };
   try {
-    payload = (await request.json()) as { status?: unknown; priority?: unknown };
+    payload = (await request.json()) as { status?: unknown; flagged?: unknown };
   } catch {
     return json({ error: 'invalid json' }, 400);
   }
@@ -40,11 +38,17 @@ export const PATCH: APIRoute = async ({ params, request }) => {
   if (payload.status !== undefined && !isStatus(payload.status)) {
     return json({ error: 'invalid status' }, 400);
   }
-  if (payload.priority !== undefined && !isPriority(payload.priority)) {
-    return json({ error: 'invalid priority' }, 400);
+  if (payload.flagged !== undefined && typeof payload.flagged !== 'boolean') {
+    return json({ error: 'flagged must be boolean' }, 400);
   }
-  if (payload.status === undefined && payload.priority === undefined) {
-    return json({ error: 'must include status or priority' }, 400);
+  if (payload.status === undefined && payload.flagged === undefined) {
+    return json({ error: 'must include status or flagged' }, 400);
+  }
+
+  // Only EC can set/unset the priority flag. Clients see flagged questions
+  // but cannot change the flag themselves.
+  if (payload.flagged !== undefined && !isEC(user.email)) {
+    return json({ error: 'flagging is EC-only' }, 403);
   }
 
   const db = env.DB;
@@ -54,7 +58,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
     questionId,
     {
       status: payload.status as Status | undefined,
-      priority: payload.priority as Priority | undefined,
+      flagged: payload.flagged as boolean | undefined,
     },
     user.email
   );

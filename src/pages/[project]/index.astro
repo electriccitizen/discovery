@@ -57,15 +57,30 @@ const statusCounts = {
   answered: 0,
   needs_clarification: 0,
 };
-const priorityCounts = { high: 0, medium: 0, low: 0 };
+
+interface FlaggedQuestion {
+  questionId: string;
+  questionTitle: string;
+  sectionId: string;
+  sectionTitle: string;
+  sectionSlug: string;
+}
+const flaggedQuestions: FlaggedQuestion[] = [];
 
 for (const section of sections) {
   for (const q of section.questions) {
     const r = responsesById.get(q.id);
     const s = (r?.status ?? 'not_started') as keyof typeof statusCounts;
-    const p = (r?.priority ?? 'medium') as keyof typeof priorityCounts;
     statusCounts[s]++;
-    priorityCounts[p]++;
+    if ((r?.flagged ?? 0) === 1) {
+      flaggedQuestions.push({
+        questionId: q.id,
+        questionTitle: q.title,
+        sectionId: section.id,
+        sectionTitle: section.title,
+        sectionSlug: section.slug,
+      });
+    }
   }
 }
 
@@ -109,22 +124,38 @@ function sectionStats(sectionId: string) {
     <div class="progress-bar">
       <div class="progress-bar-fill" style={`width: ${completionPct}%`}></div>
     </div>
-    <div class="progress-grids">
-      <dl class="progress-status-breakdown">
-        <div class="grid-header">Status</div>
-        <div><dt>Not started</dt><dd>{statusCounts.not_started}</dd></div>
-        <div><dt>In progress</dt><dd>{statusCounts.in_progress}</dd></div>
-        <div><dt>Answered</dt><dd>{statusCounts.answered}</dd></div>
-        <div><dt>Needs clarification</dt><dd>{statusCounts.needs_clarification}</dd></div>
-      </dl>
-      <dl class="progress-priority-breakdown">
-        <div class="grid-header">Priority</div>
-        <div><dt>High</dt><dd>{priorityCounts.high}</dd></div>
-        <div><dt>Medium</dt><dd>{priorityCounts.medium}</dd></div>
-        <div><dt>Low</dt><dd>{priorityCounts.low}</dd></div>
-      </dl>
-    </div>
+    <dl class="progress-status-breakdown">
+      <div class="grid-header">Status</div>
+      <div><dt>Not started</dt><dd>{statusCounts.not_started}</dd></div>
+      <div><dt>In progress</dt><dd>{statusCounts.in_progress}</dd></div>
+      <div><dt>Answered</dt><dd>{statusCounts.answered}</dd></div>
+      <div><dt>Needs clarification</dt><dd>{statusCounts.needs_clarification}</dd></div>
+    </dl>
   </section>
+
+  {flaggedQuestions.length > 0 && (
+    <section class="priority-panel">
+      <div class="priority-panel-header">
+        <span class="priority-panel-tag">Priority</span>
+        <h2 class="priority-panel-title">
+          {flaggedQuestions.length === 1
+            ? 'EC has flagged 1 question for your attention'
+            : `EC has flagged ${flaggedQuestions.length} questions for your attention`}
+        </h2>
+      </div>
+      <ol class="priority-panel-list">
+        {flaggedQuestions.map((q) => (
+          <li>
+            <a href={`/${projectSlug}/section/${q.sectionSlug}#${q.questionId}`}>
+              <span class="priority-panel-qid">{q.questionId}</span>
+              <span class="priority-panel-qtitle">{q.questionTitle}</span>
+              <span class="priority-panel-section">{q.sectionId}. {q.sectionTitle}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
 
   {activity.length > 0 && (
     <section class="activity-block">

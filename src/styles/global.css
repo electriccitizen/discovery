@@ -771,12 +771,37 @@ img { max-width: 100%; height: auto; }
 .pill-priority-medium.selected { background: #d6cfbf; color: var(--ink); }
 .pill-priority-low.selected    { background: #ece7da; color: var(--ink-muted); }
 
-/* === Status chip (in card header — visible only for explicit states) === */
+/* === Question card header right-side region === */
 
 .question-card-header {
   flex-wrap: wrap;
 }
 .question-card-header .question-title { flex: 1; min-width: 0; }
+
+/* === Priority chip (in card header — visible to both EC and client when flagged) === */
+
+.priority-chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.18rem 0.5rem;
+  border-radius: 3px;
+  background: var(--rust);
+  color: #fff;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.question-card.priority-flagged {
+  border-color: var(--rust);
+  box-shadow: inset 3px 0 0 0 var(--rust);
+}
+
+/* === Status chip (in card header — visible only for explicit states) === */
 
 .status-chip {
   display: inline-flex;
@@ -794,11 +819,50 @@ img { max-width: 100%; height: auto; }
 .status-chip-answered            { background: var(--moss-soft); color: #2e4d24; }
 .status-chip-needs_clarification { background: var(--rust-soft); color: var(--rust); }
 
-/* Priority-only row tightens the container since only one group is inside */
-.status-pills.priority-only {
-  padding: 0.55rem 0.85rem;
-  gap: var(--space-2);
+/* === Question actions row (status toggles + EC priority flag) === */
+
+.question-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  flex-wrap: wrap;
 }
+
+.question-actions .status-toggle { margin-top: 0; }
+
+/* === Priority flag button (EC-only) === */
+
+.priority-flag-button {
+  font: inherit;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius);
+  border: 1px dashed var(--line-strong);
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.priority-flag-button:hover {
+  border-color: var(--rust);
+  color: var(--rust);
+  background: var(--rust-tint);
+}
+.priority-flag-button.selected {
+  background: var(--rust);
+  border-color: var(--rust);
+  border-style: solid;
+  color: #fff;
+}
+.priority-flag-button.selected:hover { background: #863418; border-color: #863418; }
+
+.priority-flag-button .priority-flag-label-selected { display: none; }
+.priority-flag-button.selected .priority-flag-label-default { display: none; }
+.priority-flag-button.selected .priority-flag-label-selected { display: inline; }
 
 /* === Status toggle (two action buttons below the response) === */
 
@@ -994,6 +1058,85 @@ img { max-width: 100%; height: auto; }
   font-size: 1.05rem;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
+}
+
+/* === Priority panel (project overview, when any questions are flagged) === */
+
+.priority-panel {
+  margin: var(--space-5) 0 var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  background: var(--rust-tint);
+  border: 1px solid var(--rust-soft);
+  border-left: 3px solid var(--rust);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+.priority-panel-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.priority-panel-tag {
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  padding: 0.18rem 0.5rem;
+  background: var(--rust);
+  color: #fff;
+  border-radius: 3px;
+}
+.priority-panel-title {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0;
+}
+.priority-panel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.priority-panel-list li { margin: 0; }
+.priority-panel-list a {
+  display: grid;
+  grid-template-columns: 2.4rem 1fr auto;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: 0.55rem 0.85rem;
+  background: var(--paper-raised);
+  border: 1px solid var(--rust-soft);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.15s ease;
+}
+.priority-panel-list a:hover { border-color: var(--rust); }
+.priority-panel-qid {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.12rem 0.45rem;
+  background: var(--rust);
+  color: #fff;
+  border-radius: 3px;
+  text-align: center;
+}
+.priority-panel-qtitle {
+  font-weight: 500;
+  line-height: 1.4;
+}
+.priority-panel-section {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* === Activity feed === */

@@ -64,71 +64,6 @@ class ResponseForm extends HTMLElement {
   }
 }
 
-class StatusPills extends HTMLElement {
-  private project!: string;
-  private questionId!: string;
-
-  connectedCallback() {
-    this.project = this.dataset.project ?? '';
-    this.questionId = this.dataset.questionId ?? '';
-
-    this.querySelectorAll<HTMLButtonElement>('button[data-status]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const status = btn.dataset.status;
-        if (status) this.update({ status });
-      });
-    });
-    this.querySelectorAll<HTMLButtonElement>('button[data-priority]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const priority = btn.dataset.priority;
-        if (priority) this.update({ priority });
-      });
-    });
-  }
-
-  private async update(patch: { status?: string; priority?: string }) {
-    const prevSelection = this.captureSelection();
-    this.applySelection(patch);
-    try {
-      const r = await fetch(
-        `/api/projects/${this.project}/questions/${this.questionId}/status`,
-        {
-          method: 'PATCH',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(patch),
-        }
-      );
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    } catch (err) {
-      console.error('status update failed', err);
-      this.applySelection(prevSelection);
-      alert('Failed to update — please retry.');
-    }
-  }
-
-  private captureSelection(): { status?: string; priority?: string } {
-    const status = this.querySelector<HTMLButtonElement>('button[data-status].selected')?.dataset
-      .status;
-    const priority = this.querySelector<HTMLButtonElement>(
-      'button[data-priority].selected'
-    )?.dataset.priority;
-    return { status, priority };
-  }
-
-  private applySelection(patch: { status?: string; priority?: string }) {
-    if (patch.status !== undefined) {
-      this.querySelectorAll<HTMLButtonElement>('button[data-status]').forEach((b) => {
-        b.classList.toggle('selected', b.dataset.status === patch.status);
-      });
-    }
-    if (patch.priority !== undefined) {
-      this.querySelectorAll<HTMLButtonElement>('button[data-priority]').forEach((b) => {
-        b.classList.toggle('selected', b.dataset.priority === patch.priority);
-      });
-    }
-  }
-}
-
 /**
  * Status toggle — two action buttons:
  *   - "Mark as answered" / "Answered ✓"
@@ -201,6 +136,71 @@ class StatusToggle extends HTMLElement {
       chip.textContent = label;
       chip.className = `status-chip status-chip-${status}`;
       chip.hidden = label === '';
+    }
+  }
+}
+
+/**
+ * Priority flag — single EC-only toggle that surfaces "answer this one
+ * next" to the client. Updates the visible priority chip in the card
+ * header and the card's accent border.
+ */
+class PriorityFlag extends HTMLElement {
+  private project!: string;
+  private questionId!: string;
+  private button!: HTMLButtonElement;
+
+  connectedCallback() {
+    this.project = this.dataset.project ?? '';
+    this.questionId = this.dataset.questionId ?? '';
+    this.button = this.querySelector('button[data-action="toggle-flag"]') as HTMLButtonElement;
+    this.button?.addEventListener('click', () => this.toggle());
+  }
+
+  private isFlagged(): boolean {
+    return this.dataset.flagged === '1';
+  }
+
+  private async toggle() {
+    const next = !this.isFlagged();
+    const prev = this.isFlagged();
+    this.applyFlag(next);
+    try {
+      const r = await fetch(
+        `/api/projects/${this.project}/questions/${this.questionId}/status`,
+        {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ flagged: next }),
+        }
+      );
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    } catch (err) {
+      console.error('priority flag toggle failed', err);
+      this.applyFlag(prev);
+      alert('Failed to update flag — please retry.');
+    }
+  }
+
+  private applyFlag(flagged: boolean) {
+    this.dataset.flagged = flagged ? '1' : '0';
+    this.button?.classList.toggle('selected', flagged);
+    const card = this.closest('.question-card');
+    if (!card) return;
+    card.classList.toggle('priority-flagged', flagged);
+    const header = card.querySelector('.question-card-header');
+    if (!header) return;
+    let chip = header.querySelector<HTMLElement>('[data-role="priority-chip"]');
+    if (flagged && !chip) {
+      chip = document.createElement('span');
+      chip.className = 'priority-chip';
+      chip.dataset.role = 'priority-chip';
+      chip.textContent = 'Priority';
+      // Insert after the question-id badge so it sits with the title.
+      const qid = header.querySelector('.question-id');
+      qid?.parentNode?.insertBefore(chip, qid.nextSibling);
+    } else if (!flagged && chip) {
+      chip.remove();
     }
   }
 }
@@ -310,11 +310,11 @@ function escapeAttr(s: string): string {
 if (!customElements.get('response-form')) {
   customElements.define('response-form', ResponseForm);
 }
-if (!customElements.get('status-pills')) {
-  customElements.define('status-pills', StatusPills);
-}
 if (!customElements.get('status-toggle')) {
   customElements.define('status-toggle', StatusToggle);
+}
+if (!customElements.get('priority-flag')) {
+  customElements.define('priority-flag', PriorityFlag);
 }
 if (!customElements.get('comment-thread')) {
   customElements.define('comment-thread', CommentThread);

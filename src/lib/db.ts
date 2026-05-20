@@ -20,7 +20,8 @@ export interface ResponseRow {
   question_id: string;
   body: string;
   status: Status;
-  priority: Priority;
+  priority: Priority;       // legacy column, no longer read or written
+  flagged: number;          // 0 or 1 — EC focus flag
   updated_at: string;
   updated_by: string;
 }
@@ -35,7 +36,7 @@ export interface CommentRow {
   created_at: string;
 }
 
-export type AuditKind = 'body' | 'status' | 'priority';
+export type AuditKind = 'body' | 'status' | 'priority' | 'flag';
 
 export interface AuditRow {
   id: number;
@@ -63,7 +64,7 @@ export async function getResponse(
 ): Promise<ResponseRow | null> {
   const row = await db
     .prepare(
-      'SELECT project_slug, question_id, body, status, priority, updated_at, updated_by FROM responses WHERE project_slug = ?1 AND question_id = ?2'
+      'SELECT project_slug, question_id, body, status, priority, flagged, updated_at, updated_by FROM responses WHERE project_slug = ?1 AND question_id = ?2'
     )
     .bind(project, questionId)
     .first<ResponseRow>();
@@ -128,21 +129,17 @@ export async function upsertResponseStatus(
   db: D1Database,
   project: string,
   questionId: string,
-  patch: { status?: Status; priority?: Priority },
+  patch: { status?: Status; flagged?: boolean },
   updatedBy: string
 ): Promise<ResponseRow> {
   const now = new Date().toISOString();
   const existing = await getResponse(db, project, questionId);
   const prevStatus = existing?.status ?? null;
-  const prevPriority = existing?.priority ?? null;
+  const prevFlagged = existing?.flagged ?? 0;
   let nextStatus = patch.status ?? existing?.status ?? 'not_started';
-  const nextPriority = patch.priority ?? existing?.priority ?? 'medium';
+  const nextFlagged = patch.flagged === undefined ? prevFlagged : (patch.flagged ? 1 : 0);
 
-  // Preserve the body-vs-status invariant: an empty body can never carry
-  // 'in_progress' (that's the auto-derived "you've typed something" state).
-  // If a toggle untoggles to 'in_progress' but the body is empty, store
-  // 'not_started' instead. Explicit answered / needs_clarification are
-  // honored regardless of body — they're deliberate human assertions.
+  // Body-vs-status invariant: an empty body can never carry 'in_progress'.
   if (nextStatus === 'in_progress' && !(existing?.body ?? '').trim()) {
     nextStatus = 'not_started';
   }
@@ -150,15 +147,15 @@ export async function upsertResponseStatus(
   const statements = [
     db
       .prepare(
-        `INSERT INTO responses (project_slug, question_id, status, priority, updated_at, updated_by)
+        `INSERT INTO responses (project_slug, question_id, status, flagged, updated_at, updated_by)
          VALUES (?1, ?2, ?3, ?4, ?5, ?6)
          ON CONFLICT(project_slug, question_id) DO UPDATE SET
            status = excluded.status,
-           priority = excluded.priority,
+           flagged = excluded.flagged,
            updated_at = excluded.updated_at,
            updated_by = excluded.updated_by`
       )
-      .bind(project, questionId, nextStatus, nextPriority, now, updatedBy),
+      .bind(project, questionId, nextStatus, nextFlagged, now, updatedBy),
   ];
 
   if (patch.status !== undefined && patch.status !== prevStatus) {
@@ -171,14 +168,14 @@ export async function upsertResponseStatus(
         .bind(project, questionId, prevStatus, nextStatus, updatedBy, now)
     );
   }
-  if (patch.priority !== undefined && patch.priority !== prevPriority) {
+  if (patch.flagged !== undefined && nextFlagged !== prevFlagged) {
     statements.push(
       db
         .prepare(
           `INSERT INTO audit_log (project_slug, question_id, kind, prev_value, new_value, changed_by, changed_at)
-           VALUES (?1, ?2, 'priority', ?3, ?4, ?5, ?6)`
+           VALUES (?1, ?2, 'flag', ?3, ?4, ?5, ?6)`
         )
-        .bind(project, questionId, prevPriority, nextPriority, updatedBy, now)
+        .bind(project, questionId, String(prevFlagged), String(nextFlagged), updatedBy, now)
     );
   }
 
@@ -208,7 +205,7 @@ export async function listResponses(
 ): Promise<ResponseRow[]> {
   const result = await db
     .prepare(
-      'SELECT project_slug, question_id, body, status, priority, updated_at, updated_by FROM responses WHERE project_slug = ?1'
+      'SELECT project_slug, question_id, body, status, priority, flagged, updated_at, updated_by FROM responses WHERE project_slug = ?1'
     )
     .bind(project)
     .all<ResponseRow>();

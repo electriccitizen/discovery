@@ -1,13 +1,12 @@
 ---
 import type { Question } from '../lib/worksheet.ts';
 import {
-  PRIORITY_VALUES,
   type AuditRow,
   type CommentRow,
-  type Priority,
   type ResponseRow,
   type Status,
 } from '../lib/db.ts';
+import { isEC } from '../lib/access.ts';
 import CommentThread from './CommentThread.astro';
 import AuditHistory from './AuditHistory.astro';
 
@@ -20,19 +19,17 @@ interface Props {
 }
 
 const { question, projectSlug, response, comments, audit } = Astro.props;
+
+const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email');
+const userIsEC = userEmail ? isEC(userEmail) : false;
+
 const bodyValue = response?.body ?? '';
 const status: Status = (response?.status as Status) ?? 'not_started';
-const priority: Priority = (response?.priority as Priority) ?? 'medium';
-
-const PRIORITY_LABELS: Record<Priority, string> = {
-  high: 'High',
-  medium: 'Medium',
-  low: 'Low',
-};
-
 const isAnswered = status === 'answered';
-const isFlagged = status === 'needs_clarification';
-const showChip = isAnswered || isFlagged;
+const isNeedsClarification = status === 'needs_clarification';
+const showStatusChip = isAnswered || isNeedsClarification;
+
+const priorityFlagged = (response?.flagged ?? 0) === 1;
 
 const updatedDisplay = response
   ? new Date(response.updated_at).toLocaleString(undefined, {
@@ -41,15 +38,21 @@ const updatedDisplay = response
     })
   : null;
 ---
-<article class={`question-card status-${status} priority-${priority}`} id={question.id}>
+<article
+  class={`question-card status-${status}${priorityFlagged ? ' priority-flagged' : ''}`}
+  id={question.id}
+>
   <header class="question-card-header">
     <span class="question-id">{question.id}</span>
+    {priorityFlagged && (
+      <span class="priority-chip" data-role="priority-chip">Priority</span>
+    )}
     <h3 class="question-title">{question.title}</h3>
     <span
       class={`status-chip status-chip-${status}`}
       data-role="status-chip"
-      hidden={!showChip}
-    >{isAnswered ? 'Answered' : isFlagged ? 'Needs clarification' : ''}</span>
+      hidden={!showStatusChip}
+    >{isAnswered ? 'Answered' : isNeedsClarification ? 'Needs clarification' : ''}</span>
   </header>
 
   {question.bodyHtml && (
@@ -70,19 +73,6 @@ const updatedDisplay = response
     </aside>
   )}
 
-  <status-pills class="status-pills priority-only" data-project={projectSlug} data-question-id={question.id}>
-    <div class="pill-group">
-      <span class="pill-label">Priority</span>
-      {PRIORITY_VALUES.map((p) => (
-        <button
-          type="button"
-          data-priority={p}
-          class={`pill pill-priority pill-priority-${p}${priority === p ? ' selected' : ''}`}
-        >{PRIORITY_LABELS[p]}</button>
-      ))}
-    </div>
-  </status-pills>
-
   <response-form class="response-form" data-project={projectSlug} data-question-id={question.id}>
     <label class="response-label">
       <span class="response-label-text">Your response</span>
@@ -99,29 +89,50 @@ const updatedDisplay = response
     </div>
   </response-form>
 
-  <status-toggle
-    class="status-toggle"
-    data-project={projectSlug}
-    data-question-id={question.id}
-    data-status={status}
-  >
-    <button
-      type="button"
-      class={`status-action status-action-answered${isAnswered ? ' selected' : ''}`}
-      data-action="toggle-answered"
+  <div class="question-actions">
+    <status-toggle
+      class="status-toggle"
+      data-project={projectSlug}
+      data-question-id={question.id}
+      data-status={status}
     >
-      <span class="status-action-label-default">Mark as answered</span>
-      <span class="status-action-label-selected">Answered ✓</span>
-    </button>
-    <button
-      type="button"
-      class={`status-action status-action-clarification${isFlagged ? ' selected' : ''}`}
-      data-action="toggle-clarification"
-    >
-      <span class="status-action-label-default">Flag for clarification</span>
-      <span class="status-action-label-selected">Flagged — needs clarification</span>
-    </button>
-  </status-toggle>
+      <button
+        type="button"
+        class={`status-action status-action-answered${isAnswered ? ' selected' : ''}`}
+        data-action="toggle-answered"
+      >
+        <span class="status-action-label-default">Mark as answered</span>
+        <span class="status-action-label-selected">Answered ✓</span>
+      </button>
+      <button
+        type="button"
+        class={`status-action status-action-clarification${isNeedsClarification ? ' selected' : ''}`}
+        data-action="toggle-clarification"
+      >
+        <span class="status-action-label-default">Flag for clarification</span>
+        <span class="status-action-label-selected">Flagged — needs clarification</span>
+      </button>
+    </status-toggle>
+
+    {userIsEC && (
+      <priority-flag
+        class="priority-flag"
+        data-project={projectSlug}
+        data-question-id={question.id}
+        data-flagged={priorityFlagged ? '1' : '0'}
+      >
+        <button
+          type="button"
+          class={`priority-flag-button${priorityFlagged ? ' selected' : ''}`}
+          data-action="toggle-flag"
+          title="EC only: flag this for client's priority attention"
+        >
+          <span class="priority-flag-label-default">Flag as priority</span>
+          <span class="priority-flag-label-selected">Priority ✓</span>
+        </button>
+      </priority-flag>
+    )}
+  </div>
 
   <AuditHistory audit={audit} />
 
