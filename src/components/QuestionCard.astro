@@ -59,6 +59,13 @@ const updatedDisplay = response
     <div class="question-body" set:html={question.bodyHtml} />
   )}
 
+  {question.recommendationHtml && (
+    <aside class="question-meta question-recommendation">
+      <span class="meta-label">Recommendation</span>
+      <span class="meta-body" set:html={question.recommendationHtml} />
+    </aside>
+  )}
+
   {question.whyHtml && (
     <aside class="question-meta question-why">
       <span class="meta-label">Why we ask</span>

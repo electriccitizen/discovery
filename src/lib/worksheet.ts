@@ -7,6 +7,7 @@ export interface Question {
   bodyHtml: string;
   whyHtml: string | null;
   expectedHtml: string | null;
+  recommendationHtml: string | null;
 }
 
 export interface Section {
@@ -52,22 +53,39 @@ function parseQuestionBlock(raw: string): Question {
     body = body ? `${headerTrailing}\n\n${body}` : headerTrailing;
   }
 
-  const whyRe = /(?:^|\n)\s*[-*]\s+\*Why we ask:\*\s+([\s\S]+?)(?=\n\s*[-*]\s+\*[A-Z]|\n\s*\n|$)/;
-  const expectedRe = /(?:^|\n)\s*[-*]\s+\*Expected format:\*\s+([\s\S]+?)(?=\n\s*[-*]\s+\*[A-Z]|\n\s*\n|$)/;
+  // Metadata bullet patterns. All three use the same shape: leading
+  // bullet, label wrapped in single (`*…*`) or double (`**…**`) asterisks,
+  // colon, space, content. The lookahead stops at the next metadata bullet
+  // (which can also be single- OR double-asterisk-labeled — hence `\*\*?`),
+  // a blank line, or end of body.
+  const META_END = /(?=\n\s*[-*]\s+\*\*?[A-Z]|\n\s*\n|$)/.source;
+  const whyRe = new RegExp(
+    `(?:^|\\n)\\s*[-*]\\s+\\*Why we ask:\\*\\s+([\\s\\S]+?)${META_END}`
+  );
+  const expectedRe = new RegExp(
+    `(?:^|\\n)\\s*[-*]\\s+\\*Expected format:\\*\\s+([\\s\\S]+?)${META_END}`
+  );
+  const recommendationRe = new RegExp(
+    `(?:^|\\n)\\s*[-*]\\s+\\*\\*Recommendation:?\\*\\*\\s+([\\s\\S]+?)${META_END}`
+  );
 
-  // Strip sequentially with a re-match between. The original two-match-
-  // then-two-strip pattern broke when both were present: the Expected
-  // match's captured text starts with a leading "\n" (from the
-  // (?:^|\n) alternation), and the Why strip + trim removes that
-  // leading whitespace from the body, so the Expected strip can no
-  // longer find its captured substring and leaks the bullet into the
-  // rendered question body.
+  // Strip sequentially with a re-match between. The cached-match-then-strip
+  // pattern breaks when more than one metadata bullet exists: a captured
+  // match starts with a leading "\n" from the (?:^|\n) alternation, and a
+  // preceding strip + trim removes that leading whitespace from the body,
+  // so the cached match's literal can no longer be found in the body and
+  // the bullet leaks into the rendered question body. Sequencing the
+  // match/strip cycle avoids that.
+  const recommendationMatch = body.match(recommendationRe);
+  if (recommendationMatch) body = body.replace(recommendationMatch[0], '').trim();
+
   const whyMatch = body.match(whyRe);
   if (whyMatch) body = body.replace(whyMatch[0], '').trim();
 
   const expectedMatch = body.match(expectedRe);
   if (expectedMatch) body = body.replace(expectedMatch[0], '').trim();
 
+  const recommendation = recommendationMatch?.[1]?.trim() ?? null;
   const why = whyMatch?.[1]?.trim() ?? null;
   const expected = expectedMatch?.[1]?.trim() ?? null;
 
@@ -77,6 +95,9 @@ function parseQuestionBlock(raw: string): Question {
     bodyHtml: body ? String(marked.parse(body)) : '',
     whyHtml: why ? String(marked.parseInline(why)) : null,
     expectedHtml: expected ? String(marked.parseInline(expected)) : null,
+    recommendationHtml: recommendation
+      ? String(marked.parseInline(recommendation))
+      : null,
   };
 }
 

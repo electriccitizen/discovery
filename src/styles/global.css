@@ -729,6 +729,16 @@ img { max-width: 100%; height: auto; }
 }
 .question-meta .meta-body { color: var(--ink-soft); }
 .question-why { border-left-color: var(--navy); }
+.question-recommendation {
+  border-left-color: var(--yellow);
+  background: var(--yellow-tint);
+}
+.question-recommendation .meta-label {
+  color: var(--yellow-deep);
+}
+.question-recommendation .meta-body {
+  color: var(--ink);
+}
 
 /* Demoted "Expected format" hint — small italic line under the body
  * instead of a labeled aside. Same content, less weight. */
