@@ -31,9 +31,7 @@ While reviewing the current site, we surfaced content types and features that th
 - **(b) Fold videos into other content types** — embed videos directly in Stories, Events, 5 Steps pages, etc. Drop the dedicated finder. Video as a content medium remains throughout the site, just not in a centralized library.
 - **(c) Hybrid** — keep a video library/gallery for discovery, but also embed videos heavily in other content. Both surfaces.
 
-Also: hosting is confirmed as YouTube on the current site. Do you want to keep YouTube as the canonical store, or move to a different host?
-
-- *Expected format:* (a) / (b) / (c), plus host preference.
+- *Expected format:* (a) / (b) / (c).
 
 **L3. Campus news stories — does this exist as a public-facing content stream on the current site, or only inside the logged-in portal? If public, what URL pattern? Is it in scope to migrate?**
 
