@@ -35,6 +35,7 @@ The RFP specifies two additional filters that **don't currently exist** on the l
 - **Upcoming only at launch** — cleanest, smallest dataset, loses historical record.
 - **Past N months/years** (e.g., last 12 months, last 3 years) — preserves recent activity, manageable volume.
 - **Full archive** — preserves complete history but adds bulk and clutters search/finder without strong filtering.
+- **Recommendation:** we suggest only migrating a small amount of past events, if any, unless there is a compelling reason to keep them.
 - *Why we ask:* This is the single biggest variable in event migration volume. Affects new-site URL count, search indexing, and pre-launch editorial review effort.
 
 **F5. Does IIE agree with the overall approach to Scholarships and Events?** To summarize: existing Scholarship and Event content types migrate cleanly from the current site; new submissions follow the existing patterns (HEIs submit scholarships via the accreditation-gated form → REAC review → IIE publish; Advisers submit events via the OKTA-verified form → REAC review → IIE publish). Auto-expiry on scholarships per F2. Event registration stays off-site (per M2). New filter fields and event-type categorization per F1 and F3 — IIE back-fills those on migrated records.
