@@ -1,0 +1,38 @@
+---
+import type { Question } from '../lib/worksheet.ts';
+
+interface Props {
+  question: Question;
+}
+
+const { question } = Astro.props;
+---
+<article class="question-card" id={question.id}>
+  <header class="question-card-header">
+    <span class="question-id">{question.id}</span>
+    <h3 class="question-title">{question.title}</h3>
+  </header>
+
+  {question.bodyHtml && (
+    <div class="question-body" set:html={question.bodyHtml} />
+  )}
+
+  {question.whyHtml && (
+    <aside class="question-meta question-why">
+      <span class="meta-label">Why we ask</span>
+      <span class="meta-body" set:html={question.whyHtml} />
+    </aside>
+  )}
+
+  {question.expectedHtml && (
+    <aside class="question-meta question-expected">
+      <span class="meta-label">Expected format</span>
+      <span class="meta-body" set:html={question.expectedHtml} />
+    </aside>
+  )}
+
+  <div class="question-response-placeholder">
+    <span class="placeholder-tag">Phase 2</span>
+    Response field, status, priority, and comments land here.
+  </div>
+</article>

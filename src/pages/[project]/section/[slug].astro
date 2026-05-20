@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getProject } from '../../../lib/projects.ts';
+import { getSection, listSections } from '../../../lib/worksheet.ts';
+import QuestionCard from '../../../components/QuestionCard.astro';
+
+const projectSlug = Astro.params.project;
+const sectionSlug = Astro.params.slug;
+if (!projectSlug || !sectionSlug) return new Response(null, { status: 404 });
+
+const project = getProject(projectSlug);
+const section = getSection(projectSlug, sectionSlug);
+if (!project || !section) return new Response(null, { status: 404 });
+
+const allSections = listSections(projectSlug);
+const idx = allSections.findIndex((s) => s.slug === section.slug);
+const prev = idx > 0 ? allSections[idx - 1] : null;
+const next = idx < allSections.length - 1 ? allSections[idx + 1] : null;
+---
+<BaseLayout title={`${section.id}. ${section.title}`}>
+  <p class="breadcrumb">
+    <a href="/">Discovery Portal</a>
+    <span class="sep">›</span>
+    <a href={`/${projectSlug}`}>{project.title}</a>
+  </p>
+
+  <h1>
+    <span class="section-id-large">{section.id}</span>
+    <span class="section-title-large">{section.title}</span>
+  </h1>
+
+  {section.introHtml && (
+    <section class="section-intro">
+      <h2>What we currently understand</h2>
+      <div set:html={section.introHtml} />
+    </section>
+  )}
+
+  <section class="section-questions">
+    <h2>Questions for you ({section.questions.length})</h2>
+    <ol class="question-list">
+      {section.questions.map((q) => (
+        <li><QuestionCard question={q} /></li>
+      ))}
+    </ol>
+  </section>
+
+  <nav class="section-nav">
+    {prev && (
+      <a class="section-nav-prev" href={`/${projectSlug}/section/${prev.slug}`}>
+        <span class="nav-label">← Previous</span>
+        <span class="nav-target">{prev.id}. {prev.title}</span>
+      </a>
+    )}
+    {next && (
+      <a class="section-nav-next" href={`/${projectSlug}/section/${next.slug}`}>
+        <span class="nav-label">Next →</span>
+        <span class="nav-target">{next.id}. {next.title}</span>
+      </a>
+    )}
+  </nav>
+</BaseLayout>

@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getProject } from '../../lib/projects.ts';
+import { listSections, countQuestions } from '../../lib/worksheet.ts';
+
+const projectSlug = Astro.params.project;
+if (!projectSlug) return new Response(null, { status: 404 });
+
+const project = getProject(projectSlug);
+if (!project) return new Response(null, { status: 404 });
+
+const sections = listSections(projectSlug);
+const totalQuestions = countQuestions(projectSlug);
+---
+<BaseLayout title={project.title}>
+  <p class="breadcrumb"><a href="/">Discovery Portal</a></p>
+  <h1>{project.title}</h1>
+
+  <dl class="project-meta-block">
+    <div><dt>Client</dt><dd>{project.client.name}</dd></div>
+    <div><dt>Primary contact</dt><dd>{project.client.primary_contact}</dd></div>
+    <div><dt>Status</dt><dd>{project.status}</dd></div>
+    <div><dt>Scope</dt><dd>{totalQuestions} questions · {sections.length} sections</dd></div>
+  </dl>
+
+  <h2>Worksheet sections</h2>
+  <ol class="section-list">
+    {sections.map((s) => (
+      <li>
+        <a href={`/${projectSlug}/section/${s.slug}`}>
+          <span class="section-id">{s.id}</span>
+          <span class="section-title">{s.title}</span>
+          <span class="section-count">{s.questions.length} {s.questions.length === 1 ? 'question' : 'questions'}</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+
+  {project.references.length > 0 && (
+    <>
+      <h2>Reference documents</h2>
+      <ul class="reference-list">
+        {project.references.map((r) => (
+          <li>
+            <a href={`/${projectSlug}/reference/${r.slug}`}>{r.title}</a>
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+</BaseLayout>

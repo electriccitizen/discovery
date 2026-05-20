@@ -1,0 +1,46 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+const email = Astro.request.headers.get('cf-access-authenticated-user-email');
+const isEC = email?.endsWith('@electriccitizen.com') ?? false;
+const userLabel = email ? (isEC ? 'EC' : 'Client') : null;
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} — Discovery Portal</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a href="/" class="site-title">Discovery Portal</a>
+        {email && (
+          <span class="user-chip">
+            <span class={`user-role user-role-${isEC ? 'ec' : 'client'}`}>{userLabel}</span>
+            <span class="user-email">{email}</span>
+          </span>
+        )}
+      </div>
+    </header>
+    <main class="site-main">
+      <div class="wrap">
+        <slot />
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>Electric Citizen</span>
+        <span class="sep">·</span>
+        <a href="https://github.com/electriccitizen/discovery">GitHub</a>
+      </div>
+    </footer>
+  </body>
+</html>

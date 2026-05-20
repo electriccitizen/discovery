@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getProject, getReference } from '../../../lib/projects.ts';
+
+const projectSlug = Astro.params.project;
+const refSlug = Astro.params.slug;
+if (!projectSlug || !refSlug) return new Response(null, { status: 404 });
+
+const project = getProject(projectSlug);
+const ref = getReference(projectSlug, refSlug);
+if (!project || !ref) return new Response(null, { status: 404 });
+---
+<BaseLayout title={ref.title}>
+  <p class="breadcrumb">
+    <a href="/">Discovery Portal</a>
+    <span class="sep">›</span>
+    <a href={`/${projectSlug}`}>{project.title}</a>
+    <span class="sep">›</span>
+    <span>Reference</span>
+  </p>
+
+  <article class="reference-doc" set:html={ref.html} />
+</BaseLayout>
