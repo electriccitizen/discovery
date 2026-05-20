@@ -137,11 +137,19 @@ export async function upsertResponseStatus(
   const prevStatus = existing?.status ?? null;
   const prevFlagged = existing?.flagged ?? 0;
   let nextStatus = patch.status ?? existing?.status ?? 'not_started';
-  const nextFlagged = patch.flagged === undefined ? prevFlagged : (patch.flagged ? 1 : 0);
+  let nextFlagged = patch.flagged === undefined ? prevFlagged : (patch.flagged ? 1 : 0);
 
   // Body-vs-status invariant: an empty body can never carry 'in_progress'.
   if (nextStatus === 'in_progress' && !(existing?.body ?? '').trim()) {
     nextStatus = 'not_started';
+  }
+
+  // Marking a question as answered resolves the priority signal — the
+  // "answer this one next" prompt has been honored, so the flag clears
+  // automatically. The flag change is still audited (attributed to
+  // whoever marked answered).
+  if (nextStatus === 'answered' && prevFlagged === 1) {
+    nextFlagged = 0;
   }
 
   const statements = [
@@ -168,7 +176,10 @@ export async function upsertResponseStatus(
         .bind(project, questionId, prevStatus, nextStatus, updatedBy, now)
     );
   }
-  if (patch.flagged !== undefined && nextFlagged !== prevFlagged) {
+  // Audit any actual flag change — explicit (patch.flagged provided) or
+  // implicit (auto-cleared on answered). The audit row carries the
+  // user whose action triggered it.
+  if (nextFlagged !== prevFlagged) {
     statements.push(
       db
         .prepare(
