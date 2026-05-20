@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getProject } from '../../lib/projects.ts';
 import { listSections, countQuestions } from '../../lib/worksheet.ts';
 import { listRecentActivity, listResponses, type ActivityItem } from '../../lib/db.ts';
-import { canAccessProject, isEC } from '../../lib/access.ts';
+import { canAccessProject } from '../../lib/access.ts';
 import { env } from 'cloudflare:workers';
 
 const projectSlug = Astro.params.project;
@@ -16,7 +16,6 @@ const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email'
 if (!userEmail || !canAccessProject(userEmail, project)) {
   return new Response(null, { status: 404 });
 }
-const userIsEC = isEC(userEmail);
 
 const sections = listSections(projectSlug);
 const totalQuestions = countQuestions(projectSlug);
@@ -101,7 +100,7 @@ function sectionStats(sectionId: string) {
     <div class="progress-bar">
       <div class="progress-bar-fill" style={`width: ${completionPct}%`}></div>
     </div>
-    <div class={userIsEC ? 'progress-grids' : 'progress-grids progress-grids-status-only'}>
+    <div class="progress-grids">
       <dl class="progress-status-breakdown">
         <div class="grid-header">Status</div>
         <div><dt>Not started</dt><dd>{statusCounts.not_started}</dd></div>
@@ -109,14 +108,12 @@ function sectionStats(sectionId: string) {
         <div><dt>Answered</dt><dd>{statusCounts.answered}</dd></div>
         <div><dt>Needs clarification</dt><dd>{statusCounts.needs_clarification}</dd></div>
       </dl>
-      {userIsEC && (
-        <dl class="progress-priority-breakdown">
-          <div class="grid-header">Priority</div>
-          <div><dt>High</dt><dd>{priorityCounts.high}</dd></div>
-          <div><dt>Medium</dt><dd>{priorityCounts.medium}</dd></div>
-          <div><dt>Low</dt><dd>{priorityCounts.low}</dd></div>
-        </dl>
-      )}
+      <dl class="progress-priority-breakdown">
+        <div class="grid-header">Priority</div>
+        <div><dt>High</dt><dd>{priorityCounts.high}</dd></div>
+        <div><dt>Medium</dt><dd>{priorityCounts.medium}</dd></div>
+        <div><dt>Low</dt><dd>{priorityCounts.low}</dd></div>
+      </dl>
     </div>
   </section>
 

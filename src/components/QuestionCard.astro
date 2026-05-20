@@ -2,13 +2,13 @@
 import type { Question } from '../lib/worksheet.ts';
 import {
   PRIORITY_VALUES,
+  STATUS_VALUES,
   type AuditRow,
   type CommentRow,
   type Priority,
   type ResponseRow,
   type Status,
 } from '../lib/db.ts';
-import { isEC } from '../lib/access.ts';
 import CommentThread from './CommentThread.astro';
 import AuditHistory from './AuditHistory.astro';
 
@@ -21,17 +21,19 @@ interface Props {
 }
 
 const { question, projectSlug, response, comments, audit } = Astro.props;
-
-const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email');
-const userIsEC = userEmail ? isEC(userEmail) : false;
-
 const bodyValue = response?.body ?? '';
 const status: Status = (response?.status as Status) ?? 'not_started';
 const priority: Priority = (response?.priority as Priority) ?? 'medium';
 
+const STATUS_LABELS: Record<Status, string> = {
+  not_started: 'Not started',
+  in_progress: 'In progress',
+  answered: 'Answered',
+  needs_clarification: 'Needs clarification',
+};
 const PRIORITY_LABELS: Record<Priority, string> = {
   high: 'High',
-  medium: 'Med',
+  medium: 'Medium',
   low: 'Low',
 };
 
@@ -41,36 +43,11 @@ const updatedDisplay = response
       timeStyle: 'short',
     })
   : null;
-
-const isAnswered = status === 'answered';
-const isFlagged = status === 'needs_clarification';
-const showChip = isAnswered || isFlagged;
 ---
 <article class={`question-card status-${status} priority-${priority}`} id={question.id}>
   <header class="question-card-header">
     <span class="question-id">{question.id}</span>
     <h3 class="question-title">{question.title}</h3>
-    <div class="question-card-header-right">
-      <span
-        class={`status-chip status-chip-${status}`}
-        data-role="status-chip"
-        hidden={!showChip}
-      >
-        {isAnswered ? 'Answered' : isFlagged ? 'Needs clarification' : ''}
-      </span>
-      {userIsEC && (
-        <priority-strip class="priority-strip" data-project={projectSlug} data-question-id={question.id}>
-          <span class="priority-strip-label">Priority</span>
-          {PRIORITY_VALUES.map((p) => (
-            <button
-              type="button"
-              data-priority={p}
-              class={`priority-mini priority-mini-${p}${priority === p ? ' selected' : ''}`}
-            >{PRIORITY_LABELS[p]}</button>
-          ))}
-        </priority-strip>
-      )}
-    </div>
   </header>
 
   {question.bodyHtml && (
@@ -91,6 +68,29 @@ const showChip = isAnswered || isFlagged;
     </aside>
   )}
 
+  <status-pills class="status-pills" data-project={projectSlug} data-question-id={question.id}>
+    <div class="pill-group">
+      <span class="pill-label">Status</span>
+      {STATUS_VALUES.map((s) => (
+        <button
+          type="button"
+          data-status={s}
+          class={`pill pill-status pill-status-${s}${status === s ? ' selected' : ''}`}
+        >{STATUS_LABELS[s]}</button>
+      ))}
+    </div>
+    <div class="pill-group">
+      <span class="pill-label">Priority</span>
+      {PRIORITY_VALUES.map((p) => (
+        <button
+          type="button"
+          data-priority={p}
+          class={`pill pill-priority pill-priority-${p}${priority === p ? ' selected' : ''}`}
+        >{PRIORITY_LABELS[p]}</button>
+      ))}
+    </div>
+  </status-pills>
+
   <response-form class="response-form" data-project={projectSlug} data-question-id={question.id}>
     <label class="response-label">
       <span class="response-label-text">Your response</span>
@@ -106,30 +106,6 @@ const showChip = isAnswered || isFlagged;
       )}
     </div>
   </response-form>
-
-  <status-toggle
-    class="status-toggle"
-    data-project={projectSlug}
-    data-question-id={question.id}
-    data-status={status}
-  >
-    <button
-      type="button"
-      class={`status-action status-action-answered${isAnswered ? ' selected' : ''}`}
-      data-action="toggle-answered"
-    >
-      <span class="status-action-label-default">Mark as answered</span>
-      <span class="status-action-label-selected">Answered</span>
-    </button>
-    <button
-      type="button"
-      class={`status-action status-action-clarification${isFlagged ? ' selected' : ''}`}
-      data-action="toggle-clarification"
-    >
-      <span class="status-action-label-default">Flag for clarification</span>
-      <span class="status-action-label-selected">Flagged — needs clarification</span>
-    </button>
-  </status-toggle>
 
   <AuditHistory audit={audit} />
 

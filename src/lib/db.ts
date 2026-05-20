@@ -80,33 +80,18 @@ export async function upsertResponseBody(
   const now = new Date().toISOString();
   const existing = await getResponse(db, project, questionId);
   const prevBody = existing?.body ?? null;
-  const prevStatus = (existing?.status ?? 'not_started') as Status;
-
-  // Auto-transition between not_started and in_progress based on whether
-  // the body has content. Explicit user states (answered,
-  // needs_clarification) are NOT overridden — those are intentional
-  // choices that survive even if the user is editing the body.
-  //
-  // Auto-transitions are intentionally NOT audited: the body change itself
-  // is already in audit_log, and the implied status flip is derivable
-  // from that. Audit log is for explicit human actions.
-  const bodyHasContent = body.trim().length > 0;
-  let nextStatus: Status = prevStatus;
-  if (prevStatus === 'not_started' && bodyHasContent) nextStatus = 'in_progress';
-  else if (prevStatus === 'in_progress' && !bodyHasContent) nextStatus = 'not_started';
 
   const statements = [
     db
       .prepare(
-        `INSERT INTO responses (project_slug, question_id, body, status, updated_at, updated_by)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+        `INSERT INTO responses (project_slug, question_id, body, updated_at, updated_by)
+         VALUES (?1, ?2, ?3, ?4, ?5)
          ON CONFLICT(project_slug, question_id) DO UPDATE SET
            body = excluded.body,
-           status = excluded.status,
            updated_at = excluded.updated_at,
            updated_by = excluded.updated_by`
       )
-      .bind(project, questionId, body, nextStatus, now, updatedBy),
+      .bind(project, questionId, body, now, updatedBy),
   ];
 
   if (prevBody !== body) {
