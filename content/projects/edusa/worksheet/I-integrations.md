@@ -35,7 +35,7 @@ A few things to confirm:
 
 - **(a) Heat-map vendor preference?** Common picks:
   - *Microsoft Clarity* — free, no traffic caps, integrates with GA4, solid privacy posture. Nice default.
-  - *Hotjar* — paid (free tier capped at ~35 sessions/day). More mature feature set.
+  - *Hotjar* — paid (free tier capped at \~35 sessions/day). More mature feature set.
   - *Mouseflow* — paid, similar territory.
   - *Existing IIE tool* — if someone at IIE is already using something, let us know and we'll wire that up instead.
 - **(b) Subscription costs.** If you go with a paid tier, the subscription is on your side. Comfortable with that?

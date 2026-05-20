@@ -12,7 +12,7 @@ order: 1
 ### Questions for you
 
 **A1. When does IIE plan to sign the Pantheon contract?**
-- **Recommendation:** We can wait on this decision until much closer to launch. We should plan to get the official, paid account in place ~30 days before launch.
+- **Recommendation:** We can wait on this decision until much closer to launch. We should plan to get the official, paid account in place \~30 days before launch.
 - *Why we ask:* The signing date determines when the Dev / Test / Live environments are provisioned and when we can start deploying against the real hosting. We don't need this resolved tomorrow, but we want to plan the build sequence around it.
 
 **A2. While the Pantheon contract is being finalized, can EC begin development on an EC-managed sandbox server, or would IIE prefer to stand up a Pantheon sandbox up-front?**

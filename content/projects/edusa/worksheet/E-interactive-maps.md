@@ -35,7 +35,7 @@ order: 5
 
 - **Recommendation:** We suggest starting with a simple list of data layers from readily available sources. Fewer, better data layers beat adding everything possible.
 
-- **(a) Advising-center locations** — we have ~436 records from the current site with street addresses; we'd geocode at migration.
+- **(a) Advising-center locations** — we have \~436 records from the current site with street addresses; we'd geocode at migration.
 - **(b) HEI locations** — described as a map layer in the RFP and LOA. HEIs submit institutional info via the form (D1), accreditation-checked and REAC-reviewed; we geocode at submission. The map would show whichever HEIs have submitted — not a pre-existing directory of all accredited institutions. Two related items:
   - (i) Confirm the submission-driven model is what you have in mind.
   - (ii) How does IIE plan to gather HEI submissions pre-launch so the map has data on day one? (Email outreach to known contacts, announcement at events like the DC Forum, direct asks to specific institutions, or accept empty-at-launch / grow-organically.)

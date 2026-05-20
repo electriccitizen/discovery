@@ -34,7 +34,7 @@ The RFP specifies two additional filters that **don't currently exist** on the l
 - *Note on data backfill:* This is a new field that doesn't exist on the current site, so **existing events migrated from the current site will need IIE to back-fill event-type values manually**, and the field gets added to the adviser submission form for future events. Same pattern as the F1 backfill note.
 - **Recommendation:** Go with the event types you think are valuable, and decide whether you want to back-fill old/existing events with this data or just apply it to new ones moving forward.
 
-**F4. Event migration — how far back?** The sitemap surfaces ~5,624 Event records, most historical. We need a date cutoff for migration. Options:
+**F4. Event migration — how far back?** The sitemap surfaces \~5,624 Event records, most historical. We need a date cutoff for migration. Options:
 - **Upcoming only at launch** — cleanest, smallest dataset, loses historical record.
 - **Past N months/years** (e.g., last 12 months, last 3 years) — preserves recent activity, manageable volume.
 - **Full archive** — preserves complete history but adds bulk and clutters search/finder without strong filtering.

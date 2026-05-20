@@ -20,7 +20,7 @@ While reviewing the current site, we surfaced content types and features that th
 ### Questions for you
 
 **L1. Scholarship records — migration scope and View-preservation.** **Confirmed**: `/find-financial-aid` and `/financial-aid` are Views over the same Scholarship content type — all records link to canonical `/scholarships/{slug}` URLs and the detail pages render identical data (verified on a sample record). Two things still open:
-- **(a) Migration scope** — the sitemap shows ~857 records vs. ~270 surfaced through the public View. The View filters out expired/inactive records. Do we migrate all 857 (preserving history) or only the 270 active ones?
+- **(a) Migration scope** — the sitemap shows \~857 records vs. \~270 surfaced through the public View. The View filters out expired/inactive records. Do we migrate all 857 (preserving history) or only the 270 active ones?
 - **(b) View preservation** — do we keep a "Financial Aid"-branded landing page (e.g., `/financial-aid`) on the new site as a separate entry point, or consolidate everything under `/scholarships`?
 
 - **Recommendation:** We recommend unifying into a single view. We also recommend migrating only active, published scholarships.
@@ -47,7 +47,7 @@ While reviewing the current site, we surfaced content types and features that th
 - (c) Should adviser profiles be **public**, **internal-only** (IIE-staff visibility), or something else?
 - *Why we ask:* Visibility choice affects contact-spam protection on adviser contact info and whether profiles appear in public search.
 
-**L7. Confirming the residual `/node/{N}` content.** Our full redirect pass against all 965 unaliased `/node/N` URLs in the sitemap found that 961 return 403 anonymously. Of those, **187 are aliases for the 12 Region landing pages** (L12) — historical accumulation as those pages went through revisions. The remaining **~778 are truly orphaned**: they don't resolve to any current alias, and we can't classify them from the outside. Please help us spot-check during discovery — pick a handful (say `/node/179`, `/node/192`, `/node/221`) and tell us what they are. Migration risk if any of these are real one-off public-facing pages we'd need to migrate sight-unseen.
+**L7. Confirming the residual `/node/{N}` content.** Our full redirect pass against all 965 unaliased `/node/N` URLs in the sitemap found that 961 return 403 anonymously. Of those, **187 are aliases for the 12 Region landing pages** (L12) — historical accumulation as those pages went through revisions. The remaining **\~778 are truly orphaned**: they don't resolve to any current alias, and we can't classify them from the outside. Please help us spot-check during discovery — pick a handful (say `/node/179`, `/node/192`, `/node/221`) and tell us what they are. Migration risk if any of these are real one-off public-facing pages we'd need to migrate sight-unseen.
 
 **L8. Organizational news — confirm scope.** The LOA's Project Purpose #5 calls for "a framework to display organizational news and content that inspires, educates, and engages users." The current site's Experience hub nav still references a News link, but `/experience-studying-usa/news` 404s anonymously — so the nav reference exists but no content loads. Three possibilities, each pointing in a different direction:
 - The news program was retired and the nav link is stale (we'd rebuild fresh on the new site to satisfy the LOA commitment).
@@ -57,7 +57,7 @@ While reviewing the current site, we surfaced content types and features that th
 
 **L9. Country Fact Sheets — confirm scope and visibility.** The RFP lists "Regional Fact Sheets" as a resource HEIs should access; we believe these are the same artifact as the per-country PDFs at `/us-higher-education-professionals/recruitment-resources/country-fact-sheets` on the current site (the URL redirect-loops anonymously, suggesting login-gated). We cannot see their content from outside the gate.
 
-- **(a) What's actually in them?** Approximately one PDF per country (~170?), or fewer? What does each contain (demographics, education-system info, advising-center contacts, success-story snapshots, etc.)?
+- **(a) What's actually in them?** Approximately one PDF per country (\~170?), or fewer? What does each contain (demographics, education-system info, advising-center contacts, success-story snapshots, etc.)?
 - **(b) Maintenance state.** Actively maintained, or stale? Who owns updates?
 - **(c) Visibility on the new site.** Since HEIs won't have logins on the new build (per §C), the options are: keep them IIE-staff-only, make them public, or drop entirely.
 - **(d) Migration source.** Per §B WWCU, these are gated PDFs IIE must supply directly (we can't scrape them) — confirm IIE has access to the source files.
@@ -85,7 +85,7 @@ The LOA's wording — *"several custom content types for programs, people, and r
 
 Before recommending migrate / drop / rebuild-public, we'd like to understand what's actually in them — either share the content of a typical page with us, describe who uses them and for what, or tell us they're stale and we can drop without further review.
 
-**L13. Student Success Stories — do you want them on the new site?** The current site has a public stories gallery at `/experience-studying-usa/stories-international-students` (single paginated page, ~24 pages of stories rendered inline, no per-story URLs). The RFP §p.10 calls for "an engaging webpage of text and multimedia content showcasing international students."
+**L13. Student Success Stories — do you want them on the new site?** The current site has a public stories gallery at `/experience-studying-usa/stories-international-students` (single paginated page, \~24 pages of stories rendered inline, no per-story URLs). The RFP §p.10 calls for "an engaging webpage of text and multimedia content showcasing international students."
 
 - **Recommendation:** If yes, we recommend a per-story content type — each story gets its own URL, SEO-indexable, shareable, supports per-story metadata (country/region per E4(c), audience track, university, etc.) and feeds the map's success-story layer cleanly. The current paginated-single-page architecture would be a downgrade for the new build.
 
