@@ -1,6 +1,6 @@
 ## Welcome
 
-This worksheet collects the questions we need to answer in order to move into the build phase and finalize the longer-term technical decisions that impact the site build. The worksheet was derived largely from our [technical analysis](/edusa/reference/technical-analysis) and all of the available source documents.
+This worksheet collects the questions we need to answer in order to move into the build phase and finalize the longer-term technical decisions that impact the project. The worksheet was derived largely from our [technical analysis](/edusa/reference/technical-analysis) and all of the available source documents.
 
 <details class="intro-section">
 <summary>How to use the portal</summary>
@@ -10,7 +10,7 @@ This worksheet collects the questions we need to answer in order to move into th
 - Click **Mark as answered** when you're done with a question, or **Flag for clarification** if you need our input first. Both buttons sit below the response field on each question.
 - The **comment thread** below each question is for back-and-forth: clarifications, push-back, follow-ups.
 - If a question doesn't apply or you don't know yet, leave a comment like *"unknown"* or *"let's discuss"* and we'll take it up live.
-- **Reference documents** (sitemap inventory, migration analysis, technical analysis, etc.) are linked in the top-right menu of every page.
+- **Reference documents** (sitemap inventory, migration analysis, technical analysis, etc.) are linked in the header menu of every page.
 
 </details>
 
