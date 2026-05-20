@@ -48,7 +48,3 @@ order: 5
 - *Expected format:* per-layer: "yes, source = X" / "no, drop this layer" / "let's discuss in Strategy."
 
 **E5. Anything else about the map we should be considering?** Specific data sources we haven't named, presentation patterns from other reference sites, accessibility concerns, political-geography sensitivities, or any other constraints we should plan for.
-
-**E6. Does IIE agree with the overall map approach?** To summarize: we'll build with a standard mapping library (Leaflet, Mapbox, or similar) using the provider's default boundaries and labels. Data layers come from existing site data where possible (geocoded centers, HEIs), from IIE-supplied external resources (E3), and from IIE-authored content where the data doesn't already exist (E4). Architectural decisions (library choice, basemap, etc.) stay with EC.
-- *Why we ask:* The map is one of the most visible deliverables and one of the most undefined in the source docs. Better to confirm alignment now than discover a mismatch at design time.
-- *Expected format:* "yes, proceed as described" / "yes, with these changes: …" / "let's discuss."
