@@ -2,6 +2,8 @@
 
 This worksheet collects the questions we need to answer before the build can move past Strategy & Analysis. Responses save automatically as you type, and you can come back to update any answer at any time. Status, comments, and history are live.
 
+This worksheet was derived largely from our [technical analysis](/edusa/reference/technical-analysis) and all of the available [source documents](/edusa/reference/source-documents).
+
 <details class="intro-section">
 <summary>How to use the portal</summary>
 
