@@ -6,3 +6,8 @@ dist/
 .env.*
 !.env.example
 .DS_Store
+
+# D1 SQL dumps from scripts/backup-db.mjs — keep out of git in case
+# they ever contain client comments (the private repo would still see
+# them, but better practice to handle backups out-of-band).
+backups/
