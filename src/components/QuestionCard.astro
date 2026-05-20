@@ -67,10 +67,10 @@ const updatedDisplay = response
   )}
 
   {question.expectedHtml && (
-    <aside class="question-meta question-expected">
-      <span class="meta-label">Expected format</span>
-      <span class="meta-body" set:html={question.expectedHtml} />
-    </aside>
+    <p class="expected-hint">
+      <span class="expected-hint-label">Expected</span>
+      <span class="expected-hint-body" set:html={question.expectedHtml} />
+    </p>
   )}
 
   <response-form class="response-form" data-project={projectSlug} data-question-id={question.id}>
