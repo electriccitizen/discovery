@@ -22,6 +22,8 @@ While reviewing the current site, we surfaced content types and features that th
 - **(a) Migration scope** — the sitemap shows ~857 records vs. ~270 surfaced through the public View. The View filters out expired/inactive records. Do we migrate all 857 (preserving history) or only the 270 active ones?
 - **(b) View preservation** — do we keep a "Financial Aid"-branded landing page (e.g., `/financial-aid`) on the new site as a separate entry point, or consolidate everything under `/scholarships`?
 
+- **Recommendation:** We recommend unifying into a single view. We also recommend migrating only active, published scholarships.
+
 **L2. Video — how should the new build present the existing video collection?** The LOA commits to video as a content medium (impact-story showcase per Att. B obj. #3, Drupal video blocks, embedded video in content) and the Q&A confirms existing video assets will be incorporated. What's open is the *current site's dedicated video library pattern* — 242 records in a Video content type with its own faceted finder at `/videos-0` (Topic + Audience filters). Three plausible paths for the new build:
 
 - **(a) Preserve as-is** — Video stays its own content type with the existing finder, migrated with current Topic + Audience taxonomies.
