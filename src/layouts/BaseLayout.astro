@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import { getProject } from '../lib/projects.ts';
+import { canAccessProject } from '../lib/access.ts';
 
 interface Props {
   title: string;
@@ -9,6 +11,29 @@ const { title } = Astro.props;
 const email = Astro.request.headers.get('cf-access-authenticated-user-email');
 const isEC = email?.endsWith('@electriccitizen.com') ?? false;
 const userLabel = email ? (isEC ? 'EC' : 'Client') : null;
+
+// Derive project context from the URL path so any page nested under
+// /[project]/* gets a header reference-doc menu without needing to thread
+// project state through props.
+const pathSegments = Astro.url.pathname.split('/').filter(Boolean);
+const projectSlug = pathSegments[0];
+
+let projectContext: {
+  slug: string;
+  title: string;
+  references: { slug: string; title: string }[];
+} | null = null;
+
+if (projectSlug && email) {
+  const project = getProject(projectSlug);
+  if (project && canAccessProject(email, project) && project.references.length > 0) {
+    projectContext = {
+      slug: projectSlug,
+      title: project.title,
+      references: project.references,
+    };
+  }
+}
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -21,13 +46,42 @@ const userLabel = email ? (isEC ? 'EC' : 'Client') : null;
   <body>
     <header class="site-header">
       <div class="wrap">
-        <a href="/" class="site-title">Discovery Portal</a>
-        {email && (
-          <span class="user-chip">
-            <span class={`user-role user-role-${isEC ? 'ec' : 'client'}`}>{userLabel}</span>
-            <span class="user-email">{email}</span>
-          </span>
-        )}
+        <div class="site-header-left">
+          <a href="/" class="site-title">Discovery Portal</a>
+          {projectContext && (
+            <>
+              <span class="site-header-sep" aria-hidden="true">/</span>
+              <a href={`/${projectContext.slug}`} class="site-header-project">{projectContext.title}</a>
+            </>
+          )}
+        </div>
+
+        <div class="site-header-right">
+          {projectContext && (
+            <details class="header-refs">
+              <summary class="header-refs-trigger">
+                <span>Reference</span>
+                <span class="header-refs-caret" aria-hidden="true">▾</span>
+              </summary>
+              <div class="header-refs-menu" role="menu">
+                <span class="header-refs-menu-label">{projectContext.title}</span>
+                <ul>
+                  {projectContext.references.map((r) => (
+                    <li>
+                      <a href={`/${projectContext!.slug}/reference/${r.slug}`} role="menuitem">{r.title}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </details>
+          )}
+          {email && (
+            <span class="user-chip">
+              <span class={`user-role user-role-${isEC ? 'ec' : 'client'}`}>{userLabel}</span>
+              <span class="user-email">{email}</span>
+            </span>
+          )}
+        </div>
       </div>
     </header>
     <main class="site-main">
@@ -44,6 +98,14 @@ const userLabel = email ? (isEC ? 'EC' : 'Client') : null;
     </footer>
     <script>
       import '../scripts/discovery.ts';
+      // Close the header reference menu when clicking outside.
+      document.addEventListener('click', (e) => {
+        const refs = document.querySelector('details.header-refs');
+        if (!refs || !refs.hasAttribute('open')) return;
+        if (!(e.target instanceof Node) || !refs.contains(e.target)) {
+          refs.removeAttribute('open');
+        }
+      });
     </script>
   </body>
 </html>
