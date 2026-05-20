@@ -20,6 +20,8 @@ order: 5
 
 **E2. The current site has two parallel country lists — should the new build consolidate?** Centers and Scholarships use a Drupal Country taxonomy (177 terms); Events use the address module's ISO 2-letter list (250 codes). They don't fully overlap (ISO is more complete on territories and edge cases). Our default plan is to consolidate on a single canonical source (most likely the ISO list) and re-map existing taxonomy references during migration — that keeps the country reference clean and is what the interactive map will plot against.
 
+- **Recommendation:** we recommend a single list of countries that is maintained for all areas of the site, unless there is a specific reason you need different lists.
+
 - **(a)** Any reason NOT to consolidate? (e.g., the current taxonomy carries IIE-specific metadata we can't see from outside, or an editorial workflow that depends on it specifically)
 - **(b)** Does IIE have a single official source for the canonical country/territory list, with names spelled the way IIE wants them surfaced? If so, please share.
 - **(c)** Are there territories the ISO list omits or names differently that you need on the new site? (e.g., Taiwan, Kosovo, Palestine, Western Sahara handling.)
