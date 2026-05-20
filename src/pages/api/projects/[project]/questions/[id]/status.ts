@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { requireUser } from '../../../../../../lib/access.ts';
+import { canAccessProject, requireUser } from '../../../../../../lib/access.ts';
 import {
   isPriority,
   isStatus,
@@ -23,10 +23,12 @@ export const PATCH: APIRoute = async ({ params, request }) => {
   if (!project || !questionId) return json({ error: 'bad params' }, 400);
 
   const meta = getProject(project);
-  if (!meta) return json({ error: 'unknown project' }, 404);
+  if (!meta) return json({ error: 'not found' }, 404);
 
   const user = requireUser(request, meta.client.label);
   if (user instanceof Response) return user;
+
+  if (!canAccessProject(user.email, meta)) return json({ error: 'not found' }, 404);
 
   let payload: { status?: unknown; priority?: unknown };
   try {

@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getProject } from '../../lib/projects.ts';
 import { listSections, countQuestions } from '../../lib/worksheet.ts';
 import { listRecentActivity, listResponses, type ActivityItem } from '../../lib/db.ts';
+import { canAccessProject } from '../../lib/access.ts';
 import { env } from 'cloudflare:workers';
 
 const projectSlug = Astro.params.project;
@@ -10,6 +11,11 @@ if (!projectSlug) return new Response(null, { status: 404 });
 
 const project = getProject(projectSlug);
 if (!project) return new Response(null, { status: 404 });
+
+const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email');
+if (!userEmail || !canAccessProject(userEmail, project)) {
+  return new Response(null, { status: 404 });
+}
 
 const sections = listSections(projectSlug);
 const totalQuestions = countQuestions(projectSlug);

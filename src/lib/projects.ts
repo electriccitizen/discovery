@@ -6,6 +6,7 @@ export interface ProjectMeta {
   client: { name: string; label: string; primary_contact: string };
   ec_team: string[];
   client_emails: string[];
+  client_email_domains?: string[];
   status: string;
   section_order: string[];
   references: { slug: string; title: string }[];

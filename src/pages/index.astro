@@ -2,8 +2,12 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { listProjects, getProject } from '../lib/projects.ts';
 import { countQuestions, listSections } from '../lib/worksheet.ts';
+import { canAccessProject, isEC } from '../lib/access.ts';
 
-const projects = listProjects()
+const email = Astro.request.headers.get('cf-access-authenticated-user-email');
+const userIsEC = email ? isEC(email) : false;
+
+const allProjects = listProjects()
   .map((p) => {
     const meta = getProject(p.slug);
     if (!meta) return null;
@@ -15,18 +19,33 @@ const projects = listProjects()
     };
   })
   .filter((p): p is NonNullable<typeof p> => p !== null);
+
+const visibleProjects = email
+  ? allProjects.filter((p) => canAccessProject(email, p.meta))
+  : allProjects;
+
+// Auto-route non-EC users who have exactly one visible project: skip the
+// picker and land them on their project overview directly.
+if (!userIsEC && visibleProjects.length === 1) {
+  return Astro.redirect(`/${visibleProjects[0].slug}`);
+}
 ---
 <BaseLayout title="Active engagements">
   <h1>Discovery Portal</h1>
   <p class="lede">
-    Interactive technical-discovery worksheets. Pick an engagement to begin.
+    {userIsEC
+      ? 'Interactive technical-discovery worksheets. Pick an engagement to begin.'
+      : 'Pick an engagement to begin.'}
   </p>
 
-  {projects.length === 0 ? (
-    <p class="muted">No active projects.</p>
+  {visibleProjects.length === 0 ? (
+    <p class="muted">
+      No projects are currently assigned to <code>{email}</code>. If you believe
+      this is wrong, please contact your Electric Citizen lead.
+    </p>
   ) : (
     <ul class="project-list">
-      {projects.map((p) => (
+      {visibleProjects.map((p) => (
         <li>
           <a class="project-card" href={`/${p.slug}`}>
             <h2>{p.meta.title}</h2>
