@@ -12,7 +12,8 @@ order: 7
 
 ### Questions for you
 
-**G1. Do you have a preferred LLM provider for the AI features?** We recommend OpenAI. Other options: Anthropic (Claude), Google (Gemini), Microsoft (Azure OpenAI), or "vendor's choice / no preference."
+**G1. Do you have a preferred LLM provider for the AI features?** Options include OpenAI, Anthropic (Claude), Google (Gemini), Microsoft (Azure OpenAI), or "vendor's choice / no preference."
+- **Recommendation:** We recommend OpenAI (gpt-4o-mini) as the best option for AI integrations for budget and technical reasons, but we are open to other LLMs if necessary.
 - *Why we ask:* Each has different pricing, capabilities, and SLAs. Affects build cost since you're funding token usage.
 
 **G2. The LLM contract will be held by IIE directly — confirm.** The LOA assigns token costs to IIE (p.30), so the default is that IIE provisions the OpenAI (or chosen vendor) account and pays for token usage directly. EC integrates against your API keys.
