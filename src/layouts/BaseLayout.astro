@@ -86,6 +86,12 @@ if (projectSlug && email) {
               </div>
             </details>
           )}
+          {email && (
+            <span class="user-chip">
+              <span class={`user-role user-role-${isEC ? 'ec' : 'client'}`}>{userLabel}</span>
+              <span class="user-email">{email}</span>
+            </span>
+          )}
           {projectContext && (
             <a
               class="header-bell"
@@ -98,12 +104,6 @@ if (projectSlug && email) {
                 <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
               </svg>
             </a>
-          )}
-          {email && (
-            <span class="user-chip">
-              <span class={`user-role user-role-${isEC ? 'ec' : 'client'}`}>{userLabel}</span>
-              <span class="user-email">{email}</span>
-            </span>
           )}
         </div>
       </div>
