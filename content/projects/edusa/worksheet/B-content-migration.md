@@ -22,6 +22,7 @@ order: 2
 - *Expected format:* a named contact, "we'll escalate via ECA," or "confirmed not obtainable."
 
 **B2. How will IIE provide editorial review on the migrate/drop decisions?**
+- **Recommendation:** we can wait on a decision until we have more clarity from your internal audit and the ongoing content audits from our team. This question is designed to call out a necessary step in the migration process and to get your initial thoughts.
 - *Why we ask:* The Q&A indicated IIE was producing a content inventory in parallel. We'd like to confirm the current status of that work — and in any case, EC will need editorial-review time from REAC / content owners / IIE staff to reconcile what should actually migrate vs. drop vs. rebuild. What's the right mechanism and cadence for that review work?
 - *Expected format:* a named owner + a working pattern (e.g., weekly review session, batch sign-offs via Drive, REAC-network polling).
 
