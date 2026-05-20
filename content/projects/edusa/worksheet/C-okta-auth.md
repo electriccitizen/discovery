@@ -6,12 +6,12 @@ order: 3
 
 ### What we currently understand
 
-- IIE provides an OKTA tenant for internal-user authentication. The FedRAMP variant of OKTA is not required (per Q&A).
-- The new build implements **OKTA SSO with just-in-time (JIT) provisioning** for IIE-staff roles (Adviser, REAC, REAC Assistant, IIE Admin). Advisers and REACs already have IIE OKTA accounts (Q&A confirmed); REAC Assistants and IIE Admin sit in the same tenant. Drupal creates user records automatically on first OKTA authentication; OKTA's lifecycle (offboarding, MFA, group changes) is authoritative; IIE never manually provisions or password-manages a website account. This is the standard SSO pattern and matches your stated preference for OKTA-as-source-of-truth.
-- **Sponsor authentication is the one open authentication question** — State Department staff sit on a separate identity provider from IIE's OKTA tenant. See C4 below.
+- IIE provides an OKTA tenant for internal-user authentication. The FedRAMP variant is not required (per Q&A).
+- The new build implements **OKTA SSO with just-in-time (JIT) provisioning** for IIE-staff roles (Adviser, REAC, REAC Assistant, IIE Admin). Drupal creates user records on first OKTA authentication; OKTA's lifecycle (offboarding, MFA, group changes) is authoritative; IIE never manually provisions website accounts. Advisers and REACs already have IIE OKTA accounts (Q&A confirmed).
+- **Sponsor authentication is the one open question.** State Department staff sit on a separate identity provider from IIE's OKTA tenant. See C4.
 - HEIs do not authenticate. They submit via anonymous forms gated by accreditation check; submissions route to REAC review → IIE Admin publish.
-- **Editorial UX for IIE-staff roles is a hybrid**: Advisers submit via OKTA-verified Drupal forms (one-shot transactional flows for events, advising-center updates, etc.); REACs / REAC Assistants / IIE Admin authenticate to Drupal via OKTA SSO and use a Drupal-native editor dashboard to review, edit, and publish. This matches the linear approval workflow (Adviser → REAC → IIE Admin) and uses standard Drupal moderation rather than bespoke per-role review UI.
-- The current site (Drupal 7) supports a richer six-role model that includes HEI-staff logins. The new build eliminates the HEI-staff role entirely (per Q&A) but keeps the internal-role distinctions, sourced from OKTA instead of Drupal-managed credentials.
+- **Editorial UX is hybrid by role.** Advisers submit via OKTA-verified Drupal forms (one-shot transactional flows). REACs / REAC Assistants / IIE Admin authenticate to Drupal via OKTA SSO and use a Drupal-native editor dashboard to review, edit, and publish. Standard Drupal moderation, not bespoke per-role review UI.
+- The current Drupal 7 site supports a richer six-role model including HEI-staff logins. The new build eliminates HEI-staff entirely (per Q&A) but keeps the internal-role distinctions, sourced from OKTA.
 
 ### Questions for you
 
