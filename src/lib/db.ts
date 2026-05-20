@@ -35,6 +35,19 @@ export interface CommentRow {
   created_at: string;
 }
 
+export type AuditKind = 'body' | 'status' | 'priority';
+
+export interface AuditRow {
+  id: number;
+  project_slug: string;
+  question_id: string;
+  kind: AuditKind;
+  prev_value: string | null;
+  new_value: string;
+  changed_by: string;
+  changed_at: string;
+}
+
 export function isStatus(value: unknown): value is Status {
   return typeof value === 'string' && (STATUS_VALUES as string[]).includes(value);
 }
@@ -65,17 +78,35 @@ export async function upsertResponseBody(
   updatedBy: string
 ): Promise<ResponseRow> {
   const now = new Date().toISOString();
-  await db
-    .prepare(
-      `INSERT INTO responses (project_slug, question_id, body, updated_at, updated_by)
-       VALUES (?1, ?2, ?3, ?4, ?5)
-       ON CONFLICT(project_slug, question_id) DO UPDATE SET
-         body = excluded.body,
-         updated_at = excluded.updated_at,
-         updated_by = excluded.updated_by`
-    )
-    .bind(project, questionId, body, now, updatedBy)
-    .run();
+  const existing = await getResponse(db, project, questionId);
+  const prevBody = existing?.body ?? null;
+
+  const statements = [
+    db
+      .prepare(
+        `INSERT INTO responses (project_slug, question_id, body, updated_at, updated_by)
+         VALUES (?1, ?2, ?3, ?4, ?5)
+         ON CONFLICT(project_slug, question_id) DO UPDATE SET
+           body = excluded.body,
+           updated_at = excluded.updated_at,
+           updated_by = excluded.updated_by`
+      )
+      .bind(project, questionId, body, now, updatedBy),
+  ];
+
+  if (prevBody !== body) {
+    statements.push(
+      db
+        .prepare(
+          `INSERT INTO audit_log (project_slug, question_id, kind, prev_value, new_value, changed_by, changed_at)
+           VALUES (?1, ?2, 'body', ?3, ?4, ?5, ?6)`
+        )
+        .bind(project, questionId, prevBody, body, updatedBy, now)
+    );
+  }
+
+  await db.batch(statements);
+
   const row = await getResponse(db, project, questionId);
   if (!row) throw new Error('response upsert returned no row');
   return row;
@@ -90,23 +121,64 @@ export async function upsertResponseStatus(
 ): Promise<ResponseRow> {
   const now = new Date().toISOString();
   const existing = await getResponse(db, project, questionId);
+  const prevStatus = existing?.status ?? null;
+  const prevPriority = existing?.priority ?? null;
   const nextStatus = patch.status ?? existing?.status ?? 'not_started';
   const nextPriority = patch.priority ?? existing?.priority ?? 'medium';
-  await db
-    .prepare(
-      `INSERT INTO responses (project_slug, question_id, status, priority, updated_at, updated_by)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6)
-       ON CONFLICT(project_slug, question_id) DO UPDATE SET
-         status = excluded.status,
-         priority = excluded.priority,
-         updated_at = excluded.updated_at,
-         updated_by = excluded.updated_by`
-    )
-    .bind(project, questionId, nextStatus, nextPriority, now, updatedBy)
-    .run();
+
+  const statements = [
+    db
+      .prepare(
+        `INSERT INTO responses (project_slug, question_id, status, priority, updated_at, updated_by)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+         ON CONFLICT(project_slug, question_id) DO UPDATE SET
+           status = excluded.status,
+           priority = excluded.priority,
+           updated_at = excluded.updated_at,
+           updated_by = excluded.updated_by`
+      )
+      .bind(project, questionId, nextStatus, nextPriority, now, updatedBy),
+  ];
+
+  if (patch.status !== undefined && patch.status !== prevStatus) {
+    statements.push(
+      db
+        .prepare(
+          `INSERT INTO audit_log (project_slug, question_id, kind, prev_value, new_value, changed_by, changed_at)
+           VALUES (?1, ?2, 'status', ?3, ?4, ?5, ?6)`
+        )
+        .bind(project, questionId, prevStatus, nextStatus, updatedBy, now)
+    );
+  }
+  if (patch.priority !== undefined && patch.priority !== prevPriority) {
+    statements.push(
+      db
+        .prepare(
+          `INSERT INTO audit_log (project_slug, question_id, kind, prev_value, new_value, changed_by, changed_at)
+           VALUES (?1, ?2, 'priority', ?3, ?4, ?5, ?6)`
+        )
+        .bind(project, questionId, prevPriority, nextPriority, updatedBy, now)
+    );
+  }
+
+  await db.batch(statements);
+
   const row = await getResponse(db, project, questionId);
   if (!row) throw new Error('response status upsert returned no row');
   return row;
+}
+
+export async function listAllAudit(
+  db: D1Database,
+  project: string
+): Promise<AuditRow[]> {
+  const result = await db
+    .prepare(
+      'SELECT id, project_slug, question_id, kind, prev_value, new_value, changed_by, changed_at FROM audit_log WHERE project_slug = ?1 ORDER BY changed_at ASC, id ASC'
+    )
+    .bind(project)
+    .all<AuditRow>();
+  return result.results ?? [];
 }
 
 export async function listResponses(

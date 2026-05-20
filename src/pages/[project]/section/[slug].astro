@@ -2,7 +2,13 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getProject } from '../../../lib/projects.ts';
 import { getSection, listSections } from '../../../lib/worksheet.ts';
-import { listAllComments, listResponses, type CommentRow } from '../../../lib/db.ts';
+import {
+  listAllAudit,
+  listAllComments,
+  listResponses,
+  type AuditRow,
+  type CommentRow,
+} from '../../../lib/db.ts';
 import { canAccessProject } from '../../../lib/access.ts';
 import { env } from 'cloudflare:workers';
 import QuestionCard from '../../../components/QuestionCard.astro';
@@ -21,15 +27,25 @@ if (!userEmail || !canAccessProject(userEmail, project)) {
 }
 
 const db = env.DB;
-const [responses, comments] = db
-  ? await Promise.all([listResponses(db, projectSlug), listAllComments(db, projectSlug)])
-  : [[], []];
+const [responses, comments, audit] = db
+  ? await Promise.all([
+      listResponses(db, projectSlug),
+      listAllComments(db, projectSlug),
+      listAllAudit(db, projectSlug),
+    ])
+  : [[], [], [] as AuditRow[]];
 const responsesById = new Map(responses.map((r) => [r.question_id, r]));
 const commentsByQuestion = new Map<string, CommentRow[]>();
 for (const c of comments) {
   const arr = commentsByQuestion.get(c.question_id);
   if (arr) arr.push(c);
   else commentsByQuestion.set(c.question_id, [c]);
+}
+const auditByQuestion = new Map<string, AuditRow[]>();
+for (const a of audit) {
+  const arr = auditByQuestion.get(a.question_id);
+  if (arr) arr.push(a);
+  else auditByQuestion.set(a.question_id, [a]);
 }
 
 const allSections = listSections(projectSlug);
@@ -66,6 +82,7 @@ const next = idx < allSections.length - 1 ? allSections[idx + 1] : null;
             projectSlug={projectSlug}
             response={responsesById.get(q.id) ?? null}
             comments={commentsByQuestion.get(q.id) ?? []}
+            audit={auditByQuestion.get(q.id) ?? []}
           />
         </li>
       ))}

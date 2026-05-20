@@ -1,0 +1,92 @@
+---
+import type { AuditRow } from '../lib/db.ts';
+
+interface Props {
+  audit: AuditRow[];
+}
+
+const { audit } = Astro.props;
+
+// Most recent first
+const sorted = [...audit].sort((a, b) => (a.changed_at < b.changed_at ? 1 : -1));
+
+const ecDomain = '@electriccitizen.com';
+function roleClass(email: string): 'ec' | 'client' {
+  return email.toLowerCase().endsWith(ecDomain) ? 'ec' : 'client';
+}
+function fmtTime(iso: string): string {
+  return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+function kindLabel(kind: AuditRow['kind']): string {
+  return kind === 'body' ? 'Response' : kind === 'status' ? 'Status' : 'Priority';
+}
+function statusLabel(value: string): string {
+  return value
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+function preview(s: string | null, max = 320): string {
+  if (s === null) return '';
+  const trimmed = s.trim();
+  return trimmed.length > max ? trimmed.slice(0, max - 1) + '…' : trimmed;
+}
+---
+{sorted.length > 0 && (
+  <details class="audit-history">
+    <summary class="audit-summary">
+      <span class="audit-count">{sorted.length}</span>
+      <span>{sorted.length === 1 ? 'revision' : 'revisions'}</span>
+      <span class="audit-summary-hint">— view history</span>
+    </summary>
+    <ol class="audit-list">
+      {sorted.map((entry) => (
+        <li class={`audit-entry audit-kind-${entry.kind} role-${roleClass(entry.changed_by)}`}>
+          <div class="audit-meta">
+            <span class={`audit-kind-chip kind-${entry.kind}`}>{kindLabel(entry.kind)}</span>
+            <span class={`user-role user-role-${roleClass(entry.changed_by)}`}>
+              {roleClass(entry.changed_by) === 'ec' ? 'EC' : 'Client'}
+            </span>
+            <code class="audit-author">{entry.changed_by}</code>
+            <time class="audit-time" datetime={entry.changed_at}>{fmtTime(entry.changed_at)}</time>
+          </div>
+
+          {entry.kind === 'body' ? (
+            <div class="audit-body-change">
+              {entry.prev_value === null ? (
+                <div class="audit-body-new audit-body-block">
+                  <span class="audit-block-label">Set initial response</span>
+                  <div class="audit-block-text">{preview(entry.new_value)}</div>
+                </div>
+              ) : (
+                <>
+                  <div class="audit-body-prev audit-body-block">
+                    <span class="audit-block-label">Previous</span>
+                    <div class="audit-block-text">{preview(entry.prev_value) || '(empty)'}</div>
+                  </div>
+                  <div class="audit-body-new audit-body-block">
+                    <span class="audit-block-label">Updated to</span>
+                    <div class="audit-block-text">{preview(entry.new_value) || '(empty)'}</div>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <div class="audit-transition">
+              {entry.prev_value === null ? (
+                <span>
+                  Set to <strong>{statusLabel(entry.new_value)}</strong>
+                </span>
+              ) : (
+                <span>
+                  <strong>{statusLabel(entry.prev_value)}</strong>
+                  <span class="audit-arrow"> → </span>
+                  <strong>{statusLabel(entry.new_value)}</strong>
+                </span>
+              )}
+            </div>
+          )}
+        </li>
+      ))}
+    </ol>
+  </details>
+)}

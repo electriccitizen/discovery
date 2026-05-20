@@ -3,21 +3,24 @@ import type { Question } from '../lib/worksheet.ts';
 import {
   PRIORITY_VALUES,
   STATUS_VALUES,
+  type AuditRow,
   type CommentRow,
   type Priority,
   type ResponseRow,
   type Status,
 } from '../lib/db.ts';
 import CommentThread from './CommentThread.astro';
+import AuditHistory from './AuditHistory.astro';
 
 interface Props {
   question: Question;
   projectSlug: string;
   response: ResponseRow | null;
   comments: CommentRow[];
+  audit: AuditRow[];
 }
 
-const { question, projectSlug, response, comments } = Astro.props;
+const { question, projectSlug, response, comments, audit } = Astro.props;
 const bodyValue = response?.body ?? '';
 const status: Status = (response?.status as Status) ?? 'not_started';
 const priority: Priority = (response?.priority as Priority) ?? 'medium';
@@ -103,6 +106,8 @@ const updatedDisplay = response
       )}
     </div>
   </response-form>
+
+  <AuditHistory audit={audit} />
 
   <CommentThread projectSlug={projectSlug} questionId={question.id} comments={comments} />
 </article>
