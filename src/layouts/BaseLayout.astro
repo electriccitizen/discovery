@@ -52,20 +52,22 @@ if (projectSlug && email) {
             <>
               <span class="site-header-sep" aria-hidden="true">/</span>
               <a href={`/${projectContext.slug}`} class="site-header-project">{projectContext.title}</a>
-              <form class="header-search" action={`/${projectContext.slug}/search`} method="get" role="search">
-                <input
-                  type="search"
-                  name="q"
-                  placeholder="Search…"
-                  aria-label="Search this project"
-                  autocomplete="off"
-                />
-              </form>
             </>
           )}
         </div>
 
         <div class="site-header-right">
+          {projectContext && (
+            <form class="header-search" action={`/${projectContext.slug}/search`} method="get" role="search">
+              <input
+                type="search"
+                name="q"
+                placeholder="Search…"
+                aria-label="Search this project"
+                autocomplete="off"
+              />
+            </form>
+          )}
           {projectContext && (
             <details class="header-refs">
               <summary class="header-refs-trigger">
