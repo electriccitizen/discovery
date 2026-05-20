@@ -203,9 +203,10 @@ img { max-width: 100%; height: auto; }
 
 .site-header-left {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-3);
   min-width: 0;
+  flex-wrap: wrap;
 }
 .site-header-sep {
   color: var(--ink-faint);
@@ -241,17 +242,18 @@ img { max-width: 100%; height: auto; }
 
 .header-search {
   display: flex;
+  margin-left: var(--space-2);
 }
 .header-search input[type='search'] {
   font: inherit;
   font-family: var(--font-sans);
-  font-size: 0.84rem;
-  padding: 0.4rem 0.65rem;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.6rem;
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   color: var(--ink);
-  width: 13rem;
+  width: 11rem;
   max-width: 100%;
   transition: border-color 0.12s ease, box-shadow 0.12s ease;
 }
