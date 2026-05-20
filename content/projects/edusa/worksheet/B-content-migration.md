@@ -14,6 +14,7 @@ order: 2
 - **Gated database content has no exportable source.** Region landing pages (L12), portal-only Campus News (L3), Adviser Profiles (L6), Webinars (L8), and the \~778 orphaned `/node/N` URLs (L7) live only inside Drupal. Without a D7 DB dump (B1), these require manual re-authoring on the new site. Rough combined volume: a few hundred pages, but accurate sizing requires portal access.
 - **Taxonomy and tagging are unrecoverable from scrape alone.** We see term labels (12 Regions, 177 Countries, 5 Degree Levels) but not IDs, hierarchy, custom fields, or which content carries which tags. Without a dump we rebuild vocabularies from observed labels and re-tag during migration; surface-invisible metadata is lost.
 - **Manual recreation is part of any migration.** Gated content + new fields on existing types (e.g., country tag on Success Stories per E4(c), region metadata for Adviser Profiles per L6) + content-shape changes all require fresh writes rather than ports. A DB dump shrinks this surface; without one, it expands. We'll flag specifics as we go so the editorial workload is visible up-front.
+- See [Migration Analysis](/edusa/reference/migration-analysis) for the full per-content-type breakdown and supporting detail.
 
 ### Questions for you
 
