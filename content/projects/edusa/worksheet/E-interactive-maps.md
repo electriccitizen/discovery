@@ -33,6 +33,8 @@ order: 5
 
 **E4. The map's data layers — which do you want, and what's the source for each?** The source docs describe possible layers the map could surface — we're not committed to all of them. For each, please confirm: (a) is this layer wanted on the new site's map? and (b) if yes, where does the source data come from?
 
+- **Recommendation:** we suggest starting with a simple list of data layers from readily available sources. Fewer, better data layers beats adding everything possible.
+
 - **(a) Advising-center locations** — we have ~436 records from the current site with street addresses; we'd geocode at migration.
 - **(b) HEI locations** — described as a map layer in the RFP and LOA. HEIs submit institutional info via the form (D1), accreditation-checked and REAC-reviewed; we geocode at submission. The map would show whichever HEIs have submitted — not a pre-existing directory of all accredited institutions. Two related items:
   - (i) Confirm the submission-driven model is what you have in mind.
