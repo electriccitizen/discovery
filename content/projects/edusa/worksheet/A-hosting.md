@@ -16,4 +16,5 @@ order: 1
 - *Why we ask:* The signing date determines when the Dev / Test / Live environments are provisioned and when we can start deploying against the real hosting. We don't need this resolved tomorrow, but we want to plan the build sequence around it.
 
 **A2. While the Pantheon contract is being finalized, can EC begin development on an EC-managed sandbox server, or would IIE prefer to stand up a Pantheon sandbox up-front?**
+- **Recommendation:** the path of least resistance is to host development on our Pantheon account. We can transfer to the IIE org once the account is set up.
 - *Why we ask:* Either path works. An EC sandbox lets us start building immediately and migrate the codebase to your Pantheon environments once the contract is in place. A Pantheon sandbox is also fine — slightly more setup, and we'd confirm provisioning timing with Pantheon. Your preference.
