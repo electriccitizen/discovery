@@ -62,7 +62,9 @@ While reviewing the current site, we surfaced content types and features that th
 - **(c) Visibility on the new site.** Since HEIs won't have logins on the new build (per §C), the options are: keep them IIE-staff-only, make them public, or drop entirely.
 - **(d) Migration source.** Per §B WWCU, these are gated PDFs IIE must supply directly (we can't scrape them) — confirm IIE has access to the source files.
 
-**L10. Spam protection — the current site uses Drupal image CAPTCHA on one form (`/node/1116`) and nothing on anything else.** Image CAPTCHA is both inaccessible (WCAG concern) and weak in 2026. **We recommend** swapping to honeypot + **Cloudflare Turnstile** + Drupal `flood` controls for all public forms. (Turnstile is free, privacy-preserving, accessible, and largely invisible to legitimate users — no checkbox or image puzzle.) Does that work, or do you have a preferred anti-spam stack?
+**L10. Spam protection — the current site uses Drupal image CAPTCHA on one form (`/node/1116`) and nothing on anything else.** Image CAPTCHA is both inaccessible (WCAG concern) and weak in 2026. Do you have a preferred anti-spam stack, or are you open to our recommended approach?
+
+- **Recommendation:** We recommend swapping to honeypot + Cloudflare Turnstile + Drupal `flood` controls for all public forms. (Turnstile is free, privacy-preserving, accessible, and largely invisible to legitimate users — no checkbox or image puzzle.)
 
 **L11. Content type inventory — please review.** Our current synthesis (current-site crawl + LOA §G + RFP audience sections), consolidated in `technical-analysis.md §3.14` and reproduced here in summary:
 
