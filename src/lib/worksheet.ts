@@ -55,10 +55,17 @@ function parseQuestionBlock(raw: string): Question {
   const whyRe = /(?:^|\n)\s*[-*]\s+\*Why we ask:\*\s+([\s\S]+?)(?=\n\s*[-*]\s+\*[A-Z]|\n\s*\n|$)/;
   const expectedRe = /(?:^|\n)\s*[-*]\s+\*Expected format:\*\s+([\s\S]+?)(?=\n\s*[-*]\s+\*[A-Z]|\n\s*\n|$)/;
 
+  // Strip sequentially with a re-match between. The original two-match-
+  // then-two-strip pattern broke when both were present: the Expected
+  // match's captured text starts with a leading "\n" (from the
+  // (?:^|\n) alternation), and the Why strip + trim removes that
+  // leading whitespace from the body, so the Expected strip can no
+  // longer find its captured substring and leaks the bullet into the
+  // rendered question body.
   const whyMatch = body.match(whyRe);
-  const expectedMatch = body.match(expectedRe);
-
   if (whyMatch) body = body.replace(whyMatch[0], '').trim();
+
+  const expectedMatch = body.match(expectedRe);
   if (expectedMatch) body = body.replace(expectedMatch[0], '').trim();
 
   const why = whyMatch?.[1]?.trim() ?? null;
