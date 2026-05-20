@@ -7,7 +7,7 @@ order: 10
 ### What we currently understand
 
 - The new domain is `educationusa.org`; the current domain is `educationusa.state.gov`. Launch target is **April 30, 2027** per the signed LOA.
-- The cutover is more than DNS — it's a brand and trust transition out of a federal TLD. The work includes: a 301 redirect map (pre-built from the migration crawl), State Department coordination for the `.state.gov`-side redirect (outside our control), an SEO transition plan (Search Console property changes, sitemap resubmissions), and communications messaging that the address has changed.
+- The cutover is more than DNS. The work includes: a 301 redirect map (pre-built from the migration crawl), State Department coordination for the `.state.gov`-side redirect (outside our control), an SEO transition plan (Search Console property changes, sitemap resubmissions), and communications messaging that the address has changed.
 - Possible cookie/session domain implications if any shared services span the transition.
 
 ### Questions for you
