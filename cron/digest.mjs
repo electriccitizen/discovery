@@ -3,19 +3,18 @@
 // if there was activity in the last 24h — sends a per-subscriber digest
 // via Resend. Zero activity = no email. Quiet days stay quiet.
 
+import questions from './questions.json';
+
 const DEFAULT_PORTAL_BASE = 'https://discovery.electriccitizen.com';
-const FROM = 'Discovery Portal <noreply@electriccitizen.com>';
+const FROM = 'EC Discovery Portal <noreply@electriccitizen.com>';
 
 export default {
   async scheduled(_event, env, ctx) {
     ctx.waitUntil(run(env));
   },
 
-  // A fetch handler so we can manually trigger the digest while testing,
-  // e.g. via `curl https://.../__run` (gated by Cloudflare Access on the
-  // workers.dev URL — but we've disabled workers.dev, so only reachable
-  // via a route we explicitly add). For now it's unreachable; keeping the
-  // handler skeleton makes future debug invocations a one-line change.
+  // A fetch handler so we can manually trigger the digest while testing.
+  // Reachable only when workers_dev is temporarily flipped on in wrangler.jsonc.
   async fetch(request, env, ctx) {
     if (new URL(request.url).pathname !== '/__run') {
       return new Response('not found', { status: 404 });
@@ -67,7 +66,7 @@ async function run(env) {
 
     const subscribers = (subs.results ?? []).map((r) => r.email);
     const body = composeDigest({ projectSlug: project_slug, portalBase, comments: commentRows, audit: auditRows });
-    const subject = subjectLine(project_slug, totalActivity);
+    const subject = subjectLine(totalActivity);
 
     for (const email of subscribers) {
       const ok = await sendEmail(env, email, subject, body);
@@ -76,41 +75,62 @@ async function run(env) {
   }
 }
 
-function subjectLine(projectSlug, count) {
-  const n = count === 1 ? '1 update' : `${count} updates`;
-  return `Discovery (${projectSlug}) — ${n} from yesterday`;
+function subjectLine(count) {
+  const noun = count === 1 ? 'item' : 'items';
+  return `Daily Discovery Digest (${count} ${noun})`;
+}
+
+function questionInfo(projectSlug, questionId) {
+  return questions?.[projectSlug]?.[questionId] ?? null;
+}
+
+function questionLink(portalBase, projectSlug, questionId) {
+  const info = questionInfo(projectSlug, questionId);
+  if (!info) return `${portalBase}/${projectSlug}`;
+  return `${portalBase}/${projectSlug}/section/${info.sectionSlug}#${questionId}`;
+}
+
+function questionHeading(projectSlug, questionId) {
+  const info = questionInfo(projectSlug, questionId);
+  if (!info) return questionId;
+  return `${questionId} — ${info.title}`;
 }
 
 function composeDigest({ projectSlug, portalBase, comments, audit }) {
   const lines = [];
-  lines.push(`Activity on the Discovery portal in the last 24 hours.`);
+  lines.push(`Activity on your discovery portal in the last 24 hours.`);
   lines.push('');
 
   if (comments.length > 0) {
     lines.push(`Comments (${comments.length})`);
     for (const c of comments) {
-      const preview = clip(c.body, 140);
-      lines.push(`  • ${c.question_id} — ${c.author_label} (${c.author_email}): "${preview}"`);
+      lines.push(`  • ${questionHeading(projectSlug, c.question_id)}`);
+      lines.push(`    ${c.author_label} (${c.author_email}): "${clip(c.body, 200)}"`);
+      lines.push(`    → ${questionLink(portalBase, projectSlug, c.question_id)}`);
+      lines.push('');
     }
-    lines.push('');
   }
 
   const responses = audit.filter((a) => a.kind === 'body');
   if (responses.length > 0) {
     lines.push(`Response edits (${responses.length})`);
     for (const a of responses) {
-      lines.push(`  • ${a.question_id} — edited by ${a.changed_by}`);
+      lines.push(`  • ${questionHeading(projectSlug, a.question_id)}`);
+      lines.push(`    edited by ${a.changed_by}`);
+      lines.push(`    → ${questionLink(portalBase, projectSlug, a.question_id)}`);
+      lines.push('');
     }
-    lines.push('');
   }
 
   const statuses = audit.filter((a) => a.kind === 'status');
   if (statuses.length > 0) {
     lines.push(`Status changes (${statuses.length})`);
     for (const a of statuses) {
-      lines.push(`  • ${a.question_id}: ${humanStatus(a.prev_value)} → ${humanStatus(a.new_value)} (by ${a.changed_by})`);
+      lines.push(`  • ${questionHeading(projectSlug, a.question_id)}`);
+      lines.push(`    ${humanStatus(a.prev_value)} → ${humanStatus(a.new_value)} (by ${a.changed_by})`);
+      lines.push(`    → ${questionLink(portalBase, projectSlug, a.question_id)}`);
+      lines.push('');
     }
-    lines.push('');
   }
 
   const flags = audit.filter((a) => a.kind === 'flag');
@@ -118,9 +138,11 @@ function composeDigest({ projectSlug, portalBase, comments, audit }) {
     lines.push(`Priority flag changes (${flags.length})`);
     for (const a of flags) {
       const what = a.new_value === '1' ? 'flagged as priority' : 'unflagged';
-      lines.push(`  • ${a.question_id} — ${what} (by ${a.changed_by})`);
+      lines.push(`  • ${questionHeading(projectSlug, a.question_id)}`);
+      lines.push(`    ${what} by ${a.changed_by}`);
+      lines.push(`    → ${questionLink(portalBase, projectSlug, a.question_id)}`);
+      lines.push('');
     }
-    lines.push('');
   }
 
   lines.push(`Open the project: ${portalBase}/${projectSlug}`);

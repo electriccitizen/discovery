@@ -1,0 +1,364 @@
+{
+  "edusa": {
+    "A1": {
+      "title": "When does IIE plan to sign the Pantheon contract?",
+      "sectionId": "A",
+      "sectionTitle": "Hosting (Pantheon)",
+      "sectionSlug": "A-hosting"
+    },
+    "A2": {
+      "title": "While the Pantheon contract is being finalized, can EC begin development on an EC-managed sandbox server, or would IIE prefer to stand up a Pantheon sandbox up-front?",
+      "sectionId": "A",
+      "sectionTitle": "Hosting (Pantheon)",
+      "sectionSlug": "A-hosting"
+    },
+    "B1": {
+      "title": "Final effort on obtaining a D7 database dump :)",
+      "sectionId": "B",
+      "sectionTitle": "Content Migration",
+      "sectionSlug": "B-content-migration"
+    },
+    "B2": {
+      "title": "How will IIE provide editorial review on the migrate/drop decisions?",
+      "sectionId": "B",
+      "sectionTitle": "Content Migration",
+      "sectionSlug": "B-content-migration"
+    },
+    "B3": {
+      "title": "Beyond the gated content we've already identified, are there other hidden pages, downloads, or asset libraries we should know about?",
+      "sectionId": "B",
+      "sectionTitle": "Content Migration",
+      "sectionSlug": "B-content-migration"
+    },
+    "B4": {
+      "title": "Does IIE agree with the overall migration strategy and risks?",
+      "sectionId": "B",
+      "sectionTitle": "Content Migration",
+      "sectionSlug": "B-content-migration"
+    },
+    "C1": {
+      "title": "What kinds of content do REACs, REAC Assistants, and Sponsors *create* (vs. only review)?",
+      "sectionId": "C",
+      "sectionTitle": "OKTA, Authentication, and Roles",
+      "sectionSlug": "C-okta-auth"
+    },
+    "C2": {
+      "title": "When a user logs in via OKTA, what attributes will OKTA send to the new site?",
+      "sectionId": "C",
+      "sectionTitle": "OKTA, Authentication, and Roles",
+      "sectionSlug": "C-okta-auth"
+    },
+    "C3": {
+      "title": "Is MFA (multi-factor authentication) enforced on your OKTA tenant?",
+      "sectionId": "C",
+      "sectionTitle": "OKTA, Authentication, and Roles",
+      "sectionSlug": "C-okta-auth"
+    },
+    "C4": {
+      "title": "How will Sponsors (State Department staff) authenticate to the new site?",
+      "sectionId": "C",
+      "sectionTitle": "OKTA, Authentication, and Roles",
+      "sectionSlug": "C-okta-auth"
+    },
+    "C5": {
+      "title": "How can you provide technical details on OKTA integration?",
+      "sectionId": "C",
+      "sectionTitle": "OKTA, Authentication, and Roles",
+      "sectionSlug": "C-okta-auth"
+    },
+    "D1": {
+      "title": "Is there an authoritative list of accredited U.S. higher-education institutions we should validate submissions against?",
+      "sectionId": "D",
+      "sectionTitle": "HEI Verification",
+      "sectionSlug": "D-hei-verification"
+    },
+    "D2": {
+      "title": "When a non-accredited person submits something, what should the system do — reject silently, reject with a message, route to manual review, or something else?",
+      "sectionId": "D",
+      "sectionTitle": "HEI Verification",
+      "sectionSlug": "D-hei-verification"
+    },
+    "E1": {
+      "title": "We plan to deliver one integrated map per the LOA. Does that match what you envisioned?",
+      "sectionId": "E",
+      "sectionTitle": "Interactive Map(s)",
+      "sectionSlug": "E-interactive-maps"
+    },
+    "E2": {
+      "title": "The current site has two parallel country lists — should the new build consolidate?",
+      "sectionId": "E",
+      "sectionTitle": "Interactive Map(s)",
+      "sectionSlug": "E-interactive-maps"
+    },
+    "E3": {
+      "title": "The RFP names several IIE-owned and external resources HEIs should access from the new site — what's the format, refresh cadence, and intended role for each?",
+      "sectionId": "E",
+      "sectionTitle": "Interactive Map(s)",
+      "sectionSlug": "E-interactive-maps"
+    },
+    "E4": {
+      "title": "The map's data layers — which do you want, and what's the source for each?",
+      "sectionId": "E",
+      "sectionTitle": "Interactive Map(s)",
+      "sectionSlug": "E-interactive-maps"
+    },
+    "E5": {
+      "title": "Anything else about the map we should be considering?",
+      "sectionId": "E",
+      "sectionTitle": "Interactive Map(s)",
+      "sectionSlug": "E-interactive-maps"
+    },
+    "F1": {
+      "title": "Scholarship filter vocabularies — confirm existing and fill gaps.",
+      "sectionId": "F",
+      "sectionTitle": "Scholarships and Events",
+      "sectionSlug": "F-scholarships-events"
+    },
+    "F2": {
+      "title": "Scholarship auto-expire — when and how?",
+      "sectionId": "F",
+      "sectionTitle": "Scholarships and Events",
+      "sectionSlug": "F-scholarships-events"
+    },
+    "F3": {
+      "title": "Adviser event sub-categorization — what event types within \"adviser events\" do you want to differentiate?",
+      "sectionId": "F",
+      "sectionTitle": "Scholarships and Events",
+      "sectionSlug": "F-scholarships-events"
+    },
+    "F4": {
+      "title": "Event migration — how far back?",
+      "sectionId": "F",
+      "sectionTitle": "Scholarships and Events",
+      "sectionSlug": "F-scholarships-events"
+    },
+    "F5": {
+      "title": "Does IIE agree with the overall approach to Scholarships and Events?",
+      "sectionId": "F",
+      "sectionTitle": "Scholarships and Events",
+      "sectionSlug": "F-scholarships-events"
+    },
+    "G1": {
+      "title": "Do you have a preferred LLM provider for the AI features?",
+      "sectionId": "G",
+      "sectionTitle": "AI Features",
+      "sectionSlug": "G-ai-features"
+    },
+    "G2": {
+      "title": "The LLM and Vector DB contracts will be held by IIE directly — can you please confirm?",
+      "sectionId": "G",
+      "sectionTitle": "AI Features",
+      "sectionSlug": "G-ai-features"
+    },
+    "G3": {
+      "title": "What's your vision for the Greeter / chat assistant?",
+      "sectionId": "G",
+      "sectionTitle": "AI Features",
+      "sectionSlug": "G-ai-features"
+    },
+    "G4": {
+      "title": "What's your vision for AI-enhanced search?",
+      "sectionId": "G",
+      "sectionTitle": "AI Features",
+      "sectionSlug": "G-ai-features"
+    },
+    "G5": {
+      "title": "What's your vision for AI-assisted editorial tagging?",
+      "sectionId": "G",
+      "sectionTitle": "AI Features",
+      "sectionSlug": "G-ai-features"
+    },
+    "G6": {
+      "title": "Translation Support — what's the actual use case?",
+      "sectionId": "G",
+      "sectionTitle": "AI Features",
+      "sectionSlug": "G-ai-features"
+    },
+    "G7": {
+      "title": "Does IIE agree with the overall AI feature approach?",
+      "sectionId": "G",
+      "sectionTitle": "AI Features",
+      "sectionSlug": "G-ai-features"
+    },
+    "H1": {
+      "title": "Which content types should NOT appear in public search results?",
+      "sectionId": "H",
+      "sectionTitle": "Search",
+      "sectionSlug": "H-search"
+    },
+    "I1": {
+      "title": "MailChimp setup for the new site's newsletter signup.",
+      "sectionId": "I",
+      "sectionTitle": "Integrations",
+      "sectionSlug": "I-integrations"
+    },
+    "I2": {
+      "title": "Analytics tooling — a few questions to align on.",
+      "sectionId": "I",
+      "sectionTitle": "Integrations",
+      "sectionSlug": "I-integrations"
+    },
+    "I3": {
+      "title": "Will the new site require a cookie-consent banner (e.g., for EU visitors under GDPR or California users under CCPA)?",
+      "sectionId": "I",
+      "sectionTitle": "Integrations",
+      "sectionSlug": "I-integrations"
+    },
+    "I4": {
+      "title": "Social media accounts to embed feeds from — please confirm specific handles for Facebook, X, Instagram, LinkedIn, and YouTube.",
+      "sectionId": "I",
+      "sectionTitle": "Integrations",
+      "sectionSlug": "I-integrations"
+    },
+    "J1": {
+      "title": "Should the new site and the old site run in parallel for a period before the legacy site is taken down, or is it a hard switch?",
+      "sectionId": "J",
+      "sectionTitle": "Domain, Launch, and Cutover",
+      "sectionSlug": "J-domain-launch"
+    },
+    "J2": {
+      "title": "Permanent 301 redirects for legacy `educationusa.state.gov` URLs + the State Dept POC who can implement them.",
+      "sectionId": "J",
+      "sectionTitle": "Domain, Launch, and Cutover",
+      "sectionSlug": "J-domain-launch"
+    },
+    "J3": {
+      "title": "Redirect map review.",
+      "sectionId": "J",
+      "sectionTitle": "Domain, Launch, and Cutover",
+      "sectionSlug": "J-domain-launch"
+    },
+    "J4": {
+      "title": "SSL certificate — Pantheon-managed Let's Encrypt, or do you need a custom certificate?",
+      "sectionId": "J",
+      "sectionTitle": "Domain, Launch, and Cutover",
+      "sectionSlug": "J-domain-launch"
+    },
+    "J5": {
+      "title": "Who controls DNS for `educationusa.org`?",
+      "sectionId": "J",
+      "sectionTitle": "Domain, Launch, and Cutover",
+      "sectionSlug": "J-domain-launch"
+    },
+    "J6": {
+      "title": "Outbound email from the site — what SMTP service will we use?",
+      "sectionId": "J",
+      "sectionTitle": "Domain, Launch, and Cutover",
+      "sectionSlug": "J-domain-launch"
+    },
+    "J7": {
+      "title": "Sender domain for outbound email from the site.",
+      "sectionId": "J",
+      "sectionTitle": "Domain, Launch, and Cutover",
+      "sectionSlug": "J-domain-launch"
+    },
+    "K1": {
+      "title": "Does IIE have a GitHub or GitLab organization you'd like the project repository to live in, or should we host it in Electric Citizen's GitHub organization with IIE granted access?",
+      "sectionId": "K",
+      "sectionTitle": "Source Control & Development Access",
+      "sectionSlug": "K-source-control"
+    },
+    "L1": {
+      "title": "Scholarship records — migration scope and View-preservation.",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L2": {
+      "title": "Video — how should the new build present the existing video collection?",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L3": {
+      "title": "Campus news stories — does this exist as a public-facing content stream on the current site, or only inside the logged-in portal? If public, what URL pattern? Is it in scope to migrate?",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L4": {
+      "title": "Webinars — `/us-higher-education-professionals/online-services/webinars` is linked from the Online Services nav but 301-redirects to the homepage.",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L5": {
+      "title": "EducationUSA Academy content — the program ended summer 2024, but its content remains on the live site.",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L6": {
+      "title": "Adviser profiles — the LOA references \"adviser profiles\" as content the new site should support, but the current public-facing site does not surface any.",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L7": {
+      "title": "Confirming the residual `/node/{N}` content.",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L8": {
+      "title": "Organizational news — confirm scope.",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L9": {
+      "title": "Country Fact Sheets — confirm scope and visibility.",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L10": {
+      "title": "Spam protection — the current site uses Drupal image CAPTCHA on one form (`/node/1116`) and nothing on anything else.",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L11": {
+      "title": "Content type inventory — please review.",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L12": {
+      "title": "Region landing pages — what should the new build do with the 12 `/regions/{slug}` pages?",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L13": {
+      "title": "Student Success Stories — do you want them on the new site?",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "L14": {
+      "title": "The \"5 Steps to U.S. Study\" guide — migrate as-is or revisit in Strategy?",
+      "sectionId": "L",
+      "sectionTitle": "Scope Items from Live-Site Discovery",
+      "sectionSlug": "L-live-site-discovery"
+    },
+    "M1": {
+      "title": "Campus Hosting submission workflow — currently four external Google Forms power four distinct application paths",
+      "sectionId": "M",
+      "sectionTitle": "Forms",
+      "sectionSlug": "M-forms"
+    },
+    "M2": {
+      "title": "Event registration is uniformly routed off-site",
+      "sectionId": "M",
+      "sectionTitle": "Forms",
+      "sectionSlug": "M-forms"
+    },
+    "M3": {
+      "title": "Any other third-party form tools on the current site we haven't surfaced?",
+      "sectionId": "M",
+      "sectionTitle": "Forms",
+      "sectionSlug": "M-forms"
+    }
+  }
+}

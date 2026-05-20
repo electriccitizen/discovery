@@ -12,6 +12,18 @@ via Resend. **Zero activity in a 24-hour window → no email sent.**
 | --- | --- |
 | `digest.mjs` | The Worker. Exports `scheduled` and a debug `/__run` fetch handler. |
 | `wrangler.jsonc` | Worker config: name `discovery-digest`, cron `0 11 * * *`, D1 binding to the shared `discovery` database. |
+| `build-questions.mjs` | Pre-build step. Walks `/content/projects/*/worksheet/*.md` and writes `questions.json` (question_id → title, section info). The digest worker imports this to surface real question titles and deep links in the email instead of bare `A1`-style IDs. |
+| `questions.json` | Generated. **Re-run `build-questions.mjs` whenever you edit worksheet markdown content, then redeploy.** |
+
+## Before every deploy
+
+```bash
+cd cron
+node build-questions.mjs
+npx wrangler deploy
+```
+
+The `build-questions.mjs` step is fast (~50ms) and ensures the email digest reflects any worksheet edits since the last deploy. If you forget, deploys still work — the email will just fall back to bare question IDs for any new/renamed questions.
 
 ## Cron schedule
 
