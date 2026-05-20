@@ -149,6 +149,36 @@ export async function listAllComments(
   return result.results ?? [];
 }
 
+export interface ActivityItem {
+  kind: 'response' | 'comment';
+  question_id: string;
+  author_email: string;
+  body: string;
+  at: string;
+}
+
+export async function listRecentActivity(
+  db: D1Database,
+  project: string,
+  limit = 12
+): Promise<ActivityItem[]> {
+  const result = await db
+    .prepare(
+      `SELECT 'response' AS kind, question_id, updated_by AS author_email, body, updated_at AS at
+         FROM responses
+         WHERE project_slug = ?1 AND length(body) > 0
+       UNION ALL
+       SELECT 'comment'  AS kind, question_id, author_email, body, created_at AS at
+         FROM comments
+         WHERE project_slug = ?1
+       ORDER BY at DESC
+       LIMIT ?2`
+    )
+    .bind(project, limit)
+    .all<ActivityItem>();
+  return result.results ?? [];
+}
+
 export async function addComment(
   db: D1Database,
   project: string,

@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getProject } from '../../lib/projects.ts';
 import { listSections, countQuestions } from '../../lib/worksheet.ts';
-import { listResponses } from '../../lib/db.ts';
+import { listRecentActivity, listResponses, type ActivityItem } from '../../lib/db.ts';
 import { env } from 'cloudflare:workers';
 
 const projectSlug = Astro.params.project;
@@ -15,8 +15,32 @@ const sections = listSections(projectSlug);
 const totalQuestions = countQuestions(projectSlug);
 
 const db = env.DB;
-const responses = db ? await listResponses(db, projectSlug) : [];
+const [responses, activity] = db
+  ? await Promise.all([listResponses(db, projectSlug), listRecentActivity(db, projectSlug, 10)])
+  : [[], [] as ActivityItem[]];
 const responsesById = new Map(responses.map((r) => [r.question_id, r]));
+
+const sectionByLetter = new Map(sections.map((s) => [s.id, s]));
+function questionLink(qid: string): string {
+  const letter = qid.match(/^([A-Z])/)?.[1];
+  const section = letter ? sectionByLetter.get(letter) : undefined;
+  return section ? `/${projectSlug}/section/${section.slug}#${qid}` : '#';
+}
+
+const ecDomain = '@electriccitizen.com';
+function labelFor(email: string): 'EC' | string {
+  return email.toLowerCase().endsWith(ecDomain) ? 'EC' : project.client.label;
+}
+function roleClass(email: string): 'ec' | 'client' {
+  return email.toLowerCase().endsWith(ecDomain) ? 'ec' : 'client';
+}
+function fmtTime(iso: string): string {
+  return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+function preview(s: string, max = 140): string {
+  const trimmed = s.replace(/\s+/g, ' ').trim();
+  return trimmed.length > max ? trimmed.slice(0, max - 1) + '…' : trimmed;
+}
 
 const statusCounts = {
   not_started: 0,
@@ -70,13 +94,43 @@ function sectionStats(sectionId: string) {
     <div class="progress-bar">
       <div class="progress-bar-fill" style={`width: ${completionPct}%`}></div>
     </div>
-    <dl class="progress-status-breakdown">
-      <div><dt>Not started</dt><dd>{statusCounts.not_started}</dd></div>
-      <div><dt>In progress</dt><dd>{statusCounts.in_progress}</dd></div>
-      <div><dt>Answered</dt><dd>{statusCounts.answered}</dd></div>
-      <div><dt>Needs clarification</dt><dd>{statusCounts.needs_clarification}</dd></div>
-    </dl>
+    <div class="progress-grids">
+      <dl class="progress-status-breakdown">
+        <div class="grid-header">Status</div>
+        <div><dt>Not started</dt><dd>{statusCounts.not_started}</dd></div>
+        <div><dt>In progress</dt><dd>{statusCounts.in_progress}</dd></div>
+        <div><dt>Answered</dt><dd>{statusCounts.answered}</dd></div>
+        <div><dt>Needs clarification</dt><dd>{statusCounts.needs_clarification}</dd></div>
+      </dl>
+      <dl class="progress-priority-breakdown">
+        <div class="grid-header">Priority</div>
+        <div><dt>High</dt><dd>{priorityCounts.high}</dd></div>
+        <div><dt>Medium</dt><dd>{priorityCounts.medium}</dd></div>
+        <div><dt>Low</dt><dd>{priorityCounts.low}</dd></div>
+      </dl>
+    </div>
   </section>
+
+  {activity.length > 0 && (
+    <section class="activity-block">
+      <h2>Recent activity</h2>
+      <ol class="activity-list">
+        {activity.map((a) => (
+          <li class={`activity-item activity-${a.kind} role-${roleClass(a.author_email)}`}>
+            <div class="activity-meta">
+              <a class="activity-question" href={questionLink(a.question_id)}>{a.question_id}</a>
+              <span class={`user-role user-role-${roleClass(a.author_email)}`}>{labelFor(a.author_email)}</span>
+              <span class="activity-action">
+                {a.kind === 'comment' ? 'commented' : 'edited response'}
+              </span>
+              <time class="activity-time" datetime={a.at}>{fmtTime(a.at)}</time>
+            </div>
+            <p class="activity-preview">{preview(a.body)}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
 
   <h2>Worksheet sections</h2>
   <ol class="section-list">
