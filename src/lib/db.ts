@@ -36,7 +36,7 @@ export interface CommentRow {
   created_at: string;
 }
 
-export type AuditKind = 'body' | 'status' | 'priority' | 'flag';
+export type AuditKind = 'body' | 'status' | 'priority' | 'flag' | 'notification_pref';
 
 export interface AuditRow {
   id: number;
@@ -278,6 +278,84 @@ export async function listRecentActivity(
     .bind(project, limit)
     .all<ActivityItem>();
   return result.results ?? [];
+}
+
+export interface NotificationPref {
+  email: string;
+  project_slug: string;
+  daily_digest: number;       // 0 or 1
+  updated_at: string;
+}
+
+export async function getNotificationPref(
+  db: D1Database,
+  email: string,
+  project: string
+): Promise<NotificationPref | null> {
+  const row = await db
+    .prepare(
+      'SELECT email, project_slug, daily_digest, updated_at FROM notification_preferences WHERE email = ?1 AND project_slug = ?2'
+    )
+    .bind(email, project)
+    .first<NotificationPref>();
+  return row ?? null;
+}
+
+export async function upsertNotificationPref(
+  db: D1Database,
+  email: string,
+  project: string,
+  dailyDigest: boolean
+): Promise<NotificationPref> {
+  const now = new Date().toISOString();
+  const existing = await getNotificationPref(db, email, project);
+  const prev = existing?.daily_digest ?? 0;
+  const next = dailyDigest ? 1 : 0;
+
+  const statements = [
+    db
+      .prepare(
+        `INSERT INTO notification_preferences (email, project_slug, daily_digest, updated_at)
+         VALUES (?1, ?2, ?3, ?4)
+         ON CONFLICT(email, project_slug) DO UPDATE SET
+           daily_digest = excluded.daily_digest,
+           updated_at = excluded.updated_at`
+      )
+      .bind(email, project, next, now),
+  ];
+
+  // Audit the preference change. question_id is null-equivalent ('') since
+  // the change is project-scoped, not question-scoped — keeps the existing
+  // NOT NULL constraint happy without a schema change.
+  if (next !== prev) {
+    statements.push(
+      db
+        .prepare(
+          `INSERT INTO audit_log (project_slug, question_id, kind, prev_value, new_value, changed_by, changed_at)
+           VALUES (?1, '', 'notification_pref', ?2, ?3, ?4, ?5)`
+        )
+        .bind(project, `daily_digest=${prev}`, `daily_digest=${next}`, email, now)
+    );
+  }
+
+  await db.batch(statements);
+
+  const row = await getNotificationPref(db, email, project);
+  if (!row) throw new Error('notification pref upsert returned no row');
+  return row;
+}
+
+export async function listDigestSubscribers(
+  db: D1Database,
+  project: string
+): Promise<string[]> {
+  const result = await db
+    .prepare(
+      'SELECT email FROM notification_preferences WHERE project_slug = ?1 AND daily_digest = 1'
+    )
+    .bind(project)
+    .all<{ email: string }>();
+  return (result.results ?? []).map((r) => r.email);
 }
 
 export async function addComment(

@@ -313,6 +313,49 @@ function escapeAttr(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 }
 
+class NotificationPrefs extends HTMLElement {
+  private project!: string;
+  private digestInput!: HTMLInputElement;
+  private statusEl!: HTMLElement;
+  private lastValue = false;
+
+  connectedCallback() {
+    this.project = this.dataset.project ?? '';
+    this.digestInput = this.querySelector('[data-action="daily-digest"]') as HTMLInputElement;
+    this.statusEl = this.querySelector('[data-role="status"]') as HTMLElement;
+    if (!this.digestInput) return;
+    this.lastValue = this.digestInput.checked;
+    this.digestInput.addEventListener('change', () => this.save());
+  }
+
+  private async save() {
+    const value = this.digestInput.checked;
+    this.setStatus('saving', 'Saving…');
+    this.digestInput.disabled = true;
+    try {
+      const r = await fetch(`/api/projects/${this.project}/notifications`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ daily_digest: value }),
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      this.lastValue = value;
+      this.setStatus('saved', value ? 'On — you’ll get tomorrow’s digest' : 'Off');
+    } catch (err) {
+      console.error('notification pref save failed', err);
+      this.digestInput.checked = this.lastValue;
+      this.setStatus('error', 'Save failed — please retry');
+    } finally {
+      this.digestInput.disabled = false;
+    }
+  }
+
+  private setStatus(state: string, text: string) {
+    this.statusEl.dataset.state = state;
+    this.statusEl.textContent = text;
+  }
+}
+
 if (!customElements.get('response-form')) {
   customElements.define('response-form', ResponseForm);
 }
@@ -324,4 +367,7 @@ if (!customElements.get('priority-flag')) {
 }
 if (!customElements.get('comment-thread')) {
   customElements.define('comment-thread', CommentThread);
+}
+if (!customElements.get('notification-prefs')) {
+  customElements.define('notification-prefs', NotificationPrefs);
 }

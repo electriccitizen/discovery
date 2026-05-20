@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getProject } from '../../lib/projects.ts';
+import { getNotificationPref } from '../../lib/db.ts';
+import { canAccessProject, isEC } from '../../lib/access.ts';
+import { env } from 'cloudflare:workers';
+
+const projectSlug = Astro.params.project;
+if (!projectSlug) return new Response(null, { status: 404 });
+
+const project = getProject(projectSlug);
+if (!project) return new Response(null, { status: 404 });
+
+const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email');
+if (!userEmail || !canAccessProject(userEmail, project)) {
+  return new Response(null, { status: 404 });
+}
+const userIsEC = isEC(userEmail);
+
+const db = env.DB;
+const pref = db ? await getNotificationPref(db, userEmail, projectSlug) : null;
+const dailyDigestOn = pref?.daily_digest === 1;
+---
+<BaseLayout title={`Notifications — ${project.title}`}>
+  <div class="page-meta">
+    <p class="breadcrumb">
+      {userIsEC && (
+        <>
+          <a href="/">Discovery Portal</a>
+          <span class="sep">›</span>
+        </>
+      )}
+      <a href={`/${projectSlug}`}>{userIsEC ? project.title : `← ${project.title}`}</a>
+    </p>
+  </div>
+
+  <h1>Notifications</h1>
+  <p class="lede">Choose how you'd like to be notified about activity on this project.</p>
+
+  <notification-prefs
+    class="prefs-block"
+    data-project={projectSlug}
+    data-daily-digest={dailyDigestOn ? '1' : '0'}
+  >
+    <div class="prefs-row">
+      <div class="prefs-row-text">
+        <label for="pref-daily-digest" class="prefs-row-title">Daily digest</label>
+        <p class="prefs-row-help">
+          One email per day summarizing new comments, responses, and status changes
+          on <strong>{project.title}</strong>. Sent in the morning. No email is sent
+          on days with zero activity.
+        </p>
+      </div>
+      <label class="prefs-toggle">
+        <input
+          type="checkbox"
+          id="pref-daily-digest"
+          data-action="daily-digest"
+          checked={dailyDigestOn}
+        />
+        <span class="prefs-toggle-track" aria-hidden="true"></span>
+      </label>
+    </div>
+    <p class="prefs-status" data-role="status"></p>
+  </notification-prefs>
+
+  <p class="muted small">
+    Email will be sent from <code>noreply@electriccitizen.com</code>. You can change this
+    setting at any time.
+  </p>
+</BaseLayout>

@@ -1,0 +1,35 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "discovery-digest",
+  "main": "digest.mjs",
+  "compatibility_date": "2026-01-01",
+
+  // Daily digest at 11:00 UTC. That's 6 AM Central Daylight Time (most of
+  // the year, ~Mar 9 – Nov 2) and 5 AM Central Standard Time the rest.
+  // Single fixed UTC schedule is the simplest model; per-user time zones
+  // are out of scope.
+  "triggers": {
+    "crons": ["0 11 * * *"]
+  },
+
+  // No public endpoints — this worker is scheduled-only. Lock down preview
+  // URLs and the workers.dev hostname so the cron handler can't be poked
+  // by anyone with the URL.
+  "workers_dev": false,
+  "preview_urls": false,
+
+  // Shares the SAME D1 database as the main Astro worker. database_id must
+  // match wrangler.jsonc at repo root.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "discovery",
+      "database_id": "ec7f201e-ca46-4aa8-a796-7f05859a363b"
+    }
+  ]
+
+  // Secrets (set via `wrangler secret put` from this directory):
+  //   RESEND_API_KEY        Resend API token (https://resend.com)
+  //   PORTAL_BASE_URL       e.g. https://discovery.electriccitizen.com
+  //                         (optional; defaults to that value in code)
+}
