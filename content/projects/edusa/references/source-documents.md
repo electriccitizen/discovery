@@ -62,11 +62,6 @@ Grouped by topic, with the LOA position noted where it differs.
 - **No ATO required.** PII protection (HEI first name / last name / email) is handled via the DPA + standard security controls.
 - **Disaster Recovery: Tier 2 Important Business-Critical.** RTO hours-to-a-day, RPO hours. Pantheon's standard infrastructure fits this tier.
 
-### Security
-
-- **Vendor must hold ISO 27001 OR (SOC 2 Type 2 attestation + NIST CSF self-assessment).** Enforced via the OneTrust IT Security Questionnaire before any renewal that crosses thresholds.
-- **Monthly security reporting** — the Q&A specifies monthly; the LOA's Megawatt support plan specifies a different cadence. Cadence is a discussion item between EC and IIE.
-
 ### AI features
 
 - **IIE wants AI to be "instrumental" to the website**, not just present. Confirmed broader ambition than a sidebar feature. See worksheet §G for the per-feature scoping.
