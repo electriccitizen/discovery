@@ -84,6 +84,14 @@ export function getIntroHtml(projectSlug: string): string | null {
   return null;
 }
 
+export function listReferences(projectSlug: string): ReferenceDoc[] {
+  const project = getProject(projectSlug);
+  if (!project) return [];
+  return project.references
+    .map((r) => getReference(projectSlug, r.slug))
+    .filter((d): d is ReferenceDoc => d !== null);
+}
+
 export function getReference(projectSlug: string, refSlug: string): ReferenceDoc | null {
   for (const [path, raw] of Object.entries(referenceFiles)) {
     const info = refPathInfo(path);

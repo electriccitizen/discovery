@@ -1,0 +1,122 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getProject, listReferences } from '../../lib/projects.ts';
+import { listSections } from '../../lib/worksheet.ts';
+import { listAllComments, listResponses } from '../../lib/db.ts';
+import { canAccessProject, isEC } from '../../lib/access.ts';
+import { search } from '../../lib/search.ts';
+import { env } from 'cloudflare:workers';
+
+const projectSlug = Astro.params.project;
+if (!projectSlug) return new Response(null, { status: 404 });
+
+const project = getProject(projectSlug);
+if (!project) return new Response(null, { status: 404 });
+
+const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email');
+if (!userEmail || !canAccessProject(userEmail, project)) {
+  return new Response(null, { status: 404 });
+}
+const userIsEC = isEC(userEmail);
+
+const rawQuery = Astro.url.searchParams.get('q') ?? '';
+const query = rawQuery.trim();
+
+const sections = listSections(projectSlug);
+const references = listReferences(projectSlug);
+
+const db = env.DB;
+const [responses, comments] = db
+  ? await Promise.all([listResponses(db, projectSlug), listAllComments(db, projectSlug)])
+  : [[], []];
+
+const results = query
+  ? search({ projectSlug, query, sections, responses, comments, references })
+  : { questions: [], responses: [], comments: [], references: [], total: 0 };
+
+const groups = [
+  { key: 'questions',  title: 'Questions',          items: results.questions },
+  { key: 'responses',  title: 'Responses',          items: results.responses },
+  { key: 'comments',   title: 'Comments',           items: results.comments },
+  { key: 'references', title: 'Reference documents', items: results.references },
+] as const;
+
+function roleClass(email: string | undefined): 'ec' | 'client' {
+  return email && email.toLowerCase().endsWith('@electriccitizen.com') ? 'ec' : 'client';
+}
+function fmtTime(iso: string | undefined): string {
+  if (!iso) return '';
+  return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+---
+<BaseLayout title={query ? `Search: ${query}` : 'Search'}>
+  <div class="page-meta">
+    <p class="breadcrumb">
+      {userIsEC && (
+        <>
+          <a href="/">Discovery Portal</a>
+          <span class="sep">›</span>
+        </>
+      )}
+      <a href={`/${projectSlug}`}>{userIsEC ? project.title : `← ${project.title}`}</a>
+    </p>
+  </div>
+
+  <h1>Search</h1>
+
+  <form class="search-form" action={`/${projectSlug}/search`} method="get">
+    <input
+      type="search"
+      name="q"
+      placeholder={`Search ${project.title}…`}
+      value={query}
+      autofocus
+      autocomplete="off"
+    />
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+
+  {query && query.length < 2 && (
+    <p class="muted">Please enter at least two characters.</p>
+  )}
+
+  {query && query.length >= 2 && results.total === 0 && (
+    <p class="muted">No matches for <strong>{query}</strong>.</p>
+  )}
+
+  {query && results.total > 0 && (
+    <p class="lede small">
+      {results.total} {results.total === 1 ? 'match' : 'matches'} for <strong>{query}</strong>.
+    </p>
+  )}
+
+  {groups.map((g) => g.items.length > 0 && (
+    <section class="search-group">
+      <h2 class="search-group-title">
+        {g.title}
+        <span class="search-group-count">{g.items.length}</span>
+      </h2>
+      <ol class="search-results">
+        {g.items.map((r) => (
+          <li class={`search-result search-result-${r.kind}`}>
+            <a href={r.href}>
+              <div class="search-result-meta">
+                {r.badge && <span class="search-result-badge">{r.badge}</span>}
+                <span class="search-result-context">{r.context}</span>
+                {r.kind === 'comment' && r.authorEmail && (
+                  <>
+                    <span class={`user-role user-role-${roleClass(r.authorEmail)}`}>{r.authorLabel}</span>
+                    <code class="search-result-author">{r.authorEmail}</code>
+                    <time class="search-result-time">{fmtTime(r.createdAt)}</time>
+                  </>
+                )}
+              </div>
+              <div class="search-result-title">{r.title}</div>
+              <div class="search-result-snippet" set:html={r.snippet}></div>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </section>
+  ))}
+</BaseLayout>
