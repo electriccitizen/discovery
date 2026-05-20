@@ -23,7 +23,9 @@ order: 7
 
 **G4. What's your vision for AI-enhanced search?** Natural-language query understanding + semantic results? AI-summarized result groupings?
 
-**G5. What's your vision for AI-assisted editorial tagging?** Examples we'd expect: auto-suggest meta tags / descriptions, taxonomy terms (Region / Country / Audience), alt text for images, transcripts for videos, internal-link suggestions. Which of these are in scope?
+**G5. What's your vision for AI-assisted editorial tagging?** Examples we'd expect: auto-suggest meta tags / descriptions, taxonomy terms (Region / Country / Audience), alt text for images, internal-link suggestions. Which of these are in scope?
+
+- **Recommendation:** Our experience is that some of these tools are hit-or-miss in terms of actual usefulness. We suggest starting small with 2–3 enhancements that might bring tangible value.
 
 **G6. Translation Support — what's the actual use case?** The LOA names *"AI-assisted translation integration (e.g. Google Cloud Translate) within editorial workflows,"* but the Drupal multilingual content stack is deferred to a future change order — so there's no native place to store translated content at launch. The feature only makes sense if IIE has a specific use case in mind. Possibilities:
 - **(a) One-off page translations** — staff occasionally produce, e.g., a Spanish version of a high-value English page; saved as separate Drupal nodes manually linked to the source.
