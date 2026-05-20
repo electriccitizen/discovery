@@ -44,5 +44,8 @@ order: 10
 - *Why we ask:* Critical for email deliverability and brand consistency. If IIE has a vetted internal relay, we use it (cheaper, simpler). If not, SendGrid is the typical default. The choice affects DNS records (DKIM/SPF/DMARC — see J5) and the sender-domain decision (J7).
 - *Expected format:* "use [vendor name]" / "we have an internal IIE relay at [hostname]" / "let's pick during Strategy."
 
-**J7. Sender domain for outbound email from the site.** Form confirmations, workflow notifications, event confirmations — what sender domain do you want them to come from? (e.g., `noreply@educationusa.org` vs. `events@educationusa.org` vs. multiple per-purpose addresses.)
+**J7. Sender domain for outbound email from the site.** Form confirmations and other notifications — what sender domain do you want them to come from? (e.g., `noreply@educationusa.org` vs. `contact@educationusa.org` vs. multiple per-purpose addresses.)
+
+- **Recommendation:** We recommend using a noreply address for transactional emails.
+
 - *Why we ask:* Deliverability and brand consistency. The DNS / DKIM / SPF / DMARC setup (J5) depends on this.
