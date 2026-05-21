@@ -19,7 +19,7 @@ order: 6
 
 The RFP specifies two additional filters that **don't currently exist** on the live finder and need IIE input:
 - **(a) Discipline / subject** — what controlled vocabulary? (A standard list like NCES CIP codes, IIE's own list, or open-text per scholarship?)
-- **(b) Award amount** — filter by ranges (e.g., "<$5k / $5k–25k / $25k+"), a slider/numeric input, or both?
+- **(b) Award amount** — filter by ranges (e.g., "<$5k / $5k–25k / $25k+")?
 
 **Note on data backfill:** Whatever IIE decides for (a) and (b), those are new fields on the Scholarship content type. We'll include them on the HEI submission form for future scholarships — but **existing scholarships migrated from the current site will need IIE to back-fill discipline and award-amount values manually** (the data isn't visible in the crawl). Same pattern as the manual-recreation framing in §B for new fields on existing content types.
 
