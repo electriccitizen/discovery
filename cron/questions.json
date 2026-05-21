@@ -79,7 +79,7 @@
       "sectionSlug": "D-hei-verification"
     },
     "E1": {
-      "title": "We plan to deliver one integrated map per the LOA. Does that match what you envisioned?",
+      "title": "The number and type of maps in the site will depend on the data that needs to be shown in each use case",
       "sectionId": "E",
       "sectionTitle": "Interactive Map(s)",
       "sectionSlug": "E-interactive-maps"
@@ -169,12 +169,6 @@
       "sectionSlug": "G-ai-features"
     },
     "G6": {
-      "title": "Translation Support — what's the actual use case?",
-      "sectionId": "G",
-      "sectionTitle": "AI Features",
-      "sectionSlug": "G-ai-features"
-    },
-    "G7": {
       "title": "Does IIE agree with the overall AI feature approach?",
       "sectionId": "G",
       "sectionTitle": "AI Features",
@@ -205,48 +199,42 @@
       "sectionSlug": "I-integrations"
     },
     "I4": {
-      "title": "Social media accounts to embed feeds from — please confirm specific handles for Facebook, X, Instagram, LinkedIn, and YouTube.",
+      "title": "Social media embed feeds",
       "sectionId": "I",
       "sectionTitle": "Integrations",
       "sectionSlug": "I-integrations"
     },
     "J1": {
-      "title": "Should the new site and the old site run in parallel for a period before the legacy site is taken down, or is it a hard switch?",
-      "sectionId": "J",
-      "sectionTitle": "Domain, Launch, and Cutover",
-      "sectionSlug": "J-domain-launch"
-    },
-    "J2": {
       "title": "Permanent 301 redirects for legacy `educationusa.state.gov` URLs + the State Dept POC who can implement them.",
       "sectionId": "J",
       "sectionTitle": "Domain, Launch, and Cutover",
       "sectionSlug": "J-domain-launch"
     },
-    "J3": {
+    "J2": {
       "title": "Redirect map review.",
       "sectionId": "J",
       "sectionTitle": "Domain, Launch, and Cutover",
       "sectionSlug": "J-domain-launch"
     },
-    "J4": {
+    "J3": {
       "title": "SSL certificate — Pantheon-managed Let's Encrypt, or do you need a custom certificate?",
       "sectionId": "J",
       "sectionTitle": "Domain, Launch, and Cutover",
       "sectionSlug": "J-domain-launch"
     },
-    "J5": {
+    "J4": {
       "title": "Who controls DNS for `educationusa.org`?",
       "sectionId": "J",
       "sectionTitle": "Domain, Launch, and Cutover",
       "sectionSlug": "J-domain-launch"
     },
-    "J6": {
+    "J5": {
       "title": "Outbound email from the site — what SMTP service will we use?",
       "sectionId": "J",
       "sectionTitle": "Domain, Launch, and Cutover",
       "sectionSlug": "J-domain-launch"
     },
-    "J7": {
+    "J6": {
       "title": "Sender domain for outbound email from the site.",
       "sectionId": "J",
       "sectionTitle": "Domain, Launch, and Cutover",
@@ -271,7 +259,7 @@
       "sectionSlug": "L-live-site-discovery"
     },
     "L3": {
-      "title": "Campus news stories — does this exist as a public-facing content stream on the current site, or only inside the logged-in portal? If public, what URL pattern? Is it in scope to migrate?",
+      "title": "Campus news stories — does this exist as a public-facing content stream on the current site, or only inside the logged-in portal? If public, what URL pattern?",
       "sectionId": "L",
       "sectionTitle": "Scope Items from Live-Site Discovery",
       "sectionSlug": "L-live-site-discovery"
@@ -332,12 +320,6 @@
     },
     "L13": {
       "title": "Student Success Stories — do you want them on the new site?",
-      "sectionId": "L",
-      "sectionTitle": "Scope Items from Live-Site Discovery",
-      "sectionSlug": "L-live-site-discovery"
-    },
-    "L14": {
-      "title": "The \"5 Steps to U.S. Study\" guide — migrate as-is or revisit in Strategy?",
       "sectionId": "L",
       "sectionTitle": "Scope Items from Live-Site Discovery",
       "sectionSlug": "L-live-site-discovery"

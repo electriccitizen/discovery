@@ -18,3 +18,6 @@ RESEND.md
 # they ever contain client comments (the private repo would still see
 # them, but better practice to handle backups out-of-band).
 backups/
+
+# Playwright MCP test snapshots
+.playwright-mcp/
