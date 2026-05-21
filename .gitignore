@@ -7,6 +7,13 @@ dist/
 !.env.example
 .DS_Store
 
+# Local-only secret scratchpads. RESEND.md held a live Resend API key
+# unguarded in the working tree — never commit credentials, even if the
+# repo is private. Real credentials live in `wrangler secret put`.
+RESEND.md
+*.secret
+*.local
+
 # D1 SQL dumps from scripts/backup-db.mjs — keep out of git in case
 # they ever contain client comments (the private repo would still see
 # them, but better practice to handle backups out-of-band).
