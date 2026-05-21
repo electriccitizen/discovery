@@ -1,0 +1,52 @@
+name: Nightly D1 backup
+
+# Dumps the live 'discovery' D1 database to a SQL file and uploads it as
+# a workflow artifact. Private repo → artifacts are private; default
+# retention is 90 days. Pairs with Cloudflare's built-in 30-day Time
+# Travel recovery to give us an off-Cloudflare copy.
+#
+# Required repo secrets:
+#   CLOUDFLARE_API_TOKEN   Token with D1:Read on the 'discovery' DB
+#   CLOUDFLARE_ACCOUNT_ID  Account ID that owns the DB
+
+on:
+  schedule:
+    # 09:00 UTC daily — well before the 11:00 UTC digest cron, and
+    # off-hours for US users (4 AM Central).
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: backup-d1
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Export live D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/backup-db.mjs
+
+      - name: Upload dump as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: discovery-d1-${{ github.run_id }}
+          path: backups/*.sql
+          retention-days: 90
+          if-no-files-found: error
