@@ -17,12 +17,13 @@ order: 9
 **I1. MailChimp setup for the new site's newsletter signup.** A few things to confirm, because the current site's newsletter subscription is a post-login user-profile checkbox (not a public form) and we don't know exactly how that pipeline connects to MailChimp today.
 - **(a) Existing list?** Do you have an existing MailChimp list that holds current EducationUSA newsletter subscribers? If so, please share the list name(s) — the new site's signup form would subscribe new signups to that list. If not, we'd set up a fresh list at launch.
 - **(b) Existing subscribers?** Where do current newsletter subscribers live today (MailChimp, internal IIE system, the current Drupal site's user database)? If they're not already in MailChimp, you may want to export and import them so the new site's audience isn't empty at launch.
-- **(c) Multiple lists?** If you envision separate lists (e.g., HEI Newsletter vs Event Notifications vs general), name each and we'll wire the appropriate forms to each.
+- **(c) Multiple lists?** Is there a need for users to be able to subscribe to different lists? Something like a checkbox or select function where they select the list they want to subscribe to when providing their info.
 
 **I1a. Newsletter signup — who's the audience?** The RFP lists this capability under the HEI section, but newsletter signups are typically open to anyone (HS counselors, deans, parents, prospective international students). Should the public-facing signup form be:
 - (a) HEI-only (gated by accreditation check, like other HEI submissions);
 - (b) Open to any visitor (just collect email + preferences);
 - (c) Hybrid (an open "general" list plus a separate accreditation-gated "HEI" list)?
+NOTE: Gated singup lists may need to be a future project phase due to budget.
 
 **I2. Analytics tooling — a few questions to align on.**
 
@@ -48,4 +49,4 @@ A few things to confirm:
 **I3. Will the new site require a cookie-consent banner (e.g., for EU visitors under GDPR or California users under CCPA)?**
 - *Why we ask:* Affects whether analytics and heat-map tracking fire before or after user consent.
 
-**I4. Social media accounts to embed feeds from — please confirm specific handles for Facebook, X, Instagram, LinkedIn, and YouTube.**
+**I4. Social media embed feeds** EC recommends not embedding social media feeds. This is a dated practice that has largely been dropped from websites because users typically follow social feeds directly in their platform apps. Social feed embeds are also large performance hogs and frequently fail to due to platform API changes. EC recommends that instead you add social sharing links where appropriate.
