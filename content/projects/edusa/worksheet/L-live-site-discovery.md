@@ -69,8 +69,8 @@ While reviewing the current site, we surfaced content types and features that th
 **L11. Content type inventory — please review.** Our current synthesis (current-site crawl + LOA §G + RFP audience sections), consolidated in [Technical Analysis](/edusa/reference/technical-analysis) §3.14 and reproduced here in summary:
 
 - **Tier 1 (crawl-confirmed):** Advising Center (422), Scholarship (270), Event, Video (242).
-- **Tier 2 (LOA-named, greenfield — does not exist on current site):** Adviser Profile, Downloadable Resource, News / Story.
-- **Tier 3 (RFP-implied or current-site-suggested, treatment TBD):** Country / Territory page, Student Success Story, Country Fact Sheet, FAQ entry, Glossary term, Webinar, Campus News Story.
+- **Tier 2 (LOA-named, greenfield — does not exist on current site, potential candidate for the new site):** Adviser Profile (possibly phase 2), Downloadable Resource, News / Story.
+- **Tier 3 (RFP-implied or current-site-suggested, treatment TBD):** Country / Territory page, Student Success Story, Country Fact Sheet, FAQ entry, Glossary term, Webinar, Campus News Story. NOTE: These will likely not be content types but may be taxonomies, on page components or built with other functionality.
 - **Tier 4 (utility):** Basic Page, Landing / Section Overview.
 
 The LOA's wording — *"several custom content types for programs, people, and research, and more pending the outcome of our technical planning"* — is intentionally open-ended. **This is what we know now.** The complete list and per-type architecture (fields, relationships, taxonomy attachments, node-vs-page-chunk decisions for Tier 3) get further defined during build planning and IIE's ongoing content strategy sessions. For this round, directional input is enough:
