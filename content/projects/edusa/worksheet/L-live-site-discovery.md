@@ -34,7 +34,7 @@ While reviewing the current site, we surfaced content types and features that th
 
 - *Expected format:* (a) / (b) / (c).
 
-**L3. Campus news stories — does this exist as a public-facing content stream on the current site, or only inside the logged-in portal? If public, what URL pattern? Is it in scope to migrate?**
+**L3. Campus news stories — does this exist as a public-facing content stream on the current site, or only inside the logged-in portal? If public, what URL pattern?** NOTE: Due to budget, this may not be in scope to migrate.
 
 **L4. Webinars — `/us-higher-education-professionals/online-services/webinars` is linked from the Online Services nav but 301-redirects to the homepage.** Has the webinars program been retired? Moved behind login? Relocated to a different URL? If still active, is it in scope for the new build, and what's the source format?
 
