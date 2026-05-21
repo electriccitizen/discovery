@@ -42,7 +42,7 @@ const updatedDisplay = response
   id={question.id}
 >
   <header class="question-card-header">
-    <span class="question-id">{question.id}</span>
+    <a class="question-id" href={`#${question.id}`} aria-label={`Link to question ${question.id}`}>{question.id}</a>
     {priorityFlagged && (
       <span class="priority-chip" data-role="priority-chip">Priority</span>
     )}

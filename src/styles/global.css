@@ -1147,6 +1147,17 @@ img { max-width: 100%; height: auto; }
   border-radius: 3px;
   letter-spacing: 0.04em;
   flex-shrink: 0;
+  text-decoration: none;
+  transition: background-color 0.12s ease;
+}
+a.question-id:hover,
+a.question-id:focus-visible {
+  background: var(--blue-soft);
+  text-decoration: none;
+}
+a.question-id:focus-visible {
+  outline: 2px solid var(--blue-deep);
+  outline-offset: 2px;
 }
 .question-title {
   font-family: var(--font-sans);
