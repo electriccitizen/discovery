@@ -33,7 +33,7 @@ order: 10
 
 - *Expected format:* named contact + role + how to reach them.
 
-**J5. Outbound email from the site — what SMTP service will we use?** Pantheon does not provide outbound SMTP, so all email leaving the site (form confirmations, password resets, newsletter dispatch) has to route through either a third-party service or an existing IIE relay. Common options: **SendGrid**, **Mailgun**, **AWS SES**, **Postmark**, or an internal IIE SMTP relay if available.
+**J5. Outbound email from the site — what SMTP service will we use?** Pantheon does not provide outbound SMTP, so all email leaving the site (form confirmations, password resets, etc) has to route through either a third-party service or an existing IIE relay. Common options: **SendGrid**, **Mailgun**, **AWS SES**, **Postmark**, or an internal IIE SMTP relay if available.
 
 - **Recommendation:** We recommend using an internal SMTP service if available. Mailgun and SendGrid are good defaults if there is no internal SMTP server; these are third-party tools that would incur a small monthly fee of $15–20/mo.
 
