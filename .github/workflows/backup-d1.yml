@@ -6,7 +6,9 @@ name: Nightly D1 backup
 # Travel recovery to give us an off-Cloudflare copy.
 #
 # Required repo secrets:
-#   CLOUDFLARE_API_TOKEN   Token with D1:Read on the 'discovery' DB
+#   CLOUDFLARE_API_TOKEN   Token with Account › D1 › Edit (export is a
+#                          write op — it creates a server-side export
+#                          job — so D1:Read is not enough).
 #   CLOUDFLARE_ACCOUNT_ID  Account ID that owns the DB
 
 on:
