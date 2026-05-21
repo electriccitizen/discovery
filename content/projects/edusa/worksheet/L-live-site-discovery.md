@@ -36,7 +36,7 @@ While reviewing the current site, we surfaced content types and features that th
 
 **L3. Campus news stories — does this exist as a public-facing content stream on the current site, or only inside the logged-in portal? If public, what URL pattern?** NOTE: Due to budget, this may not be in scope to migrate.
 
-**L4. Webinars — `/us-higher-education-professionals/online-services/webinars` is linked from the Online Services nav but 301-redirects to the homepage.** Has the webinars program been retired? Moved behind login? Relocated to a different URL? If still active, is it in scope for the new build, and what's the source format?
+**L4. Webinars — `/us-higher-education-professionals/online-services/webinars` is linked from the Online Services nav but 301-redirects to the homepage.** Has the webinars program been retired? Moved behind login? Relocated to a different URL? If still active, is this a priority for the new build, and what's the source format?
 
 **L5. EducationUSA Academy content — the program ended summer 2024, but its content remains on the live site.** Should it be migrated to the new site as an historical archive, dropped entirely, or migrated with explicit "concluded" labeling?
 
@@ -44,6 +44,7 @@ While reviewing the current site, we surfaced content types and features that th
 - (a) Does the gated portal currently hold structured adviser profiles? If so, we'd like to see them during discovery.
 - (b) What fields should an adviser profile have on the new site (name, country, advising center, contact info, photo, bio, languages, specialties, etc.)?
 - (c) Should adviser profiles be **public**, **internal-only** (IIE-staff visibility), or something else?
+- (d) Due to budget, would it be acceptible to move advisor profiles to a future phase (not included in launch)?
 - *Why we ask:* Visibility choice affects contact-spam protection on adviser contact info and whether profiles appear in public search.
 
 **L7. Confirming the residual `/node/{N}` content.** Our full redirect pass against all 965 unaliased `/node/N` URLs in the sitemap found that 961 return 403 anonymously. Of those, **187 are aliases for the 12 Region landing pages** (L12) — historical accumulation as those pages went through revisions. The remaining **\~778 are truly orphaned**: they don't resolve to any current alias, and we can't classify them from the outside. Please help us spot-check during discovery — pick a handful (say `/node/179`, `/node/192`, `/node/221`) and tell us what they are. Migration risk if any of these are real one-off public-facing pages we'd need to migrate sight-unseen.
