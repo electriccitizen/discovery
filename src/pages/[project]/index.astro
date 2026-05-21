@@ -192,27 +192,6 @@ function sectionStats(sectionId: string) {
     </section>
   )}
 
-  {activity.length > 0 && (
-    <section class="activity-block">
-      <h2>Recent activity</h2>
-      <ol class="activity-list">
-        {activity.map((a) => (
-          <li class={`activity-item activity-${a.kind} role-${roleClass(a.author_email)}`}>
-            <div class="activity-meta">
-              <a class="activity-question" href={questionLink(a.question_id)}>{a.question_id}</a>
-              <span class={`user-role user-role-${roleClass(a.author_email)}`}>{labelFor(a.author_email)}</span>
-              <span class="activity-action">
-                {a.kind === 'comment' ? 'commented' : 'edited response'}
-              </span>
-              <time class="activity-time" datetime={a.at}>{fmtTime(a.at)}</time>
-            </div>
-            <p class="activity-preview">{preview(a.body)}</p>
-          </li>
-        ))}
-      </ol>
-    </section>
-  )}
-
   <h2>Worksheet sections</h2>
   <ol class="section-list">
     {sections.map((s) => {
@@ -230,6 +209,36 @@ function sectionStats(sectionId: string) {
       );
     })}
   </ol>
+
+  {activity.length > 0 && (
+    <section class="activity-block">
+      <h2>Recent activity</h2>
+      <ol class="activity-list panel-collapsible" data-collapsed={activity.length > 3 ? 'true' : 'false'}>
+        {activity.map((a, i) => (
+          <li class={`activity-item activity-${a.kind} role-${roleClass(a.author_email)}${i >= 3 ? ' panel-overflow-item' : ''}`}>
+            <div class="activity-meta">
+              <a class="activity-question" href={questionLink(a.question_id)}>{a.question_id}</a>
+              <span class={`user-role user-role-${roleClass(a.author_email)}`}>{labelFor(a.author_email)}</span>
+              <span class="activity-action">
+                {a.kind === 'comment' ? 'commented' : 'edited response'}
+              </span>
+              <time class="activity-time" datetime={a.at}>{fmtTime(a.at)}</time>
+            </div>
+            <p class="activity-preview">{preview(a.body)}</p>
+          </li>
+        ))}
+      </ol>
+      {activity.length > 3 && (
+        <button
+          type="button"
+          class="panel-expand"
+          aria-expanded="false"
+          data-more-label={`Show ${activity.length - 3} more`}
+          data-less-label="Show fewer"
+        >Show {activity.length - 3} more</button>
+      )}
+    </section>
+  )}
 
   {project.references.length > 0 && (
     <>
