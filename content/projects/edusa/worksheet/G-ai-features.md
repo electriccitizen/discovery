@@ -27,13 +27,6 @@ order: 7
 
 - **Recommendation:** Our experience is that some of these tools are hit-or-miss in terms of actual usefulness. We suggest starting small with 2–3 enhancements that might bring tangible value.
 
-**G6. Translation Support — what's the actual use case?** The LOA names *"AI-assisted translation integration (e.g. Google Cloud Translate) within editorial workflows,"* but the Drupal multilingual content stack is deferred to a future change order — so there's no native place to store translated content at launch. The feature only makes sense if IIE has a specific use case in mind. Possibilities:
-- **(a) One-off page translations** — staff occasionally produce, e.g., a Spanish version of a high-value English page; saved as separate Drupal nodes manually linked to the source.
-- **(b) Editorial-aid only** — helps translators draft text faster; translations live outside Drupal (PDFs, social posts, etc.).
-- **(c) Defer entirely** — fold into the multilingual change order, where it makes more sense paired with proper content storage.
-
-- *Expected format:* (a) / (b) / (c), or "let's discuss in Strategy."
-
-**G7. Does IIE agree with the overall AI feature approach?** To summarize: we'll build with OpenAI as the LLM provider (G1); IIE holds the LLM and Vector DB contracts and pays usage (G2). All public-facing AI features (Greeter G3, AI-enhanced search G4) can be toggled on or off. Backend editorial tools (Editorial tagging G5, Translation Support G6) can be disabled by site admins.
+**G6. Does IIE agree with the overall AI feature approach?** To summarize: we'll build with OpenAI as the LLM provider (G1); IIE holds the LLM and Vector DB contracts and pays usage (G2). All public-facing AI features (Greeter G3, AI-enhanced search G4) can be toggled on or off. Backend editorial tools (Editorial tagging G5, Translation Support G6) can be disabled by site admins.
 - *Why we ask:* AI features are one of the loosest-defined areas in the source docs. Confirming alignment now reduces scope-creep risk during build.
 - *Expected format:* "yes, proceed as described" / "yes, with these changes: …" / "let's discuss."
