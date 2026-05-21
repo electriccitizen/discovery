@@ -90,10 +90,3 @@ Before recommending migrate / drop / rebuild-public, we'd like to understand wha
 - **Recommendation:** If yes, we recommend a per-story content type — each story gets its own URL, SEO-indexable, shareable, supports per-story metadata (country/region per E4(c), audience track, university, etc.) and feeds the map's success-story layer cleanly. The current paginated-single-page architecture would be a downgrade for the new build.
 
 - *Expected format:* "yes, per-story content type" / "no, drop them" / "yes but keep the paginated single-page approach."
-
-**L14. The "5 Steps to U.S. Study" guide — migrate as-is or revisit in Strategy?** The current site's 5 Steps guide is the largest single content asset and the most prominent student-facing journey on the site — **71 pages**, organized as a matrix of **5 steps × 5–6 audience tracks** (Community College, Undergraduate, Graduate, Short-Term, English Language, plus Online Learning in some cases). See [Technical Analysis](/edusa/reference/technical-analysis) §3.7 for the full structure.
-
-- **(a) Migrate as-is.** Preserve the existing 5×5 matrix and copy. Fix title-style inconsistencies and broken links during migration. Strategy/Design phase provides the visual refresh; content stays.
-- **(b) Reconsider during Content Strategy.** Keep the structural shape but revisit IA, audience-track scope, and editorial refresh during the Strategy phase.
-
-- *Expected format:* (a) / (b) / "let's discuss in Strategy."
