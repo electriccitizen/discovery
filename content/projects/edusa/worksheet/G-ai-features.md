@@ -27,6 +27,6 @@ order: 7
 
 - **Recommendation:** Our experience is that some of these tools are hit-or-miss in terms of actual usefulness. We suggest starting small with 2–3 enhancements that might bring tangible value.
 
-**G6. Does IIE agree with the overall AI feature approach?** To summarize: we'll build with OpenAI as the LLM provider (G1); IIE holds the LLM and Vector DB contracts and pays usage (G2). All public-facing AI features (Greeter G3, AI-enhanced search G4) can be toggled on or off. Backend editorial tools (Editorial tagging G5, Translation Support G6) can be disabled by site admins.
+**G6. Does IIE agree with the overall AI feature approach?** To summarize: we'll build with OpenAI as the LLM provider (G1); IIE holds the LLM and Vector DB contracts and pays usage (G2). All public-facing AI features (Greeter G3, AI-enhanced search G4) can be toggled on or off. Backend editorial tools (Editorial tagging G5) can be disabled by site admins.
 - *Why we ask:* AI features are one of the loosest-defined areas in the source docs. Confirming alignment now reduces scope-creep risk during build.
 - *Expected format:* "yes, proceed as described" / "yes, with these changes: …" / "let's discuss."
