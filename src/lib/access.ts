@@ -8,11 +8,26 @@ export interface AccessUser {
 
 const EC_DOMAIN = '@electriccitizen.com';
 
+/**
+ * Read the authenticated user's email. In prod this comes from the
+ * `cf-access-authenticated-user-email` header set by Cloudflare Access.
+ * In local dev there is no Access perimeter, so fall back to
+ * `DEV_USER_EMAIL` (or tim@electriccitizen.com) to let pages render.
+ */
+export function getAuthEmail(request: Request): string | null {
+  const header = request.headers.get('cf-access-authenticated-user-email');
+  if (header) return header;
+  if (import.meta.env.DEV) {
+    return import.meta.env.DEV_USER_EMAIL || 'tim@electriccitizen.com';
+  }
+  return null;
+}
+
 export function getUser(
   request: Request,
   clientLabel: string = 'Client'
 ): AccessUser | null {
-  const email = request.headers.get('cf-access-authenticated-user-email');
+  const email = getAuthEmail(request);
   if (!email) return null;
   const isEC = email.toLowerCase().endsWith(EC_DOMAIN);
   return {

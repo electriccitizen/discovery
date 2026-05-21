@@ -1,8 +1,7 @@
 export type Status =
   | 'not_started'
   | 'in_progress'
-  | 'answered'
-  | 'needs_clarification';
+  | 'answered';
 
 export type Priority = 'high' | 'medium' | 'low';
 
@@ -10,7 +9,6 @@ export const STATUS_VALUES: Status[] = [
   'not_started',
   'in_progress',
   'answered',
-  'needs_clarification',
 ];
 
 export const PRIORITY_VALUES: Priority[] = ['high', 'medium', 'low'];
@@ -76,18 +74,34 @@ export async function upsertResponseBody(
   project: string,
   questionId: string,
   body: string,
-  updatedBy: string
+  updatedBy: string,
+  opts?: { clear?: boolean }
 ): Promise<ResponseRow> {
   const now = new Date().toISOString();
   const existing = await getResponse(db, project, questionId);
   const prevBody = existing?.body ?? null;
   const prevStatus = (existing?.status ?? 'not_started') as Status;
 
+  // Data-loss guard: never let a save silently overwrite a non-empty body
+  // with an empty one unless the caller has explicitly opted in via
+  // `clear: true`. This blocks autosave races, form-state bugs, and
+  // accidental cross-user wipes (we lost Albino's first answer this way).
+  // The legitimate "user wants to delete their answer" path must pass the
+  // flag explicitly.
+  if (
+    !opts?.clear &&
+    body.trim().length === 0 &&
+    (prevBody ?? '').trim().length > 0 &&
+    existing
+  ) {
+    return existing;
+  }
+
   // Auto-transition between not_started and in_progress based on whether
-  // the body has content. Explicit user states (answered,
-  // needs_clarification) survive body edits — those are intentional
-  // assertions. Auto-transitions are NOT audited; the body change itself
-  // is in audit_log and the implied status flip is derivable from it.
+  // the body has content. Explicit 'answered' survives body edits — it's
+  // an intentional assertion. Auto-transitions are NOT audited; the body
+  // change itself is in audit_log and the implied status flip is
+  // derivable from it.
   const bodyHasContent = body.trim().length > 0;
   let nextStatus: Status = prevStatus;
   if (prevStatus === 'not_started' && bodyHasContent) nextStatus = 'in_progress';

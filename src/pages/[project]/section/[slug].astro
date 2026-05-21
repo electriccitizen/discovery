@@ -9,7 +9,7 @@ import {
   type AuditRow,
   type CommentRow,
 } from '../../../lib/db.ts';
-import { canAccessProject, isEC } from '../../../lib/access.ts';
+import { canAccessProject, isEC, getAuthEmail } from '../../../lib/access.ts';
 import { env } from 'cloudflare:workers';
 import QuestionCard from '../../../components/QuestionCard.astro';
 
@@ -21,7 +21,7 @@ const project = getProject(projectSlug);
 const section = getSection(projectSlug, sectionSlug);
 if (!project || !section) return new Response(null, { status: 404 });
 
-const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email');
+const userEmail = getAuthEmail(Astro.request);
 if (!userEmail || !canAccessProject(userEmail, project)) {
   return new Response(null, { status: 404 });
 }

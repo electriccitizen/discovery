@@ -6,7 +6,7 @@ import {
   type ResponseRow,
   type Status,
 } from '../lib/db.ts';
-import { isEC } from '../lib/access.ts';
+import { isEC, getAuthEmail } from '../lib/access.ts';
 import CommentThread from './CommentThread.astro';
 import AuditHistory from './AuditHistory.astro';
 
@@ -20,14 +20,13 @@ interface Props {
 
 const { question, projectSlug, response, comments, audit } = Astro.props;
 
-const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email');
+const userEmail = getAuthEmail(Astro.request);
 const userIsEC = userEmail ? isEC(userEmail) : false;
 
 const bodyValue = response?.body ?? '';
 const status: Status = (response?.status as Status) ?? 'not_started';
 const isAnswered = status === 'answered';
-const isNeedsClarification = status === 'needs_clarification';
-const showStatusChip = isAnswered || isNeedsClarification;
+const showStatusChip = isAnswered;
 
 const priorityFlagged = (response?.flagged ?? 0) === 1;
 
@@ -52,7 +51,7 @@ const updatedDisplay = response
       class={`status-chip status-chip-${status}`}
       data-role="status-chip"
       hidden={!showStatusChip}
-    >{isAnswered ? 'Answered' : isNeedsClarification ? 'Needs clarification' : ''}</span>
+    >{isAnswered ? 'Answered' : ''}</span>
   </header>
 
   {question.bodyHtml && (
@@ -110,14 +109,6 @@ const updatedDisplay = response
       >
         <span class="status-action-label-default">Mark as answered</span>
         <span class="status-action-label-selected">Answered ✓</span>
-      </button>
-      <button
-        type="button"
-        class={`status-action status-action-clarification${isNeedsClarification ? ' selected' : ''}`}
-        data-action="toggle-clarification"
-      >
-        <span class="status-action-label-default">Flag for clarification</span>
-        <span class="status-action-label-selected">Flagged — needs clarification</span>
       </button>
     </status-toggle>
 

@@ -42,17 +42,22 @@ export const PATCH: APIRoute = async ({ params, request }) => {
 
   if (!canAccessProject(user.email, meta)) return json({ error: 'not found' }, 404);
 
-  let payload: { body?: unknown };
+  let payload: { body?: unknown; clear?: unknown };
   try {
-    payload = (await request.json()) as { body?: unknown };
+    payload = (await request.json()) as { body?: unknown; clear?: unknown };
   } catch {
     return json({ error: 'invalid json' }, 400);
   }
   if (typeof payload.body !== 'string') {
     return json({ error: 'body must be a string' }, 400);
   }
+  if (payload.clear !== undefined && typeof payload.clear !== 'boolean') {
+    return json({ error: 'clear must be a boolean' }, 400);
+  }
 
   const db = env.DB;
-  const row = await upsertResponseBody(db, project, questionId, payload.body, user.email);
+  const row = await upsertResponseBody(db, project, questionId, payload.body, user.email, {
+    clear: payload.clear === true,
+  });
   return json({ response: row });
 };

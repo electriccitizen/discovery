@@ -1,16 +1,15 @@
 ---
 import '../styles/global.css';
 import { getProject } from '../lib/projects.ts';
-import { canAccessProject } from '../lib/access.ts';
+import { canAccessProject, getAuthEmail } from '../lib/access.ts';
 
 interface Props {
   title: string;
+  headerCrumb?: string;
 }
 
-const { title } = Astro.props;
-const email = Astro.request.headers.get('cf-access-authenticated-user-email');
-const isEC = email?.endsWith('@electriccitizen.com') ?? false;
-const userLabel = email ? (isEC ? 'EC' : 'Client') : null;
+const { title, headerCrumb } = Astro.props;
+const email = getAuthEmail(Astro.request);
 
 // Derive project context from the URL path so any page nested under
 // /[project]/* gets a header reference-doc menu without needing to thread
@@ -41,38 +40,41 @@ if (projectSlug && email) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} — EC</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+    <link rel="manifest" href="/favicons/site.webmanifest" />
+    <link rel="shortcut icon" href="/favicons/favicon.ico" />
   </head>
   <body>
     <header class="site-header">
       <div class="wrap">
         <div class="site-header-left">
-          <a href="/" class="site-title">Electric Citizen</a>
-          {projectContext && (
+          <a href="/" class="site-title">
+            <img class="site-title-mark" src="/favicons/apple-touch-icon.png" alt="" width="28" height="28" />
+            <span>Electric Citizen</span>
+          </a>
+          {projectContext ? (
             <>
               <span class="site-header-sep" aria-hidden="true">/</span>
               <a href={`/${projectContext.slug}`} class="site-header-project">{projectContext.title}</a>
+            </>
+          ) : headerCrumb && (
+            <>
+              <span class="site-header-sep" aria-hidden="true">/</span>
+              <span class="site-header-project">{headerCrumb}</span>
             </>
           )}
         </div>
 
         <div class="site-header-right">
           {projectContext && (
-            <form class="header-search" action={`/${projectContext.slug}/search`} method="get" role="search">
-              <input
-                type="search"
-                name="q"
-                placeholder="Search…"
-                aria-label="Search this project"
-                autocomplete="off"
-              />
-            </form>
-          )}
-          {projectContext && (
             <details class="header-refs">
               <summary class="header-refs-trigger">
                 <span>Reference documents</span>
-                <span class="header-refs-caret" aria-hidden="true">▾</span>
+                <svg class="header-refs-caret" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6"/>
+                </svg>
               </summary>
               <div class="header-refs-menu" role="menu">
                 <span class="header-refs-menu-label">{projectContext.title}</span>
@@ -86,11 +88,28 @@ if (projectSlug && email) {
               </div>
             </details>
           )}
-          {email && (
-            <span class="user-chip">
-              <span class={`user-role user-role-${isEC ? 'ec' : 'client'}`}>{userLabel}</span>
-              <span class="user-email">{email}</span>
-            </span>
+          {projectContext && (
+            <form class="header-search" action={`/${projectContext.slug}/search`} method="get" role="search">
+              <input
+                type="search"
+                name="q"
+                placeholder="Search…"
+                aria-label="Search this project"
+                autocomplete="off"
+              />
+              <button
+                type="submit"
+                class="header-search-toggle"
+                aria-label="Search"
+                aria-expanded="false"
+                title="Search"
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7"/>
+                  <path d="m20 20-3.5-3.5"/>
+                </svg>
+              </button>
+            </form>
           )}
           {projectContext && (
             <a
@@ -113,6 +132,18 @@ if (projectSlug && email) {
         <slot />
       </div>
     </main>
+    <button
+      type="button"
+      class="scroll-top"
+      aria-label="Scroll to top"
+      title="Scroll to top"
+      hidden
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 19V5"/>
+        <path d="m5 12 7-7 7 7"/>
+      </svg>
+    </button>
     <footer class="site-footer">
       <div class="wrap">
         <span>Electric Citizen</span>
@@ -130,6 +161,101 @@ if (projectSlug && email) {
           refs.removeAttribute('open');
         }
       });
+
+      // Header search: icon expands to input on click. Submit on Enter or
+      // a second click of the icon (when populated). Esc or outside-click
+      // (when empty) collapses.
+      (() => {
+        const form = document.querySelector('.header-search');
+        if (!(form instanceof HTMLFormElement)) return;
+        const toggle = form.querySelector('.header-search-toggle');
+        const input = form.querySelector('input[type=search]');
+        if (!(toggle instanceof HTMLButtonElement)) return;
+        if (!(input instanceof HTMLInputElement)) return;
+        const open = () => {
+          form.classList.add('is-open');
+          toggle.setAttribute('aria-expanded', 'true');
+          input.focus();
+        };
+        const close = () => {
+          form.classList.remove('is-open');
+          toggle.setAttribute('aria-expanded', 'false');
+        };
+        toggle.addEventListener('click', (e) => {
+          if (!form.classList.contains('is-open')) {
+            e.preventDefault();
+            open();
+            return;
+          }
+          if (!input.value.trim()) {
+            e.preventDefault();
+            close();
+          }
+          // else let the submit happen
+        });
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            input.value = '';
+            close();
+            toggle.focus();
+          }
+        });
+        document.addEventListener('click', (e) => {
+          if (!form.classList.contains('is-open')) return;
+          if (!(e.target instanceof Node) || form.contains(e.target)) return;
+          if (!input.value.trim()) close();
+        });
+      })();
+
+      // Welcome panel: persist collapse state via a per-project cookie
+      // (24h max-age, roughly aligned with a Cloudflare Access session).
+      // Server reads the cookie and renders the right state, so this only
+      // has to write on user toggle.
+      document.querySelectorAll('.welcome-collapsible').forEach((el) => {
+        if (!(el instanceof HTMLDetailsElement)) return;
+        const name = el.dataset.cookieName;
+        if (!name) return;
+        el.addEventListener('toggle', () => {
+          const value = el.open ? '0' : '1';
+          document.cookie = `${name}=${value}; path=/; max-age=86400; SameSite=Lax`;
+        });
+      });
+
+      // Panel collapse: "Show N more" toggles the overflow items on a
+      // collapsible list (currently the priority panel). Each button is
+      // paired with the immediately-preceding .panel-collapsible list.
+      document.querySelectorAll('.panel-expand').forEach((btn) => {
+        if (!(btn instanceof HTMLButtonElement)) return;
+        const list = btn.previousElementSibling;
+        if (!(list instanceof HTMLElement) || !list.classList.contains('panel-collapsible')) return;
+        const moreLabel = btn.dataset.moreLabel || 'Show more';
+        const lessLabel = btn.dataset.lessLabel || 'Show fewer';
+        btn.addEventListener('click', () => {
+          const expanded = list.dataset.collapsed === 'false';
+          list.dataset.collapsed = expanded ? 'true' : 'false';
+          btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+          btn.textContent = expanded ? moreLabel : lessLabel;
+        });
+      });
+
+      // Scroll-to-top button: reveal after 300px, smooth-scroll on click
+      // (or instant if the user prefers reduced motion).
+      (() => {
+        const btn = document.querySelector('.scroll-top');
+        if (!(btn instanceof HTMLButtonElement)) return;
+        const threshold = 300;
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const update = () => {
+          const show = window.scrollY > threshold;
+          btn.hidden = !show;
+          btn.classList.toggle('is-visible', show);
+        };
+        update();
+        window.addEventListener('scroll', update, { passive: true });
+        btn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: reduce.matches ? 'auto' : 'smooth' });
+        });
+      })();
     </script>
   </body>
 </html>

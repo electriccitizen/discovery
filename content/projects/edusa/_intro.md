@@ -1,5 +1,3 @@
-## Welcome
-
 This worksheet collects the questions we need to answer in order to move into the build phase and finalize the longer-term technical decisions that impact the project. The worksheet was derived largely from our [technical analysis](/edusa/reference/technical-analysis) and all of the available source documents.
 
 <details class="intro-section">
@@ -7,8 +5,8 @@ This worksheet collects the questions we need to answer in order to move into th
 
 - **Type your response** in the box on each question. It saves automatically.
 - **Edit any time.** Come back tomorrow, next week, or after our next meeting and revise. The new version replaces the old one, and a full revision history is kept on every question.
-- Click **Mark as answered** when you're done with a question, or **Flag for clarification** if you need our input first. Both buttons sit below the response field on each question.
-- The **comment thread** below each question is for back-and-forth: clarifications, push-back, follow-ups.
+- Click **Mark as answered** when you're done with a question. The button sits below the response field.
+- The **comment thread** below each question is for back-and-forth: questions about the question, clarifications, push-back, follow-ups. If something isn't clear, leave a comment and we'll either explain or rewrite the question.
 - If a question doesn't apply or you don't know yet, leave a comment like *"unknown"* or *"let's discuss"* and we'll take it up live.
 - **Reference documents** (sitemap inventory, migration analysis, technical analysis, etc.) are linked in the header menu of every page.
 

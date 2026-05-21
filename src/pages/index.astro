@@ -2,9 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { listProjects, getProject } from '../lib/projects.ts';
 import { countQuestions, listSections } from '../lib/worksheet.ts';
-import { canAccessProject, isEC } from '../lib/access.ts';
+import { canAccessProject, isEC, getAuthEmail } from '../lib/access.ts';
 
-const email = Astro.request.headers.get('cf-access-authenticated-user-email');
+const email = getAuthEmail(Astro.request);
 const userIsEC = email ? isEC(email) : false;
 
 const allProjects = listProjects()
@@ -30,8 +30,7 @@ if (!userIsEC && visibleProjects.length === 1) {
   return Astro.redirect(`/${visibleProjects[0].slug}`);
 }
 ---
-<BaseLayout title="Active engagements">
-  <h1>Discovery Portal</h1>
+<BaseLayout title="Active engagements" headerCrumb="Discovery Portal">
   <p class="lede">
     {userIsEC
       ? 'Interactive technical-discovery worksheets. Pick an engagement to begin.'

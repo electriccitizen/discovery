@@ -71,35 +71,30 @@ class ResponseForm extends HTMLElement {
 }
 
 /**
- * Status toggle — two action buttons:
- *   - "Mark as answered" / "Answered ✓"
- *   - "Flag for clarification" / "Flagged — needs clarification"
- * Toggling either button sends an explicit status PATCH. Toggling off
- * sends 'in_progress'; the server downgrades to 'not_started' if the
- * body is empty. Also updates the small status chip in the card header.
+ * Status toggle — single "Mark as answered" / "Answered ✓" button.
+ * Toggling sends an explicit status PATCH. Toggling off sends
+ * 'in_progress'; the server downgrades to 'not_started' if the body is
+ * empty. Also updates the small status chip in the card header.
  */
 class StatusToggle extends HTMLElement {
   private project!: string;
   private questionId!: string;
   private answeredBtn!: HTMLButtonElement;
-  private clarificationBtn!: HTMLButtonElement;
 
   connectedCallback() {
     this.project = this.dataset.project ?? '';
     this.questionId = this.dataset.questionId ?? '';
     this.answeredBtn = this.querySelector('[data-action="toggle-answered"]') as HTMLButtonElement;
-    this.clarificationBtn = this.querySelector('[data-action="toggle-clarification"]') as HTMLButtonElement;
-    this.answeredBtn?.addEventListener('click', () => this.toggle('answered'));
-    this.clarificationBtn?.addEventListener('click', () => this.toggle('needs_clarification'));
+    this.answeredBtn?.addEventListener('click', () => this.toggle());
   }
 
   private currentStatus(): string {
     return this.dataset.status ?? 'not_started';
   }
 
-  private async toggle(target: 'answered' | 'needs_clarification') {
+  private async toggle() {
     const current = this.currentStatus();
-    const next = current === target ? 'in_progress' : target;
+    const next = current === 'answered' ? 'in_progress' : 'answered';
     const prev = current;
 
     this.applyStatus(next);
@@ -126,19 +121,13 @@ class StatusToggle extends HTMLElement {
   private applyStatus(status: string) {
     this.dataset.status = status;
     this.answeredBtn?.classList.toggle('selected', status === 'answered');
-    this.clarificationBtn?.classList.toggle('selected', status === 'needs_clarification');
 
     const card = this.closest('.question-card');
     if (!card) return;
     card.className = card.className.replace(/\bstatus-\S+/g, `status-${status}`);
     const chip = card.querySelector<HTMLElement>('[data-role="status-chip"]');
     if (chip) {
-      const label =
-        status === 'answered'
-          ? 'Answered'
-          : status === 'needs_clarification'
-            ? 'Needs clarification'
-            : '';
+      const label = status === 'answered' ? 'Answered' : '';
       chip.textContent = label;
       chip.className = `status-chip status-chip-${status}`;
       chip.hidden = label === '';

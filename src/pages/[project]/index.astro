@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getIntroHtml, getProject } from '../../lib/projects.ts';
 import { listSections, countQuestions } from '../../lib/worksheet.ts';
 import { listRecentActivity, listResponses, type ActivityItem } from '../../lib/db.ts';
-import { canAccessProject, isEC } from '../../lib/access.ts';
+import { canAccessProject, isEC, getAuthEmail } from '../../lib/access.ts';
 import { env } from 'cloudflare:workers';
 
 const projectSlug = Astro.params.project;
@@ -12,7 +12,7 @@ if (!projectSlug) return new Response(null, { status: 404 });
 const project = getProject(projectSlug);
 if (!project) return new Response(null, { status: 404 });
 
-const userEmail = Astro.request.headers.get('cf-access-authenticated-user-email');
+const userEmail = getAuthEmail(Astro.request);
 if (!userEmail || !canAccessProject(userEmail, project)) {
   return new Response(null, { status: 404 });
 }
@@ -36,6 +36,14 @@ function questionLink(qid: string): string {
   return section ? `/${projectSlug}/section/${section.slug}#${qid}` : '#';
 }
 
+// Welcome panel state: read the per-project collapse cookie server-side
+// so the rendered HTML is already in the right state — no flash.
+const cookieHeader = Astro.request.headers.get('cookie') ?? '';
+const welcomeCookieName = `discovery-welcome-${projectSlug}`;
+const welcomeCollapsed = cookieHeader
+  .split(';')
+  .some((c) => c.trim().startsWith(`${welcomeCookieName}=1`));
+
 const ecDomain = '@electriccitizen.com';
 function labelFor(email: string): 'EC' | string {
   return email.toLowerCase().endsWith(ecDomain) ? 'EC' : project.client.label;
@@ -55,7 +63,6 @@ const statusCounts = {
   not_started: 0,
   in_progress: 0,
   answered: 0,
-  needs_clarification: 0,
 };
 
 interface SurfacedQuestion {
@@ -66,22 +73,25 @@ interface SurfacedQuestion {
   sectionSlug: string;
 }
 const flaggedQuestions: SurfacedQuestion[] = [];
-const clarificationQuestions: SurfacedQuestion[] = [];
 
 for (const section of sections) {
   for (const q of section.questions) {
     const r = responsesById.get(q.id);
-    const s = (r?.status ?? 'not_started') as keyof typeof statusCounts;
+    const rawStatus = r?.status ?? 'not_started';
+    // Defensive: any historical row that still carries the retired
+    // 'needs_clarification' value (or any unknown future value) is
+    // bucketed under 'in_progress' for the counter.
+    const s = (rawStatus in statusCounts ? rawStatus : 'in_progress') as keyof typeof statusCounts;
     statusCounts[s]++;
-    const surfaced: SurfacedQuestion = {
-      questionId: q.id,
-      questionTitle: q.title,
-      sectionId: section.id,
-      sectionTitle: section.title,
-      sectionSlug: section.slug,
-    };
-    if ((r?.flagged ?? 0) === 1) flaggedQuestions.push(surfaced);
-    if (r?.status === 'needs_clarification') clarificationQuestions.push(surfaced);
+    if ((r?.flagged ?? 0) === 1) {
+      flaggedQuestions.push({
+        questionId: q.id,
+        questionTitle: q.title,
+        sectionId: section.id,
+        sectionTitle: section.title,
+        sectionSlug: section.slug,
+      });
+    }
   }
 }
 
@@ -120,7 +130,17 @@ function sectionStats(sectionId: string) {
   </dl>
 
   {introHtml && (
-    <section class="project-intro" set:html={introHtml} />
+    <details class="project-intro welcome-collapsible" data-cookie-name={welcomeCookieName} open={!welcomeCollapsed}>
+      <summary class="welcome-summary">
+        <span class="welcome-summary-label">Welcome</span>
+        <span class="welcome-summary-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </span>
+      </summary>
+      <div class="welcome-body" set:html={introHtml} />
+    </details>
   )}
 
   <section class="progress-block">
@@ -138,7 +158,6 @@ function sectionStats(sectionId: string) {
       <div><dt>Not started</dt><dd>{statusCounts.not_started}</dd></div>
       <div><dt>In progress</dt><dd>{statusCounts.in_progress}</dd></div>
       <div><dt>Answered</dt><dd>{statusCounts.answered}</dd></div>
-      <div><dt>Needs clarification</dt><dd>{statusCounts.needs_clarification}</dd></div>
     </dl>
   </section>
 
@@ -152,9 +171,9 @@ function sectionStats(sectionId: string) {
             : `EC has flagged ${flaggedQuestions.length} questions for your attention`}
         </h2>
       </div>
-      <ol class="priority-panel-list">
-        {flaggedQuestions.map((q) => (
-          <li>
+      <ol class="priority-panel-list panel-collapsible" data-collapsed={flaggedQuestions.length > 5 ? 'true' : 'false'}>
+        {flaggedQuestions.map((q, i) => (
+          <li class={i >= 5 ? 'panel-overflow-item' : ''}>
             <a href={`/${projectSlug}/section/${q.sectionSlug}#${q.questionId}`}>
               <span class="priority-panel-qid">{q.questionId}</span>
               <span class="priority-panel-qtitle">{q.questionTitle}</span>
@@ -163,30 +182,15 @@ function sectionStats(sectionId: string) {
           </li>
         ))}
       </ol>
-    </section>
-  )}
-
-  {clarificationQuestions.length > 0 && (
-    <section class="clarification-panel">
-      <div class="clarification-panel-header">
-        <span class="clarification-panel-tag">Needs clarification</span>
-        <h2 class="clarification-panel-title">
-          {clarificationQuestions.length === 1
-            ? '1 question awaiting clarification'
-            : `${clarificationQuestions.length} questions awaiting clarification`}
-        </h2>
-      </div>
-      <ol class="clarification-panel-list">
-        {clarificationQuestions.map((q) => (
-          <li>
-            <a href={`/${projectSlug}/section/${q.sectionSlug}#${q.questionId}`}>
-              <span class="clarification-panel-qid">{q.questionId}</span>
-              <span class="clarification-panel-qtitle">{q.questionTitle}</span>
-              <span class="clarification-panel-section">{q.sectionId}. {q.sectionTitle}</span>
-            </a>
-          </li>
-        ))}
-      </ol>
+      {flaggedQuestions.length > 5 && (
+        <button
+          type="button"
+          class="panel-expand"
+          aria-expanded="false"
+          data-more-label={`Show ${flaggedQuestions.length - 5} more`}
+          data-less-label="Show fewer"
+        >Show {flaggedQuestions.length - 5} more</button>
+      )}
     </section>
   )}
 

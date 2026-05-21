@@ -1,0 +1,763 @@
+---
+// Standalone palette comparison — does NOT use BaseLayout or global.css.
+// All styles inline so current vs proposed can sit side by side cleanly.
+// Open at /preview/palette in dev. Not linked from the app.
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Palette preview</title>
+    <link rel="preconnect" href="https://rsms.me/" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <style>
+      :root {
+        --font-sans: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html { font-family: var(--font-sans); }
+      body {
+        margin: 0;
+        padding: 2rem;
+        background: #fafafa;
+        color: #0a0a0a;
+        line-height: 1.5;
+      }
+      h1 { font-size: 1.5rem; margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+      h2 { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #71717a; margin: 1.5rem 0 0.75rem; }
+      h3 { font-size: 1rem; font-weight: 600; margin: 0 0 1rem; letter-spacing: -0.01em; }
+      .intro { color: #71717a; font-size: 0.9rem; margin: 0 0 2rem; max-width: 38rem; }
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        max-width: 80rem;
+      }
+      .col {
+        padding: 1.5rem;
+        background: #fff;
+        border: 1px solid #e4e4e7;
+        border-radius: 6px;
+      }
+      .col h3 { padding-bottom: 0.75rem; border-bottom: 1px solid #e4e4e7; }
+
+      /* === Swatch grid === */
+      .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+      .swatch {
+        display: flex; flex-direction: column; gap: 0.25rem;
+        font-size: 0.7rem;
+      }
+      .swatch .chip {
+        height: 2.5rem;
+        border-radius: 4px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .swatch .name { font-weight: 600; color: #0a0a0a; }
+      .swatch .hex { color: #71717a; font-family: ui-monospace, monospace; font-size: 0.65rem; }
+
+      /* === Component mocks === */
+      .stack { display: flex; flex-direction: column; gap: 1.25rem; }
+      .pills { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+      .pill {
+        display: inline-flex; align-items: center;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        line-height: 1.2;
+      }
+      .role {
+        display: inline-block;
+        font-weight: 700;
+        font-size: 0.66rem;
+        padding: 0.12rem 0.5rem;
+        border-radius: 2px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #fff;
+      }
+      .role-with-email {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        font-size: 0.78rem; color: #71717a;
+      }
+      .role-with-email .email { font-family: ui-monospace, monospace; }
+
+      .qcard {
+        padding: 1rem 1.25rem;
+        border: 1px solid #e4e4e7;
+        border-left: 4px solid transparent;
+        border-radius: 4px;
+        background: #fff;
+        font-size: 0.9rem;
+      }
+      .qcard.answered { border-left-color: var(--qcard-answered); }
+      .qcard.needs { border-left-color: var(--qcard-needs); }
+      .qcard.flagged { border-left-color: var(--qcard-flag); }
+      .qcard .qid { font-family: ui-monospace, monospace; color: #71717a; font-size: 0.78rem; margin-bottom: 0.25rem; }
+      .qcard .body { color: #3f3f46; }
+      .qcard + .qcard { margin-top: 0.5rem; }
+
+      /* Aside boxes: Why we ask / Recommendation */
+      .aside {
+        margin-top: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: var(--aside-bg-default);
+        border-left: 2px solid var(--aside-rule-default);
+        border-radius: 4px;
+        font-size: 0.88rem;
+      }
+      .aside .label {
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: #71717a;
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .aside .body { color: #3f3f46; }
+      .aside.why { background: var(--aside-bg-why); border-left-color: var(--aside-rule-why); }
+      .aside.why .label { color: var(--aside-label-why); }
+      .aside.rec { background: var(--aside-bg-rec); border-left-color: var(--aside-rule-rec); }
+      .aside.rec .label { color: var(--aside-label-rec); }
+      .aside.rec .body { color: #0a0a0a; }
+
+      /* === Project home blocks === */
+
+      .progress-block {
+        margin-top: 0.75rem;
+        padding: 1rem 1.25rem;
+        background: #fff;
+        border: 1px solid #e4e4e7;
+        border-radius: 10px;
+      }
+      .progress-headline {
+        display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.5rem;
+      }
+      .progress-pct { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+      .progress-label { color: #71717a; font-size: 0.85rem; }
+      .progress-bar { height: 5px; background: #f4f4f5; border-radius: 999px; overflow: hidden; margin-bottom: 0.75rem; }
+      .progress-bar-fill { height: 100%; background: var(--progress-fill); }
+      .progress-status {
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.35rem;
+      }
+      .progress-status > div {
+        display: flex; justify-content: space-between; align-items: baseline;
+        padding: 0.35rem 0.5rem;
+        background: #f4f4f5;
+        border-radius: 4px;
+        font-size: 0.78rem;
+      }
+      .progress-status dt { color: #71717a; margin: 0; font-size: 0.72rem; }
+      .progress-status dd { margin: 0; font-weight: 700; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+
+      .panel {
+        margin-top: 0.75rem;
+        padding: 0.85rem 1.1rem;
+        background: var(--panel-bg);
+        border: 1px solid var(--panel-border);
+        border-left: 3px solid var(--panel-rule);
+        border-radius: 0 6px 6px 0;
+      }
+      .panel-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.6rem; }
+      .panel-tag {
+        font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em;
+        padding: 0.15rem 0.45rem;
+        background: var(--panel-tag-bg);
+        color: var(--panel-tag-color);
+        border-radius: 3px;
+      }
+      .panel-title { font-size: 0.92rem; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+      .panel-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+      .panel-list a {
+        display: grid; grid-template-columns: 2.2rem 1fr auto;
+        align-items: baseline; gap: 0.6rem;
+        padding: 0.45rem 0.65rem;
+        background: #fff;
+        border: 1px solid var(--panel-border);
+        border-radius: 4px;
+        text-decoration: none;
+        color: #0a0a0a;
+        font-size: 0.85rem;
+      }
+      .panel-qid {
+        font-family: ui-monospace, monospace; font-size: 0.7rem; font-weight: 700;
+        padding: 0.08rem 0.35rem;
+        background: var(--panel-tag-bg);
+        color: var(--panel-tag-color);
+        border-radius: 3px;
+        text-align: center;
+      }
+      .panel-section { font-size: 0.7rem; color: #71717a; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+      .panel.priority {
+        --panel-bg: var(--priority-bg);
+        --panel-border: var(--priority-border);
+        --panel-rule: var(--priority-rule);
+        --panel-tag-bg: var(--priority-tag-bg);
+        --panel-tag-color: var(--priority-tag-color);
+      }
+      .panel.clarification {
+        --panel-bg: var(--clarif-bg);
+        --panel-border: var(--clarif-border);
+        --panel-rule: var(--clarif-rule);
+        --panel-tag-bg: var(--clarif-tag-bg);
+        --panel-tag-color: var(--clarif-tag-color);
+      }
+
+      .activity-list {
+        list-style: none; margin: 0.5rem 0 0; padding: 0;
+        display: flex; flex-direction: column; gap: 0.35rem;
+      }
+      .activity-item {
+        padding: 0.5rem 0.7rem;
+        background: #fff;
+        border: 1px solid #e4e4e7;
+        border-left: 3px solid transparent;
+        border-radius: 4px;
+        font-size: 0.82rem;
+      }
+      .activity-item.role-ec { border-left-color: var(--role-ec-rule); }
+      .activity-item.role-client { border-left-color: var(--role-client-rule); }
+      .activity-meta { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; font-size: 0.72rem; color: #71717a; }
+      .activity-meta .qid { font-family: ui-monospace, monospace; font-weight: 700; color: #0a0a0a; }
+      .activity-meta .role { font-size: 0.6rem; padding: 0.06rem 0.4rem; }
+      .activity-preview { margin: 0.3rem 0 0; color: #3f3f46; font-size: 0.85rem; line-height: 1.45; }
+      .activity-meta .qid {
+        font-family: ui-monospace, monospace;
+        font-weight: 700;
+        font-size: 0.72rem;
+        padding: 0.1rem 0.4rem;
+        background: var(--qid-bg, #e1e7ef);
+        color: var(--qid-color, #1e3a5f);
+        border-radius: 3px;
+      }
+      .activity-meta .action { color: #71717a; }
+      .activity-meta .dot { color: #d4d4d8; }
+      .activity-meta time { margin-left: auto; color: #71717a; font-variant-numeric: tabular-nums; }
+
+      /* A11y contrast table */
+      .a11y { margin-top: 2rem; }
+      .a11y table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+      .a11y th, .a11y td { padding: 0.45rem 0.5rem; text-align: left; border-bottom: 1px solid #e4e4e7; }
+      .a11y th { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.08em; color: #71717a; font-weight: 700; }
+      .a11y .sample { display: inline-flex; align-items: center; padding: 0.2rem 0.55rem; border-radius: 3px; font-size: 0.72rem; font-weight: 600; }
+      .a11y .ratio { font-family: ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+      .a11y .verdict { font-weight: 700; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 3px; }
+      .a11y .pass-aaa { background: #d1fae5; color: #14532d; }
+      .a11y .pass-aa  { background: #fef3c7; color: #713f12; }
+      .a11y .fail     { background: #fecaca; color: #7f1d1d; }
+
+      /* === CURRENT (left) palette tokens === */
+      .current {
+        /* mirrors src/styles/global.css */
+        --navy: #1e3a5f;
+        --navy-soft: #e1e7ef;
+        --yellow: #d4a017;
+        --yellow-soft: #fef9c3;
+        --yellow-tint: #fefce8;
+        --yellow-deep: #713f12;
+        --amber-soft: #f7eccc;
+        --rust: #c2410c;
+        --rust-soft: #fed7aa;
+        --moss: #15803d;
+        --moss-soft: #dcfce7;
+        --sky: #0ea5e9;
+        --sky-soft: #bae6fd;
+        --client: #0e7490;
+        --stone-pill-1: #e5e0d2;
+        --stone-pill-2: #d6cfbf;
+        --stone-pill-3: #ece7da;
+
+        --qcard-answered: var(--amber-soft);
+        --qcard-needs: var(--rust-soft);
+        --qcard-flag: var(--yellow);
+
+        --aside-bg-default: #f4f4f5;
+        --aside-rule-default: #d4d4d8;
+        --aside-bg-why: #f4f4f5;
+        --aside-rule-why: var(--navy);
+        --aside-label-why: #71717a;
+        --aside-bg-rec: var(--yellow-tint);
+        --aside-rule-rec: var(--yellow);
+        --aside-label-rec: var(--yellow-deep);
+
+        --progress-fill: var(--navy);
+        --priority-bg: #f0f9ff;            /* sky-tint */
+        --priority-border: #bae6fd;        /* sky-soft */
+        --priority-rule: #0ea5e9;          /* sky */
+        --priority-tag-bg: #bae6fd;
+        --priority-tag-color: #075985;     /* sky-deep */
+        --clarif-bg: #fff7ed;              /* rust-tint */
+        --clarif-border: #fed7aa;          /* rust-soft */
+        --clarif-rule: #c2410c;            /* rust */
+        --clarif-tag-bg: #fed7aa;
+        --clarif-tag-color: #7c2d12;       /* rust-deep */
+        --role-ec-rule: #1e3a5f;           /* navy */
+        --role-client-rule: #0e7490;       /* teal */
+      }
+      .current .role-ec { background: var(--navy); }
+      .current .role-client { background: var(--client); }
+      .current .pill-not_started { background: var(--stone-pill-1); color: #0a0a0a; }
+      .current .pill-in_progress { background: var(--moss-soft); color: var(--moss); }
+      .current .pill-answered { background: var(--amber-soft); color: #6e4d0c; }
+      .current .pill-needs { background: var(--rust-soft); color: var(--rust); }
+      .current .pill-prio-high   { background: var(--rust); color: #fff; }
+      .current .pill-prio-medium { background: var(--stone-pill-2); color: #0a0a0a; }
+      .current .pill-prio-low    { background: var(--stone-pill-3); color: #71717a; }
+
+      /* === PROPOSED (right) palette tokens === */
+      .proposed {
+        --navy: #1e3a5f;
+        --navy-soft: #e1e7ef;
+
+        /* Three "pale paper" families. Each: very-pale bg, desaturated mid
+         * for border, and a DEEP near-ink for the accent (the trick — the
+         * deep tone is never a saturated version of the hue, it's an
+         * ink-toned partner). */
+
+        /* Pale yellow → brown */
+        --yellow: #ca8a04;
+        --yellow-soft: #fef3c7;
+        --yellow-tint: #fffbeb;
+        --yellow-deep: #713f12;
+
+        /* Pale blue → navy */
+        --blue-tint: #eff5fb;       /* very pale, slightly warm blue */
+        --blue-soft: #c8d8e8;       /* desaturated mid-blue */
+        --blue-deep: var(--navy);   /* navy IS the ink — already desat'd */
+
+        /* Pale pink → deep wine */
+        --pink-tint: #fdf3f3;       /* pale warm rose */
+        --pink-soft: #f5cfcf;       /* desaturated dusty pink */
+        --pink-deep: #6b1c2c;       /* deep wine — pink's "ink" */
+
+        --moss: #166534;
+        --moss-soft: #d1fae5;
+        --moss-deep: #14532d;
+        --client: #57534e;          /* warm stone-600 */
+        --stone-100: #f5f5f4;
+        --stone-200: #e7e5e4;
+        --stone-300: #d6d3d1;
+
+        --qcard-answered: var(--moss-soft);
+        --qcard-needs: var(--rust-soft);
+        --qcard-flag: var(--yellow);
+
+        --aside-bg-default: var(--stone-100);
+        --aside-rule-default: var(--stone-300);
+        --aside-bg-why: var(--stone-100);
+        --aside-rule-why: var(--navy);
+        --aside-label-why: #57534e;
+        --aside-bg-rec: var(--yellow-tint);
+        --aside-rule-rec: var(--yellow);
+        --aside-label-rec: var(--yellow-deep);
+
+        --progress-fill: var(--navy);
+
+        /* Priority → pale blue, navy ink */
+        --priority-bg: var(--blue-tint);
+        --priority-border: var(--blue-soft);
+        --priority-rule: var(--blue-deep);
+        --priority-tag-bg: var(--blue-soft);
+        --priority-tag-color: var(--blue-deep);
+
+        /* Clarification → pale pink, wine ink */
+        --clarif-bg: var(--pink-tint);
+        --clarif-border: var(--pink-soft);
+        --clarif-rule: var(--pink-deep);
+        --clarif-tag-bg: var(--pink-soft);
+        --clarif-tag-color: var(--pink-deep);
+
+        --role-ec-rule: var(--navy);
+        --role-client-rule: var(--client);
+      }
+      .proposed .role-ec { background: var(--navy); }
+      .proposed .role-client { background: var(--client); }
+      .proposed .pill-not_started { background: var(--stone-200); color: #0a0a0a; }
+      .proposed .pill-in_progress { background: var(--yellow-soft); color: var(--yellow-deep); }
+      .proposed .pill-answered { background: var(--moss-soft); color: var(--moss-deep); }
+      .proposed .pill-needs { background: var(--rust-soft); color: var(--rust-deep); }
+      .proposed .pill-prio-high   { background: var(--rust); color: #fff; }
+      .proposed .pill-prio-medium { background: var(--stone-300); color: #0a0a0a; }
+      .proposed .pill-prio-low    { background: var(--stone-100); color: #71717a; }
+    </style>
+  </head>
+  <body>
+    <h1>Palette preview — current vs proposed</h1>
+    <p class="intro">
+      Same components rendered with each palette's tokens. Nothing here is committed; this page is standalone (does not load global.css). Open in dev only.
+    </p>
+
+    <div class="columns">
+      <!-- ============ CURRENT ============ -->
+      <section class="col current">
+        <h3>Current</h3>
+
+        <h2>Accent swatches</h2>
+        <div class="swatches">
+          <div class="swatch"><div class="chip" style="background:#1e3a5f"></div><span class="name">navy</span><span class="hex">#1e3a5f</span></div>
+          <div class="swatch"><div class="chip" style="background:#d4a017"></div><span class="name">yellow</span><span class="hex">#d4a017</span></div>
+          <div class="swatch"><div class="chip" style="background:#b88728"></div><span class="name">amber (legacy)</span><span class="hex">#b88728</span></div>
+          <div class="swatch"><div class="chip" style="background:#0ea5e9"></div><span class="name">sky</span><span class="hex">#0ea5e9</span></div>
+          <div class="swatch"><div class="chip" style="background:#c2410c"></div><span class="name">rust</span><span class="hex">#c2410c</span></div>
+          <div class="swatch"><div class="chip" style="background:#15803d"></div><span class="name">moss</span><span class="hex">#15803d</span></div>
+          <div class="swatch"><div class="chip" style="background:#0e7490"></div><span class="name">client (teal)</span><span class="hex">#0e7490</span></div>
+          <div class="swatch"><div class="chip" style="background:#e5e0d2"></div><span class="name">pill stone</span><span class="hex">#e5e0d2</span></div>
+        </div>
+
+        <h2>Role chips</h2>
+        <div class="pills">
+          <span class="role role-ec">EC</span>
+          <span class="role role-client">IIE</span>
+        </div>
+        <div style="margin-top: 0.5rem;">
+          <span class="role-with-email"><span class="role role-ec">EC</span><span class="email">tim@electriccitizen.com</span></span>
+          <br/>
+          <span class="role-with-email" style="margin-top:0.25rem"><span class="role role-client">IIE</span><span class="email">albino@iie.org</span></span>
+        </div>
+
+        <h2>Status pills</h2>
+        <div class="pills">
+          <span class="pill pill-not_started">Not started</span>
+          <span class="pill pill-in_progress">In progress</span>
+          <span class="pill pill-answered">Answered</span>
+          <span class="pill pill-needs">Needs clarification</span>
+        </div>
+
+        <h2>Priority pills</h2>
+        <div class="pills">
+          <span class="pill pill-prio-high">High</span>
+          <span class="pill pill-prio-medium">Medium</span>
+          <span class="pill pill-prio-low">Low</span>
+        </div>
+
+        <h2>Question cards (left-border accent)</h2>
+        <div>
+          <div class="qcard answered">
+            <div class="qid">A1 · Answered</div>
+            <div class="body">Targeting Q3.</div>
+          </div>
+          <div class="qcard needs">
+            <div class="qid">B1 · Needs clarification</div>
+            <div class="body">Will the new search live under /search or be replaced inline?</div>
+          </div>
+          <div class="qcard flagged">
+            <div class="qid">C2 · Flagged</div>
+            <div class="body">Migration approach TBD — depends on hosting decision.</div>
+          </div>
+        </div>
+
+        <h2>Question asides — Why we ask / Recommendation</h2>
+        <aside class="aside why">
+          <span class="label">Why we ask</span>
+          <span class="body">Knowing the hosting environment up front lets us scope server-side rendering, image processing, and edge cache behavior accurately.</span>
+        </aside>
+        <aside class="aside rec">
+          <span class="label">Recommendation</span>
+          <span class="body">If you don't already have a strong reason to stay on the current stack, default to Cloudflare Workers + R2 for the static asset path and a managed Postgres for relational data.</span>
+        </aside>
+
+        <h2>Progress block</h2>
+        <div class="progress-block">
+          <div class="progress-headline">
+            <span class="progress-pct">12%</span>
+            <span class="progress-label">5 of 42 answered</span>
+          </div>
+          <div class="progress-bar"><div class="progress-bar-fill" style="width:12%"></div></div>
+          <dl class="progress-status">
+            <div><dt>Not started</dt><dd>32</dd></div>
+            <div><dt>In progress</dt><dd>3</dd></div>
+            <div><dt>Answered</dt><dd>5</dd></div>
+            <div><dt>Needs clarification</dt><dd>2</dd></div>
+          </dl>
+        </div>
+
+        <h2>Priority panel (EC-flagged questions)</h2>
+        <div class="panel priority">
+          <div class="panel-header">
+            <span class="panel-tag">Priority</span>
+            <h2 class="panel-title" style="font-size:0.92rem">EC has flagged 2 questions for your attention</h2>
+          </div>
+          <ol class="panel-list">
+            <li><a href="#"><span class="panel-qid">B1</span><span>Will the new search live under /search or be replaced inline?</span><span class="panel-section">B. Search</span></a></li>
+            <li><a href="#"><span class="panel-qid">D1</span><span>Where does the legacy content actually live?</span><span class="panel-section">D. Migration</span></a></li>
+          </ol>
+        </div>
+
+        <h2>Needs-clarification panel</h2>
+        <div class="panel clarification">
+          <div class="panel-header">
+            <span class="panel-tag">Needs clarification</span>
+            <h2 class="panel-title" style="font-size:0.92rem">1 question awaiting clarification</h2>
+          </div>
+          <ol class="panel-list">
+            <li><a href="#"><span class="panel-qid">G3</span><span>Are we keeping the existing Drupal taxonomy or rebuilding from scratch?</span><span class="panel-section">G. Architecture</span></a></li>
+          </ol>
+        </div>
+
+        <h2>Recent activity</h2>
+        <ol class="activity-list">
+          <li class="activity-item role-client">
+            <div class="activity-meta">
+              <span class="qid">A1</span>
+              <span class="role role-client">IIE</span>
+              <span class="action">edited response</span>
+              <time>May 20, 6:19 AM</time>
+            </div>
+            <p class="activity-preview">Targeting Q3.</p>
+          </li>
+          <li class="activity-item role-ec">
+            <div class="activity-meta">
+              <span class="qid">B1</span>
+              <span class="role role-ec">EC</span>
+              <span class="action">commented</span>
+              <time>May 20, 8:13 AM</time>
+            </div>
+            <p class="activity-preview">Flagging this one — depends on the hosting decision.</p>
+          </li>
+          <li class="activity-item role-ec">
+            <div class="activity-meta">
+              <span class="qid">G3</span>
+              <span class="role role-ec">EC</span>
+              <span class="action">edited response</span>
+              <time>May 20, 9:06 AM</time>
+            </div>
+            <p class="activity-preview">Marked as needs clarification — see B1 thread.</p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ============ PROPOSED ============ -->
+      <section class="col proposed">
+        <h3>Proposed</h3>
+
+        <h2>Three pales (with deep ink partners)</h2>
+        <div class="swatches" style="grid-template-columns:repeat(3,1fr); gap:0.75rem">
+          <div>
+            <div style="display:flex; gap:0.25rem">
+              <div style="flex:1; height:2.5rem; background:#fffbeb; border:1px solid rgba(0,0,0,0.08); border-radius:4px"></div>
+              <div style="flex:1; height:2.5rem; background:#fef3c7; border:1px solid rgba(0,0,0,0.08); border-radius:4px"></div>
+              <div style="flex:1; height:2.5rem; background:#713f12; border:1px solid rgba(0,0,0,0.08); border-radius:4px"></div>
+            </div>
+            <div style="font-size:0.7rem; font-weight:600; margin-top:0.3rem">Yellow → brown</div>
+            <div style="font-size:0.65rem; color:#71717a; font-family:ui-monospace,monospace">#fffbeb / #fef3c7 / #713f12</div>
+          </div>
+          <div>
+            <div style="display:flex; gap:0.25rem">
+              <div style="flex:1; height:2.5rem; background:#eff5fb; border:1px solid rgba(0,0,0,0.08); border-radius:4px"></div>
+              <div style="flex:1; height:2.5rem; background:#c8d8e8; border:1px solid rgba(0,0,0,0.08); border-radius:4px"></div>
+              <div style="flex:1; height:2.5rem; background:#1e3a5f; border:1px solid rgba(0,0,0,0.08); border-radius:4px"></div>
+            </div>
+            <div style="font-size:0.7rem; font-weight:600; margin-top:0.3rem">Blue → navy</div>
+            <div style="font-size:0.65rem; color:#71717a; font-family:ui-monospace,monospace">#eff5fb / #c8d8e8 / #1e3a5f</div>
+          </div>
+          <div>
+            <div style="display:flex; gap:0.25rem">
+              <div style="flex:1; height:2.5rem; background:#fdf3f3; border:1px solid rgba(0,0,0,0.08); border-radius:4px"></div>
+              <div style="flex:1; height:2.5rem; background:#f5cfcf; border:1px solid rgba(0,0,0,0.08); border-radius:4px"></div>
+              <div style="flex:1; height:2.5rem; background:#6b1c2c; border:1px solid rgba(0,0,0,0.08); border-radius:4px"></div>
+            </div>
+            <div style="font-size:0.7rem; font-weight:600; margin-top:0.3rem">Pink → wine</div>
+            <div style="font-size:0.65rem; color:#71717a; font-family:ui-monospace,monospace">#fdf3f3 / #f5cfcf / #6b1c2c</div>
+          </div>
+        </div>
+
+        <h2>Role chips</h2>
+        <div class="pills">
+          <span class="role role-ec">EC</span>
+          <span class="role role-client">IIE</span>
+        </div>
+        <div style="margin-top: 0.5rem;">
+          <span class="role-with-email"><span class="role role-ec">EC</span><span class="email">tim@electriccitizen.com</span></span>
+          <br/>
+          <span class="role-with-email" style="margin-top:0.25rem"><span class="role role-client">IIE</span><span class="email">albino@iie.org</span></span>
+        </div>
+
+        <h2>Status pills</h2>
+        <div class="pills">
+          <span class="pill pill-not_started">Not started</span>
+          <span class="pill pill-in_progress">In progress</span>
+          <span class="pill pill-answered">Answered</span>
+          <span class="pill pill-needs">Needs clarification</span>
+        </div>
+
+        <h2>Priority pills</h2>
+        <div class="pills">
+          <span class="pill pill-prio-high">High</span>
+          <span class="pill pill-prio-medium">Medium</span>
+          <span class="pill pill-prio-low">Low</span>
+        </div>
+
+        <h2>Question cards (left-border accent)</h2>
+        <div>
+          <div class="qcard answered">
+            <div class="qid">A1 · Answered</div>
+            <div class="body">Targeting Q3.</div>
+          </div>
+          <div class="qcard needs">
+            <div class="qid">B1 · Needs clarification</div>
+            <div class="body">Will the new search live under /search or be replaced inline?</div>
+          </div>
+          <div class="qcard flagged">
+            <div class="qid">C2 · Flagged</div>
+            <div class="body">Migration approach TBD — depends on hosting decision.</div>
+          </div>
+        </div>
+
+        <h2>Question asides — Why we ask / Recommendation</h2>
+        <aside class="aside why">
+          <span class="label">Why we ask</span>
+          <span class="body">Knowing the hosting environment up front lets us scope server-side rendering, image processing, and edge cache behavior accurately.</span>
+        </aside>
+        <aside class="aside rec">
+          <span class="label">Recommendation</span>
+          <span class="body">If you don't already have a strong reason to stay on the current stack, default to Cloudflare Workers + R2 for the static asset path and a managed Postgres for relational data.</span>
+        </aside>
+
+        <h2>Progress block</h2>
+        <div class="progress-block">
+          <div class="progress-headline">
+            <span class="progress-pct">12%</span>
+            <span class="progress-label">5 of 42 answered</span>
+          </div>
+          <div class="progress-bar"><div class="progress-bar-fill" style="width:12%"></div></div>
+          <dl class="progress-status">
+            <div><dt>Not started</dt><dd>32</dd></div>
+            <div><dt>In progress</dt><dd>3</dd></div>
+            <div><dt>Answered</dt><dd>5</dd></div>
+            <div><dt>Needs clarification</dt><dd>2</dd></div>
+          </dl>
+        </div>
+
+        <h2>Priority panel (EC-flagged questions)</h2>
+        <div class="panel priority">
+          <div class="panel-header">
+            <span class="panel-tag">Priority</span>
+            <h2 class="panel-title" style="font-size:0.92rem">EC has flagged 2 questions for your attention</h2>
+          </div>
+          <ol class="panel-list">
+            <li><a href="#"><span class="panel-qid">B1</span><span>Will the new search live under /search or be replaced inline?</span><span class="panel-section">B. Search</span></a></li>
+            <li><a href="#"><span class="panel-qid">D1</span><span>Where does the legacy content actually live?</span><span class="panel-section">D. Migration</span></a></li>
+          </ol>
+        </div>
+
+        <h2>Needs-clarification panel</h2>
+        <div class="panel clarification">
+          <div class="panel-header">
+            <span class="panel-tag">Needs clarification</span>
+            <h2 class="panel-title" style="font-size:0.92rem">1 question awaiting clarification</h2>
+          </div>
+          <ol class="panel-list">
+            <li><a href="#"><span class="panel-qid">G3</span><span>Are we keeping the existing Drupal taxonomy or rebuilding from scratch?</span><span class="panel-section">G. Architecture</span></a></li>
+          </ol>
+        </div>
+
+        <h2>Recent activity</h2>
+        <ol class="activity-list">
+          <li class="activity-item role-client">
+            <div class="activity-meta">
+              <span class="qid">A1</span>
+              <span class="role role-client">IIE</span>
+              <span class="action">edited response</span>
+              <time>May 20, 6:19 AM</time>
+            </div>
+            <p class="activity-preview">Targeting Q3.</p>
+          </li>
+          <li class="activity-item role-ec">
+            <div class="activity-meta">
+              <span class="qid">B1</span>
+              <span class="role role-ec">EC</span>
+              <span class="action">commented</span>
+              <time>May 20, 8:13 AM</time>
+            </div>
+            <p class="activity-preview">Flagging this one — depends on the hosting decision.</p>
+          </li>
+          <li class="activity-item role-ec">
+            <div class="activity-meta">
+              <span class="qid">G3</span>
+              <span class="role role-ec">EC</span>
+              <span class="action">edited response</span>
+              <time>May 20, 9:06 AM</time>
+            </div>
+            <p class="activity-preview">Marked as needs clarification — see B1 thread.</p>
+          </li>
+        </ol>
+      </section>
+    </div>
+
+    <section class="a11y" style="max-width: 80rem;">
+      <h2 style="margin-top:2.5rem">A11y — contrast ratios (WCAG)</h2>
+      <p style="color:#71717a; font-size:0.85rem; margin:0 0 1rem">
+        Computed in your browser from the actual hex values. AA = 4.5:1 for body text, 3:1 for large/UI.
+        AAA = 7:1 for body text. Failures highlighted in red.
+      </p>
+      <table id="a11y-table">
+        <thead>
+          <tr>
+            <th>Combo</th>
+            <th>Sample</th>
+            <th>Ratio</th>
+            <th>Verdict</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <script>
+      // WCAG relative luminance + contrast ratio
+      function lum(hex) {
+        const c = hex.replace('#', '');
+        const r = parseInt(c.slice(0, 2), 16) / 255;
+        const g = parseInt(c.slice(2, 4), 16) / 255;
+        const b = parseInt(c.slice(4, 6), 16) / 255;
+        const adj = (v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+        return 0.2126 * adj(r) + 0.7152 * adj(g) + 0.0722 * adj(b);
+      }
+      function ratio(fg, bg) {
+        const l1 = lum(fg), l2 = lum(bg);
+        const [a, b] = l1 > l2 ? [l1, l2] : [l2, l1];
+        return (a + 0.05) / (b + 0.05);
+      }
+      function verdict(r) {
+        if (r >= 7) return ['pass-aaa', 'AAA'];
+        if (r >= 4.5) return ['pass-aa', 'AA'];
+        if (r >= 3) return ['pass-aa', 'AA (large)'];
+        return ['fail', 'FAIL'];
+      }
+      const combos = [
+        ['CURRENT — ink on paper', '#0a0a0a', '#fafafa', 'body text'],
+        ['CURRENT — ink-soft on paper', '#3f3f46', '#fafafa', 'secondary text'],
+        ['CURRENT — ink-muted on paper', '#71717a', '#fafafa', 'tertiary text / labels'],
+        ['CURRENT — ink-faint on paper', '#a1a1aa', '#fafafa', 'placeholders / decorative'],
+        ['CURRENT — sky-deep on sky-soft (priority tag)', '#075985', '#bae6fd', 'TAG'],
+        ['CURRENT — rust-deep on rust-soft (clarif tag)', '#7c2d12', '#fed7aa', 'TAG'],
+        ['CURRENT — #6e4d0c on amber-soft (answered)', '#6e4d0c', '#f7eccc', 'PILL'],
+        ['CURRENT — moss on moss-soft (in_progress)', '#15803d', '#dcfce7', 'PILL'],
+        ['CURRENT — white on navy (EC role)', '#ffffff', '#1e3a5f', 'CHIP'],
+        ['CURRENT — white on rust (priority high)', '#ffffff', '#c2410c', 'CHIP'],
+        ['CURRENT — white on teal client', '#ffffff', '#0e7490', 'CHIP'],
+        ['PROPOSED — yellow-deep on yellow-soft', '#713f12', '#fef3c7', 'TAG'],
+        ['PROPOSED — navy on blue-soft', '#1e3a5f', '#c8d8e8', 'TAG'],
+        ['PROPOSED — pink-deep on pink-soft', '#6b1c2c', '#f5cfcf', 'TAG'],
+        ['PROPOSED — white on client stone', '#ffffff', '#57534e', 'CHIP'],
+        ['PROPOSED — moss-deep on moss-soft', '#14532d', '#d1fae5', 'PILL'],
+      ];
+      const tbody = document.querySelector('#a11y-table tbody');
+      for (const [label, fg, bg, sample] of combos) {
+        const r = ratio(fg, bg);
+        const [cls, v] = verdict(r);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${label}</td>
+          <td><span class="sample" style="background:${bg}; color:${fg}">${sample} Aa</span></td>
+          <td class="ratio">${r.toFixed(2)}:1</td>
+          <td><span class="verdict ${cls}">${v}</span></td>
+        `;
+        tbody.appendChild(tr);
+      }
+    </script>
+  </body>
+</html>
