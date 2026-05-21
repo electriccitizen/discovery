@@ -29,7 +29,6 @@ While reviewing the current site, we surfaced content types and features that th
 
 - **(a) Preserve as-is** — Video stays its own content type with the existing finder, migrated with current Topic + Audience taxonomies.
 - **(b) Fold videos into other content types** — embed videos directly in Stories, Events, 5 Steps pages, etc. Drop the dedicated finder. Video as a content medium remains throughout the site, just not in a centralized library.
-- **(c) Hybrid** — keep a video library/gallery for discovery, but also embed videos heavily in other content. Both surfaces.
 
 - **Recommendation:** We recommend option (b) and keeping all videos in a standard Media library unless there is a compelling reason to treat them as their own content type.
 
