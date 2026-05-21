@@ -23,7 +23,7 @@ order: 7
 
 **G4. What's your vision for AI-enhanced search?** Natural-language query understanding + semantic results? AI-summarized result groupings?
 
-**G5. What's your vision for AI-assisted editorial tagging?** Examples we'd expect: auto-suggest meta tags / descriptions, taxonomy terms (Region / Country / Audience), alt text for images, internal-link suggestions. Which of these are in scope?
+**G5. What's your vision for AI-assisted editorial tagging?** Examples we'd expect: auto-suggest meta tags / descriptions, taxonomy terms (Region / Country / Audience), alt text for images, internal-link suggestions. Do you have a preference or other things you'd like to see AI used for on the editorial side?
 
 - **Recommendation:** Our experience is that some of these tools are hit-or-miss in terms of actual usefulness. We suggest starting small with 2–3 enhancements that might bring tangible value.
 
