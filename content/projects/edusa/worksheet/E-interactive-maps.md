@@ -14,9 +14,7 @@ order: 5
 
 ### Questions for you
 
-**E1. We plan to deliver one integrated map per the LOA. Does that match what you envisioned?** The RFP separately mentioned a "world map" and a "U.S. map" (and described distinct map needs for HEI vs Student audiences) — the LOA collapsed that into "an interactive map." If you actually want separate maps, flag now; otherwise we proceed with one integrated experience.
-
-- **Recommendation:** We recommend a single map for a unified experience and less technical weight.
+**E1. The number and type of maps in the site will depend on the data that needs to be shown in each use case** The RFP separately mentioned a "world map" and a "U.S. map" (and described distinct map needs for HEI vs Student audiences) — the LOA collapsed that into "an interactive map." Do you think that the data for an HEI pin will differ greatly from an advising center pin?
 
 **E2. The current site has two parallel country lists — should the new build consolidate?** Centers and Scholarships use a Drupal Country taxonomy (177 terms); Events use the address module's ISO 2-letter list (250 codes). They don't fully overlap (ISO is more complete on territories and edge cases). Our default plan is to consolidate on a single canonical source (most likely the ISO list) and re-map existing taxonomy references during migration — that keeps the country reference clean and is what the interactive map will plot against.
 
@@ -36,7 +34,7 @@ order: 5
 - **Recommendation:** We suggest starting with a simple list of data layers from readily available sources. Fewer, better data layers beat adding everything possible.
 
 - **(a) Advising-center locations** — we have \~436 records from the current site with street addresses; we'd geocode at migration.
-- **(b) HEI locations** — described as a map layer in the RFP and LOA. HEIs submit institutional info via the form (D1), accreditation-checked and REAC-reviewed; we geocode at submission. The map would show whichever HEIs have submitted — not a pre-existing directory of all accredited institutions. Two related items:
+- **(b) HEI locations** — described as a map layer in the RFP and LOA (could also be a separate map if the data/use case leads us in that direction). HEIs submit institutional info via the form (D1), accreditation-checked and REAC-reviewed; we geocode at submission. The map would show whichever HEIs have submitted — not a pre-existing directory of all accredited institutions. Two related items:
   - (i) Confirm the submission-driven model is what you have in mind.
   - (ii) How does IIE plan to gather HEI submissions pre-launch so the map has data on day one? (Email outreach to known contacts, announcement at events like the DC Forum, direct asks to specific institutions, or accept empty-at-launch / grow-organically.)
 - **(c) Success-story geotags** — for stories to appear on the map, each needs a country tag (and optionally a region or city). Would require adding a country/region field to the Success Story content type.
