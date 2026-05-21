@@ -10,7 +10,7 @@ via Resend. **Zero activity in a 24-hour window → no email sent.**
 
 | File | Purpose |
 | --- | --- |
-| `digest.mjs` | The Worker. Exports `scheduled` and a debug `/__run` fetch handler. |
+| `digest.mjs` | The Worker. Exports `scheduled` only — no public HTTP surface. |
 | `wrangler.jsonc` | Worker config: name `discovery-digest`, cron `0 11 * * *`, D1 binding to the shared `discovery` database. |
 | `build-questions.mjs` | Pre-build step. Walks `/content/projects/*/worksheet/*.md` and writes `questions.json` (question_id → title, section info). The digest worker imports this to surface real question titles and deep links in the email instead of bare `A1`-style IDs. |
 | `questions.json` | Generated. **Re-run `build-questions.mjs` whenever you edit worksheet markdown content, then redeploy.** |
@@ -80,15 +80,27 @@ Defaults to `https://discovery.electriccitizen.com` if not set.
 
 ## Manual test
 
-After deploy, dry-run the digest logic without waiting for the cron:
+The worker has no public HTTP surface. Two ways to fire the digest on
+demand:
+
+**1. Cloudflare dashboard** — open the `discovery-digest` worker →
+Triggers → Cron Triggers → click the "Trigger" button next to the cron
+expression. Runs the deployed handler against real D1, real Resend.
+Easiest for a one-off.
+
+**2. Local wrangler dev** — fires the `scheduled` handler locally.
+Defaults to local D1 (won't see prod data) unless you pass `--remote`:
 
 ```bash
-# Replace dummy-token with the Cloudflare Access service token if needed,
-# or temporarily flip workers_dev to true in wrangler.jsonc and redeploy.
-curl https://discovery-digest.electriccitizen.workers.dev/__run
+cd cron
+npx wrangler dev --test-scheduled --remote
+# in another terminal:
+curl 'http://localhost:8787/__scheduled?cron=0+11+*+*+*'
 ```
 
-Watch logs in real time:
+`--remote` sends real emails to real subscribers — use sparingly.
+
+Watch logs from the deployed worker in real time:
 
 ```bash
 npx wrangler tail discovery-digest

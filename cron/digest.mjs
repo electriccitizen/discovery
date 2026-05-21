@@ -8,19 +8,11 @@ import questions from './questions.json';
 const DEFAULT_PORTAL_BASE = 'https://discovery.electriccitizen.com';
 const FROM = 'EC Discovery Portal <noreply@electriccitizen.com>';
 
+// Scheduled-only worker — no HTTP surface. For manual testing, use
+// `npx wrangler dev --test-scheduled` and hit /__scheduled locally.
 export default {
   async scheduled(_event, env, ctx) {
     ctx.waitUntil(run(env));
-  },
-
-  // A fetch handler so we can manually trigger the digest while testing.
-  // Reachable only when workers_dev is temporarily flipped on in wrangler.jsonc.
-  async fetch(request, env, ctx) {
-    if (new URL(request.url).pathname !== '/__run') {
-      return new Response('not found', { status: 404 });
-    }
-    ctx.waitUntil(run(env));
-    return new Response('digest run scheduled', { status: 202 });
   },
 };
 
