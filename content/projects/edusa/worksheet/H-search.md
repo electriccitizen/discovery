@@ -15,5 +15,5 @@ Permissioned content (e.g., HEI contact info behind a privacy wall) is excluded 
 
 ### Questions for you
 
-**H1. Which content types should NOT appear in public search results?** By default, all publicly-accessible content is indexed — Advising Centers, Scholarships, Events, Videos, Adviser Profiles, HEI listings, Country pages, Success Stories, FAQ, Glossary, Basic Pages, Landing pages, etc. Gated content (Region landing pages, HEI private contact info, anything behind login) is excluded automatically. Are there other content types you'd want kept out — e.g., admin/legal Basic Pages, Section Overview hub pages, or Country Fact Sheets if they remain gated?
+**H1. Which content types should NOT appear in public search results?** By default, most publicly-accessible content is indexed — Advising Centers, Scholarships, Videos, Adviser Profiles, HEI listings, Success Stories, FAQ, Glossary, Basic Pages, Landing pages, etc. Gated content and time-specific content (events, private contact info, anything behind login) is excluded automatically. Is there content you'd want kept out — e.g., legal specific or internal-facing pages, etc?
 - *Why we ask:* Default-include / explicit-exclude is the standard pattern; we want to confirm the exclusion list before we configure the search index.
