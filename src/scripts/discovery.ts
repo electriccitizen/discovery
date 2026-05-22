@@ -206,6 +206,27 @@ interface CommentPayload {
   author_label: string;
   body: string;
   created_at: string;
+  internal: number;
+}
+
+interface MentionableUser {
+  email: string;
+  name: string;
+  role: 'ec' | 'client';
+}
+
+// Per-project cache of the mentionable user list — the list is small and
+// stable across a page load, so one fetch services every thread on the page.
+const mentionableCache = new Map<string, Promise<MentionableUser[]>>();
+function loadMentionable(project: string): Promise<MentionableUser[]> {
+  const hit = mentionableCache.get(project);
+  if (hit) return hit;
+  const p = fetch(`/api/projects/${project}/mentionable`, { credentials: 'same-origin' })
+    .then((r) => (r.ok ? r.json() : { users: [] }))
+    .then((data: { users?: MentionableUser[] }) => data.users ?? [])
+    .catch(() => [] as MentionableUser[]);
+  mentionableCache.set(project, p);
+  return p;
 }
 
 class CommentThread extends HTMLElement {
@@ -216,6 +237,14 @@ class CommentThread extends HTMLElement {
   private textarea!: HTMLTextAreaElement;
   private statusEl!: HTMLElement;
   private submitBtn!: HTMLButtonElement;
+  private internalToggle: HTMLInputElement | null = null;
+
+  // Mention autocomplete state
+  private mentionables: MentionableUser[] = [];
+  private mentionPopup: HTMLDivElement | null = null;
+  private mentionTriggerStart = -1;       // index in textarea where '@' was typed
+  private mentionFiltered: MentionableUser[] = [];
+  private mentionSelected = 0;
 
   connectedCallback() {
     this.project = this.dataset.project ?? '';
@@ -225,22 +254,217 @@ class CommentThread extends HTMLElement {
     this.textarea = this.form.querySelector('textarea') as HTMLTextAreaElement;
     this.statusEl = this.form.querySelector('[data-role="status"]') as HTMLElement;
     this.submitBtn = this.form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    this.internalToggle = this.form.querySelector('[data-role="internal-toggle"]') as HTMLInputElement | null;
 
     this.form.addEventListener('submit', (e) => {
       e.preventDefault();
       this.submit();
     });
-    this.textarea.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        this.submit();
-      }
+    this.textarea.addEventListener('keydown', (e) => this.onTextareaKeydown(e));
+    this.textarea.addEventListener('input', () => this.onTextareaInput());
+    this.textarea.addEventListener('blur', () => {
+      // Slight delay so click-on-option still registers before blur kills it.
+      window.setTimeout(() => this.closeMentionPopup(), 120);
     });
+    if (this.internalToggle) {
+      this.internalToggle.addEventListener('change', () => {
+        this.applyInternalState();
+        // Re-filter the open popup so client roles disappear when toggled on.
+        if (this.mentionTriggerStart >= 0) this.refreshMentionFilter();
+      });
+      // Always start in the safe (public) state on page load. Deliberately
+      // not persisted: a sticky default is exactly how someone posts a
+      // client-visible comment thinking it was internal.
+      this.internalToggle.checked = false;
+      this.applyInternalState();
+    }
+
+    // Kick off the mentionable fetch eagerly so the first @ is responsive.
+    loadMentionable(this.project).then((users) => {
+      this.mentionables = users;
+    });
+  }
+
+  // === Mention autocomplete ===
+  //
+  // Detection is "did the user just type an @ that's at the start of input
+  // or preceded by whitespace/punctuation, and not followed by anything
+  // that looks like an email already". We track the @-position; as the
+  // user keeps typing, we read the text from that position forward and
+  // treat anything up to the next whitespace as the partial query.
+
+  private onTextareaKeydown(e: KeyboardEvent) {
+    // Ctrl/⌘+Enter submits regardless of popup state.
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      this.submit();
+      return;
+    }
+    // Popup keyboard nav.
+    if (this.mentionTriggerStart < 0) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.mentionSelected = (this.mentionSelected + 1) % Math.max(this.mentionFiltered.length, 1);
+      this.renderMentionPopup();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const len = Math.max(this.mentionFiltered.length, 1);
+      this.mentionSelected = (this.mentionSelected - 1 + len) % len;
+      this.renderMentionPopup();
+    } else if (e.key === 'Enter' || e.key === 'Tab') {
+      if (this.mentionFiltered.length > 0) {
+        e.preventDefault();
+        this.acceptMention(this.mentionFiltered[this.mentionSelected]);
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      this.closeMentionPopup();
+    }
+  }
+
+  private onTextareaInput() {
+    const value = this.textarea.value;
+    const caret = this.textarea.selectionStart ?? value.length;
+
+    // If we have an active trigger, check that it's still valid (caret still
+    // after the @, no whitespace inserted between @ and caret).
+    if (this.mentionTriggerStart >= 0) {
+      if (caret < this.mentionTriggerStart + 1) {
+        this.closeMentionPopup();
+        return;
+      }
+      const slice = value.slice(this.mentionTriggerStart + 1, caret);
+      if (/\s/.test(slice)) {
+        this.closeMentionPopup();
+        return;
+      }
+      this.refreshMentionFilter();
+      return;
+    }
+
+    // Look for a freshly-typed @ at the caret position.
+    if (caret === 0) return;
+    const ch = value[caret - 1];
+    if (ch !== '@') return;
+    const before = caret >= 2 ? value[caret - 2] : '';
+    // Only trigger at the start of input or after whitespace/punctuation.
+    // Prevents tripping inside email-like patterns ("foo@bar.com").
+    if (before && !/[\s(\[,;]/.test(before)) return;
+    this.mentionTriggerStart = caret - 1;
+    this.refreshMentionFilter();
+  }
+
+  private refreshMentionFilter() {
+    const value = this.textarea.value;
+    const caret = this.textarea.selectionStart ?? value.length;
+    const query = value.slice(this.mentionTriggerStart + 1, caret).toLowerCase();
+    const internalOn = this.internalToggle?.checked === true;
+    const candidates = internalOn
+      ? this.mentionables.filter((u) => u.role === 'ec')
+      : this.mentionables;
+    this.mentionFiltered = candidates.filter((u) => {
+      if (!query) return true;
+      return (
+        u.email.toLowerCase().includes(query) ||
+        u.name.toLowerCase().includes(query)
+      );
+    }).slice(0, 8);
+    this.mentionSelected = 0;
+    this.renderMentionPopup();
+  }
+
+  private ensureMentionPopup(): HTMLDivElement {
+    if (this.mentionPopup) return this.mentionPopup;
+    const div = document.createElement('div');
+    div.className = 'mention-popup';
+    div.setAttribute('role', 'listbox');
+    div.hidden = true;
+    this.form.appendChild(div);
+    div.addEventListener('mousedown', (e) => {
+      // Prevent textarea blur on click.
+      e.preventDefault();
+    });
+    div.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const opt = target.closest('[data-mention-email]');
+      if (!opt) return;
+      const email = opt.getAttribute('data-mention-email') ?? '';
+      const user = this.mentionFiltered.find((u) => u.email === email);
+      if (user) this.acceptMention(user);
+    });
+    this.mentionPopup = div;
+    return div;
+  }
+
+  private renderMentionPopup() {
+    const popup = this.ensureMentionPopup();
+    // Position docked just under the textarea.
+    const ta = this.textarea;
+    const taRect = ta.getBoundingClientRect();
+    const formRect = this.form.getBoundingClientRect();
+    popup.style.top = `${taRect.bottom - formRect.top + 4}px`;
+    popup.style.left = `${taRect.left - formRect.left}px`;
+    popup.style.width = `${Math.max(taRect.width, 240)}px`;
+
+    if (this.mentionFiltered.length === 0) {
+      popup.innerHTML = '<div class="mention-empty">No matching users</div>';
+      popup.hidden = false;
+      return;
+    }
+    popup.innerHTML = this.mentionFiltered
+      .map((u, i) => {
+        const sel = i === this.mentionSelected ? 'true' : 'false';
+        return `
+          <div class="mention-option" role="option" aria-selected="${sel}" data-mention-email="${escapeAttr(u.email)}">
+            <span class="mention-option-name"></span>
+            <span class="mention-option-email"></span>
+            <span class="mention-option-role" data-role="${u.role}">${u.role}</span>
+          </div>
+        `;
+      })
+      .join('');
+    const nodes = popup.querySelectorAll('.mention-option');
+    this.mentionFiltered.forEach((u, i) => {
+      const node = nodes[i];
+      if (!node) return;
+      (node.querySelector('.mention-option-name') as HTMLElement).textContent = u.name;
+      (node.querySelector('.mention-option-email') as HTMLElement).textContent = u.email;
+    });
+    popup.hidden = false;
+  }
+
+  private acceptMention(user: MentionableUser) {
+    const value = this.textarea.value;
+    const caret = this.textarea.selectionStart ?? value.length;
+    // Replace from the @ trigger up to the current caret with `@email `.
+    const before = value.slice(0, this.mentionTriggerStart);
+    const after = value.slice(caret);
+    const insertion = `@${user.email} `;
+    const newValue = `${before}${insertion}${after}`;
+    this.textarea.value = newValue;
+    const newCaret = before.length + insertion.length;
+    this.textarea.setSelectionRange(newCaret, newCaret);
+    this.closeMentionPopup();
+    this.textarea.focus();
+  }
+
+  private closeMentionPopup() {
+    this.mentionTriggerStart = -1;
+    this.mentionFiltered = [];
+    this.mentionSelected = 0;
+    if (this.mentionPopup) this.mentionPopup.hidden = true;
+  }
+
+  private applyInternalState() {
+    const on = this.internalToggle?.checked === true;
+    this.form.classList.toggle('comment-form--internal', on);
+    this.submitBtn.textContent = on ? 'Post internal note' : 'Post comment';
   }
 
   private async submit() {
     const body = this.textarea.value.trim();
     if (!body) return;
+    const internal = this.internalToggle?.checked === true;
     this.submitBtn.disabled = true;
     this.setStatus('saving', 'Posting…');
     try {
@@ -249,13 +473,20 @@ class CommentThread extends HTMLElement {
         {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ body }),
+          body: JSON.stringify({ body, internal }),
         }
       );
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const data = (await r.json()) as { comment: CommentPayload };
       this.appendComment(data.comment);
       this.textarea.value = '';
+      // Reset the internal toggle after every post — same reason as on
+      // page load: sticky-on is the failure mode that leaks notes to
+      // clients (or hides them from clients), depending on direction.
+      if (this.internalToggle) {
+        this.internalToggle.checked = false;
+        this.applyInternalState();
+      }
       this.setStatus('saved', 'Posted');
       window.setTimeout(() => this.setStatus('idle', ''), 1500);
     } catch (err) {
@@ -271,15 +502,19 @@ class CommentThread extends HTMLElement {
     if (empty) empty.remove();
     const role = c.author_label === 'EC' ? 'ec' : 'client';
     const article = document.createElement('article');
-    article.className = `comment comment-${role}`;
+    article.className = `comment comment-${role}${c.internal ? ' comment--internal' : ''}`;
     article.dataset.commentId = String(c.id);
     const time = new Date(c.created_at).toLocaleString(undefined, {
       dateStyle: 'medium',
       timeStyle: 'short',
     });
+    const badge = c.internal
+      ? '<span class="comment-internal-badge" title="Internal — EC team only, not visible to client">INTERNAL</span>'
+      : '';
     article.innerHTML = `
       <header class="comment-header">
         <span class="user-role user-role-${role}"></span>
+        ${badge}
         <span class="comment-author"><code></code></span>
         <time class="comment-time" datetime="${escapeAttr(c.created_at)}"></time>
       </header>
@@ -288,7 +523,7 @@ class CommentThread extends HTMLElement {
     (article.querySelector('.user-role') as HTMLElement).textContent = c.author_label;
     (article.querySelector('.comment-author code') as HTMLElement).textContent = c.author_email;
     (article.querySelector('.comment-time') as HTMLElement).textContent = time;
-    (article.querySelector('.comment-body') as HTMLElement).textContent = c.body;
+    (article.querySelector('.comment-body') as HTMLElement).innerHTML = renderCommentBodyClient(c.body);
     this.list.appendChild(article);
   }
 
@@ -300,6 +535,28 @@ class CommentThread extends HTMLElement {
 
 function escapeAttr(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Client-side mirror of src/lib/mentions.ts renderCommentBody — used for
+// optimistic append when a comment is posted. Server-rendered comments go
+// through the server helper; this needs to produce identical output.
+const CLIENT_MENTION_PATTERN = /(^|[\s(\[,;])@([A-Za-z0-9._+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,})/g;
+function renderCommentBodyClient(body: string): string {
+  const escaped = escapeHtml(body);
+  return escaped.replace(CLIENT_MENTION_PATTERN, (_m, lead: string, email: string) => {
+    const at = email.indexOf('@');
+    const label = at > 0 ? email.slice(0, at) : email;
+    return `${lead}<span class="mention-pill" title="${escapeAttr(email)}">@${escapeHtml(label)}</span>`;
+  });
 }
 
 class NotificationPrefs extends HTMLElement {

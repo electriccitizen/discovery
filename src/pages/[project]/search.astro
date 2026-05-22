@@ -27,7 +27,10 @@ const references = listReferences(projectSlug);
 
 const db = env.DB;
 const [responses, comments] = db
-  ? await Promise.all([listResponses(db, projectSlug), listAllComments(db, projectSlug)])
+  ? await Promise.all([
+      listResponses(db, projectSlug),
+      listAllComments(db, projectSlug, { includeInternal: userIsEC }),
+    ])
   : [[], []];
 
 const results = query

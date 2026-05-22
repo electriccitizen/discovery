@@ -3,6 +3,10 @@
     {
       "slug": "edusa",
       "active": true
+    },
+    {
+      "slug": "acme",
+      "active": true
     }
   ]
 }

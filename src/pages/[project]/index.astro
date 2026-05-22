@@ -25,7 +25,10 @@ const totalQuestions = countQuestions(projectSlug);
 
 const db = env.DB;
 const [responses, activity] = db
-  ? await Promise.all([listResponses(db, projectSlug), listRecentActivity(db, projectSlug, 10)])
+  ? await Promise.all([
+      listResponses(db, projectSlug),
+      listRecentActivity(db, projectSlug, 10, { includeInternal: userIsEC }),
+    ])
   : [[], [] as ActivityItem[]];
 const responsesById = new Map(responses.map((r) => [r.question_id, r]));
 
@@ -240,16 +243,4 @@ function sectionStats(sectionId: string) {
     </section>
   )}
 
-  {project.references.length > 0 && (
-    <>
-      <h2>Reference documents</h2>
-      <ul class="reference-list">
-        {project.references.map((r) => (
-          <li>
-            <a href={`/${projectSlug}/reference/${r.slug}`}>{r.title}</a>
-          </li>
-        ))}
-      </ul>
-    </>
-  )}
 </BaseLayout>

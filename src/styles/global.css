@@ -1854,7 +1854,7 @@ a.question-id:focus-visible {
   color: var(--ink);
 }
 
-.comment-form { display: block; margin-top: var(--space-3); }
+.comment-form { display: block; margin-top: var(--space-3); position: relative; }
 .comment-label { display: block; }
 .comment-label-text {
   display: block;
@@ -1923,6 +1923,169 @@ a.question-id:focus-visible {
 .comment-status[data-state='saving'] { color: var(--navy); }
 .comment-status[data-state='saved']  { color: var(--moss); }
 .comment-status[data-state='error']  { color: var(--pink-deep); }
+
+/* === Internal (EC-only) comments ===
+ *
+ * The hard rule is enforced server-side (clients never receive internal
+ * rows). These styles exist so an EC viewer can never visually confuse an
+ * internal note with a client-visible comment — amber border, tinted
+ * background, persistent INTERNAL badge. The composer mirrors the same
+ * amber treatment while the toggle is on so it's obvious-before-send.
+ */
+.comment--internal {
+  background: #fff8e1;                /* warm pale amber */
+  border-left-color: #c97a00;
+  border-left-width: 4px;
+}
+[data-theme='dark'] .comment--internal { background: #2a2316; }
+
+.comment-internal-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 0.06rem 0.4rem;
+  border-radius: 3px;
+  background: #c97a00;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.comment-internal-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  cursor: pointer;
+  user-select: none;
+}
+.comment-internal-toggle input { margin: 0; }
+
+.comment-form--internal textarea {
+  background: #fff8e1;
+  border-color: #c97a00;
+}
+[data-theme='dark'] .comment-form--internal textarea { background: #2a2316; }
+.comment-form--internal textarea:focus {
+  border-color: #c97a00;
+  box-shadow: 0 0 0 3px rgba(201, 122, 0, 0.25);
+}
+
+/* === @mention autocomplete ===
+ *
+ * Docked below the textarea — simpler than caret-anchored and works for
+ * variable-width fonts, scrolled textareas, multiline wrap. Trade-off:
+ * dropdown is detached from the cursor, but it's right next to the
+ * compose area so the read-and-pick motion is small.
+ */
+.mention-popup {
+  position: absolute;
+  z-index: 50;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--paper-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  min-width: 240px;
+  padding: 0.25rem 0;
+}
+.mention-popup[hidden] { display: none; }
+.mention-option {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+.mention-option:hover,
+.mention-option[aria-selected='true'] {
+  background: var(--navy-soft);
+}
+.mention-option-name { font-weight: 600; }
+.mention-option-email {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+.mention-option-role {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.06rem 0.4rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  color: #fff;
+  margin-left: auto;
+}
+.mention-option-role[data-role='ec']     { background: var(--ec-color, #2b3e6c); }
+.mention-option-role[data-role='client'] { background: var(--client-color, #7a5b00); }
+.mention-empty {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+/* Rendered mentions in comment bodies. Inline pill that visually
+ * separates from surrounding text without breaking layout. */
+.mention-pill {
+  display: inline;
+  padding: 0.05rem 0.35rem;
+  border-radius: 3px;
+  background: var(--navy-soft);
+  color: var(--navy-deep);
+  font-weight: 600;
+  font-size: 0.92em;
+}
+
+/* === Presenter mode (hide internal) ===
+ * Toggled by the header button; persisted in localStorage. CSS-only hide;
+ * server still filters for non-EC viewers regardless.
+ */
+body[data-hide-internal='1'] .comment--internal { display: none; }
+
+/* Icon-button match for .header-bell so the presenter toggle sits in the
+ * same visual row at the far right. Two SVGs are rendered in the button;
+ * which one is visible is driven by aria-pressed. When pressed (internal
+ * hidden) the button paints amber so the EC viewer always knows the
+ * "internal is suppressed" state — easy to forget during a screen share.
+ */
+.presenter-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+  cursor: pointer;
+  transition: border-color 0.12s ease, color 0.12s ease, background 0.12s ease;
+}
+.presenter-toggle:hover {
+  border-color: var(--line-strong);
+  color: var(--navy);
+}
+/* Icon reflects current state: open eye = internal is currently visible,
+ * eye-off = internal is currently hidden. aria-pressed='true' = hidden. */
+.presenter-toggle .presenter-icon-eye      { display: block; }
+.presenter-toggle .presenter-icon-eye-off  { display: none; }
+.presenter-toggle[aria-pressed='true'] .presenter-icon-eye      { display: none; }
+.presenter-toggle[aria-pressed='true'] .presenter-icon-eye-off  { display: block; }
+.presenter-toggle[aria-pressed='true'] {
+  background: #c97a00;
+  border-color: #c97a00;
+  color: #fff;
+}
+.presenter-toggle[aria-pressed='true']:hover {
+  color: #fff;
+  border-color: #c97a00;
+}
 
 /* === Section nav (prev/next) === */
 

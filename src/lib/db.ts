@@ -32,6 +32,7 @@ export interface CommentRow {
   author_label: string;
   body: string;
   created_at: string;
+  internal: number;          // 0 = visible to everyone; 1 = EC-only
 }
 
 export type AuditKind = 'body' | 'status' | 'priority' | 'flag' | 'notification_pref';
@@ -237,30 +238,35 @@ export async function listResponses(
   return result.results ?? [];
 }
 
+// `includeInternal` is the security boundary for the EC-only comment
+// feature: clients must never see internal rows on any read path. Callers
+// derive it from the viewer's role (true iff EC) and pass it through.
+// Defaulting to false here means a missed call site is safe-by-default
+// (clients won't accidentally see internal comments because someone forgot
+// the param) — the failure mode is "EC user briefly doesn't see their own
+// internal note," which is recoverable; a leak isn't.
 export async function listComments(
   db: D1Database,
   project: string,
-  questionId: string
+  questionId: string,
+  opts: { includeInternal: boolean } = { includeInternal: false }
 ): Promise<CommentRow[]> {
-  const result = await db
-    .prepare(
-      'SELECT id, project_slug, question_id, author_email, author_label, body, created_at FROM comments WHERE project_slug = ?1 AND question_id = ?2 ORDER BY created_at ASC, id ASC'
-    )
-    .bind(project, questionId)
-    .all<CommentRow>();
+  const sql = opts.includeInternal
+    ? 'SELECT id, project_slug, question_id, author_email, author_label, body, created_at, internal FROM comments WHERE project_slug = ?1 AND question_id = ?2 ORDER BY created_at ASC, id ASC'
+    : 'SELECT id, project_slug, question_id, author_email, author_label, body, created_at, internal FROM comments WHERE project_slug = ?1 AND question_id = ?2 AND internal = 0 ORDER BY created_at ASC, id ASC';
+  const result = await db.prepare(sql).bind(project, questionId).all<CommentRow>();
   return result.results ?? [];
 }
 
 export async function listAllComments(
   db: D1Database,
-  project: string
+  project: string,
+  opts: { includeInternal: boolean } = { includeInternal: false }
 ): Promise<CommentRow[]> {
-  const result = await db
-    .prepare(
-      'SELECT id, project_slug, question_id, author_email, author_label, body, created_at FROM comments WHERE project_slug = ?1 ORDER BY created_at ASC, id ASC'
-    )
-    .bind(project)
-    .all<CommentRow>();
+  const sql = opts.includeInternal
+    ? 'SELECT id, project_slug, question_id, author_email, author_label, body, created_at, internal FROM comments WHERE project_slug = ?1 ORDER BY created_at ASC, id ASC'
+    : 'SELECT id, project_slug, question_id, author_email, author_label, body, created_at, internal FROM comments WHERE project_slug = ?1 AND internal = 0 ORDER BY created_at ASC, id ASC';
+  const result = await db.prepare(sql).bind(project).all<CommentRow>();
   return result.results ?? [];
 }
 
@@ -275,8 +281,10 @@ export interface ActivityItem {
 export async function listRecentActivity(
   db: D1Database,
   project: string,
-  limit = 12
+  limit = 12,
+  opts: { includeInternal: boolean } = { includeInternal: false }
 ): Promise<ActivityItem[]> {
+  const commentFilter = opts.includeInternal ? '' : ' AND internal = 0';
   const result = await db
     .prepare(
       `SELECT 'response' AS kind, question_id, updated_by AS author_email, body, updated_at AS at
@@ -285,7 +293,7 @@ export async function listRecentActivity(
        UNION ALL
        SELECT 'comment'  AS kind, question_id, author_email, body, created_at AS at
          FROM comments
-         WHERE project_slug = ?1
+         WHERE project_slug = ?1${commentFilter}
        ORDER BY at DESC
        LIMIT ?2`
     )
@@ -359,6 +367,29 @@ export async function upsertNotificationPref(
   return row;
 }
 
+/**
+ * All distinct email addresses that have authored a response or comment on
+ * this project. Used by the @mention autocomplete to surface real
+ * participants — needed for domain-allowlisted projects (e.g. anyone at
+ * `@iie.org`) where we don't have an explicit roster up front.
+ */
+export async function listProjectParticipants(
+  db: D1Database,
+  project: string
+): Promise<string[]> {
+  const result = await db
+    .prepare(
+      `SELECT DISTINCT email FROM (
+         SELECT updated_by AS email FROM responses WHERE project_slug = ?1 AND length(updated_by) > 0
+         UNION
+         SELECT author_email AS email FROM comments  WHERE project_slug = ?1
+       )`
+    )
+    .bind(project)
+    .all<{ email: string }>();
+  return (result.results ?? []).map((r) => r.email);
+}
+
 export async function listDigestSubscribers(
   db: D1Database,
   project: string
@@ -378,17 +409,78 @@ export async function addComment(
   questionId: string,
   authorEmail: string,
   authorLabel: string,
-  body: string
-): Promise<CommentRow> {
+  body: string,
+  opts: { internal?: boolean; mentionedEmails?: string[] } = {}
+): Promise<{ row: CommentRow; mentioned: string[] }> {
   const now = new Date().toISOString();
+  const internal = opts.internal ? 1 : 0;
   const inserted = await db
     .prepare(
-      `INSERT INTO comments (project_slug, question_id, author_email, author_label, body, created_at)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6)
-       RETURNING id, project_slug, question_id, author_email, author_label, body, created_at`
+      `INSERT INTO comments (project_slug, question_id, author_email, author_label, body, created_at, internal)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
+       RETURNING id, project_slug, question_id, author_email, author_label, body, created_at, internal`
     )
-    .bind(project, questionId, authorEmail, authorLabel, body, now)
+    .bind(project, questionId, authorEmail, authorLabel, body, now, internal)
     .first<CommentRow>();
   if (!inserted) throw new Error('comment insert returned no row');
-  return inserted;
+
+  // Persist mentions in a separate table so the digest worker can query
+  // "what was I mentioned in?" without re-parsing every comment body.
+  // Caller is responsible for filtering against the project's mentionable
+  // set (and to EC-only when internal=1) — this layer just writes what it's
+  // told.
+  const mentioned = [...new Set((opts.mentionedEmails ?? []).map((e) => e.toLowerCase()))]
+    .filter((e) => e !== authorEmail.toLowerCase());        // never self-notify
+  if (mentioned.length > 0) {
+    const statements = mentioned.map((email) =>
+      db
+        .prepare(
+          `INSERT OR IGNORE INTO comment_mentions (comment_id, mentioned_email, created_at)
+           VALUES (?1, ?2, ?3)`
+        )
+        .bind(inserted.id, email, now)
+    );
+    await db.batch(statements);
+  }
+  return { row: inserted, mentioned };
+}
+
+/**
+ * Mentions targeting a specific recipient on a project, since a given
+ * timestamp. Used by the digest worker to compose the "You were mentioned"
+ * section. Internal comments are excluded for non-EC recipients via the
+ * `includeInternal` flag — same rule as listComments.
+ */
+export interface MentionDigestRow {
+  comment_id: number;
+  question_id: string;
+  author_email: string;
+  author_label: string;
+  body: string;
+  created_at: string;
+  internal: number;
+}
+
+export async function listMentionsForRecipient(
+  db: D1Database,
+  project: string,
+  recipientEmail: string,
+  since: string,
+  opts: { includeInternal: boolean }
+): Promise<MentionDigestRow[]> {
+  const internalClause = opts.includeInternal ? '' : ' AND c.internal = 0';
+  const result = await db
+    .prepare(
+      `SELECT c.id AS comment_id, c.question_id, c.author_email, c.author_label,
+              c.body, c.created_at, c.internal
+         FROM comment_mentions m
+         JOIN comments c ON c.id = m.comment_id
+        WHERE c.project_slug = ?1
+          AND m.mentioned_email = lower(?2)
+          AND m.created_at > ?3${internalClause}
+        ORDER BY c.created_at ASC`
+    )
+    .bind(project, recipientEmail, since)
+    .all<MentionDigestRow>();
+  return result.results ?? [];
 }

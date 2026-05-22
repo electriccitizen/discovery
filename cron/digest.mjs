@@ -2,11 +2,22 @@
 // every project that has at least one daily_digest subscriber, and — only
 // if there was activity in the last 24h — sends a per-subscriber digest
 // via Resend. Zero activity = no email. Quiet days stay quiet.
+//
+// Internal-comment rule: comment rows with internal=1 are EC-only on every
+// surface. The digest enforces this per recipient — we fetch internal +
+// public separately, then build the per-recipient body using only the
+// slice that recipient is allowed to see. Mirrors the rule enforced by
+// listComments/listAllComments in src/lib/db.ts.
 
 import questions from './questions.json';
 
 const DEFAULT_PORTAL_BASE = 'https://discovery.electriccitizen.com';
 const FROM = 'EC Discovery Portal <noreply@electriccitizen.com>';
+const EC_DOMAIN = '@electriccitizen.com';
+
+function isEC(email) {
+  return typeof email === 'string' && email.toLowerCase().endsWith(EC_DOMAIN);
+}
 
 // Scheduled-only worker — no HTTP surface. For manual testing, use
 // `npx wrangler dev --test-scheduled` and hit /__scheduled locally.
@@ -25,8 +36,10 @@ async function run(env) {
   ).all();
 
   for (const { project_slug } of projects.results ?? []) {
+    // Fetch all comments (incl. internal) — we partition per recipient below
+    // and only send the subset each viewer is allowed to see.
     const comments = await env.DB.prepare(
-      `SELECT question_id, author_email, author_label, body, created_at
+      `SELECT question_id, author_email, author_label, body, created_at, internal
          FROM comments
         WHERE project_slug = ?1 AND created_at > ?2
         ORDER BY created_at ASC`
@@ -45,22 +58,52 @@ async function run(env) {
 
     const commentRows = comments.results ?? [];
     const auditRows = audit.results ?? [];
-    const totalActivity = commentRows.length + auditRows.length;
-
-    if (totalActivity === 0) {
-      console.log(`[digest] ${project_slug}: zero activity in 24h, skipping send`);
-      continue;
-    }
+    const publicComments = commentRows.filter((c) => !c.internal);
 
     const subs = await env.DB.prepare(
       'SELECT email FROM notification_preferences WHERE project_slug = ?1 AND daily_digest = 1'
     ).bind(project_slug).all();
-
     const subscribers = (subs.results ?? []).map((r) => r.email);
-    const body = composeDigest({ projectSlug: project_slug, portalBase, comments: commentRows, audit: auditRows });
-    const subject = subjectLine(totalActivity);
 
     for (const email of subscribers) {
+      const viewerIsEC = isEC(email);
+      const visibleComments = viewerIsEC ? commentRows : publicComments;
+
+      // Pull mentions targeting this specific recipient. JOIN against
+      // comments so we can filter on internal-ness per viewer too.
+      const internalClause = viewerIsEC ? '' : ' AND c.internal = 0';
+      const mentions = await env.DB.prepare(
+        `SELECT c.id AS comment_id, c.question_id, c.author_email, c.author_label,
+                c.body, c.created_at, c.internal
+           FROM comment_mentions m
+           JOIN comments c ON c.id = m.comment_id
+          WHERE c.project_slug = ?1
+            AND m.mentioned_email = lower(?2)
+            AND m.created_at > ?3${internalClause}
+          ORDER BY c.created_at ASC`
+      ).bind(project_slug, email, since).all();
+      const mentionRows = mentions.results ?? [];
+
+      const totalActivity = visibleComments.length + auditRows.length;
+
+      // Per-recipient "silent day" check — a project might have audit/public
+      // activity for one viewer and only-internal activity for another. We
+      // mustn't send a client an email triggered solely by internal traffic.
+      // Mentions count toward activity too: even a quiet day deserves a send
+      // if the viewer was explicitly mentioned.
+      if (totalActivity === 0 && mentionRows.length === 0) {
+        console.log(`[digest] ${project_slug} → ${email}: zero visible activity, skipping`);
+        continue;
+      }
+
+      const body = composeDigest({
+        projectSlug: project_slug,
+        portalBase,
+        comments: visibleComments,
+        audit: auditRows,
+        mentions: mentionRows,
+      });
+      const subject = subjectLine(totalActivity + mentionRows.length);
       const ok = await sendEmail(env, email, subject, body);
       console.log(`[digest] ${project_slug} → ${email}: ${ok ? 'sent' : 'failed'}`);
     }
@@ -88,15 +131,27 @@ function questionHeading(projectSlug, questionId) {
   return `${questionId} — ${info.title}`;
 }
 
-function composeDigest({ projectSlug, portalBase, comments, audit }) {
+function composeDigest({ projectSlug, portalBase, comments, audit, mentions = [] }) {
   const lines = [];
   lines.push(`Activity on your discovery portal in the last 24 hours.`);
   lines.push('');
 
+  if (mentions.length > 0) {
+    lines.push(`You were mentioned (${mentions.length})`);
+    for (const m of mentions) {
+      const tag = m.internal ? ' [INTERNAL]' : '';
+      lines.push(`  • ${questionHeading(projectSlug, m.question_id)}${tag}`);
+      lines.push(`    ${m.author_label} (${m.author_email}): "${clip(m.body, 200)}"`);
+      lines.push(`    → ${questionLink(portalBase, projectSlug, m.question_id)}`);
+      lines.push('');
+    }
+  }
+
   if (comments.length > 0) {
     lines.push(`Comments (${comments.length})`);
     for (const c of comments) {
-      lines.push(`  • ${questionHeading(projectSlug, c.question_id)}`);
+      const tag = c.internal ? ' [INTERNAL]' : '';
+      lines.push(`  • ${questionHeading(projectSlug, c.question_id)}${tag}`);
       lines.push(`    ${c.author_label} (${c.author_email}): "${clip(c.body, 200)}"`);
       lines.push(`    → ${questionLink(portalBase, projectSlug, c.question_id)}`);
       lines.push('');

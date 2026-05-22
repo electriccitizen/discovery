@@ -1,4 +1,72 @@
 {
+  "acme": {
+    "A1": {
+      "title": "Which managed hosting provider does Acme want to use?",
+      "sectionId": "A",
+      "sectionTitle": "Hosting",
+      "sectionSlug": "A-hosting"
+    },
+    "A2": {
+      "title": "Will Acme hold the hosting contract directly, or via EC?",
+      "sectionId": "A",
+      "sectionTitle": "Hosting",
+      "sectionSlug": "A-hosting"
+    },
+    "A3": {
+      "title": "Are there any compliance constraints (SOC2, HIPAA, FedRAMP, data residency) that constrain the hosting choice?",
+      "sectionId": "A",
+      "sectionTitle": "Hosting",
+      "sectionSlug": "A-hosting"
+    },
+    "B1": {
+      "title": "Can Acme provide a current database export for the migration?",
+      "sectionId": "B",
+      "sectionTitle": "Content Migration",
+      "sectionSlug": "B-content"
+    },
+    "B2": {
+      "title": "Who at Acme owns the migrate/drop editorial decisions, and what cadence works for review?",
+      "sectionId": "B",
+      "sectionTitle": "Content Migration",
+      "sectionSlug": "B-content"
+    },
+    "B3": {
+      "title": "Are there any content areas (gated portals, password-protected sections, internal-only PDFs) that won't show up in a public crawl?",
+      "sectionId": "B",
+      "sectionTitle": "Content Migration",
+      "sectionSlug": "B-content"
+    },
+    "C1": {
+      "title": "For the Salesforce sync — is it one-way (site → SF) or two-way?",
+      "sectionId": "C",
+      "sectionTitle": "Integrations",
+      "sectionSlug": "C-integrations"
+    },
+    "C2": {
+      "title": "Should we build the newsletter integration against Mailchimp or HubSpot?",
+      "sectionId": "C",
+      "sectionTitle": "Integrations",
+      "sectionSlug": "C-integrations"
+    },
+    "C3": {
+      "title": "Any other third-party systems the site needs to talk to (analytics beyond GA4, marketing automation, CRM, payment, search appliance)?",
+      "sectionId": "C",
+      "sectionTitle": "Integrations",
+      "sectionSlug": "C-integrations"
+    },
+    "D1": {
+      "title": "Who manages the DNS cutover, and what's the rollback plan if something breaks at flip time?",
+      "sectionId": "D",
+      "sectionTitle": "Launch & Cutover",
+      "sectionSlug": "D-launch"
+    },
+    "D2": {
+      "title": "Is there a content freeze planned, and how will in-flight content from the old site be reconciled on launch day?",
+      "sectionId": "D",
+      "sectionTitle": "Launch & Cutover",
+      "sectionSlug": "D-launch"
+    }
+  },
   "edusa": {
     "A1": {
       "title": "When does IIE plan to sign the Pantheon contract?",

@@ -1,13 +1,15 @@
 ---
 import type { CommentRow } from '../lib/db.ts';
+import { renderCommentBody } from '../lib/mentions.ts';
 
 interface Props {
   projectSlug: string;
   questionId: string;
   comments: CommentRow[];
+  userIsEC: boolean;
 }
 
-const { projectSlug, questionId, comments } = Astro.props;
+const { projectSlug, questionId, comments, userIsEC } = Astro.props;
 
 function fmtTime(iso: string): string {
   const d = new Date(iso);
@@ -18,19 +20,25 @@ function roleClass(label: string): 'ec' | 'client' {
   return label === 'EC' ? 'ec' : 'client';
 }
 ---
-<comment-thread class="comment-thread" data-project={projectSlug} data-question-id={questionId}>
+<comment-thread class="comment-thread" data-project={projectSlug} data-question-id={questionId} data-user-ec={userIsEC ? 'true' : 'false'}>
   <div class="comment-list" data-role="list">
     {comments.length === 0 ? (
       <p class="comment-empty">No comments yet.</p>
     ) : (
       comments.map((c) => (
-        <article class={`comment comment-${roleClass(c.author_label)}`} data-comment-id={c.id}>
+        <article
+          class={`comment comment-${roleClass(c.author_label)}${c.internal ? ' comment--internal' : ''}`}
+          data-comment-id={c.id}
+        >
           <header class="comment-header">
             <span class={`user-role user-role-${roleClass(c.author_label)}`}>{c.author_label}</span>
+            {c.internal === 1 && (
+              <span class="comment-internal-badge" title="Internal — EC team only, not visible to client">INTERNAL</span>
+            )}
             <span class="comment-author"><code>{c.author_email}</code></span>
             <time class="comment-time" datetime={c.created_at}>{fmtTime(c.created_at)}</time>
           </header>
-          <p class="comment-body">{c.body}</p>
+          <p class="comment-body" set:html={renderCommentBody(c.body)}></p>
         </article>
       ))
     )}
@@ -48,6 +56,12 @@ function roleClass(label: string): 'ec' | 'client' {
     </label>
     <div class="comment-form-footer">
       <button type="submit" class="btn btn-primary">Post comment</button>
+      {userIsEC && (
+        <label class="comment-internal-toggle" title="EC-only — client cannot see this comment">
+          <input type="checkbox" data-role="internal-toggle" />
+          <span>Internal (EC only)</span>
+        </label>
+      )}
       <span class="comment-status" data-role="status"></span>
     </div>
   </form>

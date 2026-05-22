@@ -21,3 +21,7 @@ backups/
 
 # Playwright MCP test snapshots
 .playwright-mcp/
+
+# Local-only dev preview of mention/digest emails. Written by
+# src/lib/email.ts when no RESEND_API_KEY is bound (local dev only).
+.dev-emails/

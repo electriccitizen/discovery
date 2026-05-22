@@ -1,0 +1,27 @@
+{
+  "slug": "acme",
+  "title": "Acme Corp — Technical Discovery (Demo)",
+  "client": {
+    "name": "Acme Corp",
+    "label": "Acme",
+    "primary_contact": "Wile E. Coyote"
+  },
+  "ec_team": [
+    "tim@electriccitizen.com"
+  ],
+  "client_emails": [
+    "client@acme.test"
+  ],
+  "client_email_domains": ["acme.test"],
+  "status": "Active",
+  "section_order": [
+    "A", "B", "C", "D"
+  ],
+  "references": [
+    { "slug": "technical-analysis", "title": "Technical Analysis" },
+    { "slug": "site-discovery", "title": "Live Site Discovery Findings" },
+    { "slug": "sitemap-inventory", "title": "Sitemap-Derived URL Inventory" },
+    { "slug": "migration-analysis", "title": "Migration Analysis" },
+    { "slug": "source-documents", "title": "Source Documents" }
+  ]
+}

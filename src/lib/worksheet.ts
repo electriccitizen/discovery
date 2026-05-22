@@ -164,3 +164,20 @@ export function getSection(projectSlug: string, slug: string): Section | null {
 export function countQuestions(projectSlug: string): number {
   return listSections(projectSlug).reduce((sum, s) => sum + s.questions.length, 0);
 }
+
+/**
+ * Lookup a question by its ID across all sections of a project. Returns
+ * the section (for deep-link / heading context) and the question itself.
+ * Used by the @mention email helper so we can render question titles
+ * instead of bare IDs in notification emails.
+ */
+export function findQuestion(
+  projectSlug: string,
+  questionId: string
+): { section: Section; question: Question } | null {
+  for (const section of listSections(projectSlug)) {
+    const question = section.questions.find((q) => q.id === questionId);
+    if (question) return { section, question };
+  }
+  return null;
+}

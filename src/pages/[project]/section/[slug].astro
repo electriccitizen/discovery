@@ -31,7 +31,7 @@ const db = env.DB;
 const [responses, comments, audit] = db
   ? await Promise.all([
       listResponses(db, projectSlug),
-      listAllComments(db, projectSlug),
+      listAllComments(db, projectSlug, { includeInternal: userIsEC }),
       listAllAudit(db, projectSlug),
     ])
   : [[], [], [] as AuditRow[]];
