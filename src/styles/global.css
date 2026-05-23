@@ -268,7 +268,6 @@ img { max-width: 100%; height: auto; }
   display: inline-flex;
   align-items: center;
   gap: 0;
-  transition: gap 0.18s ease;
 }
 .header-search.is-open { gap: 0.4rem; }
 
@@ -278,24 +277,21 @@ img { max-width: 100%; height: auto; }
   font-size: 0.84rem;
   width: 0;
   min-width: 0;
-  padding: 0.4rem 0;
+  padding: 0;
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--radius);
   color: var(--ink);
-  opacity: 0;
-  pointer-events: none;
-  transition: width 0.18s ease, padding 0.18s ease, opacity 0.18s ease,
-              border-color 0.18s ease, background 0.18s ease, box-shadow 0.12s ease;
+  display: none;
+  transition: box-shadow 0.12s ease;
 }
 .header-search.is-open input[type='search'] {
+  display: inline-block;
   width: 14rem;
   max-width: 100%;
   padding: 0.4rem 0.65rem;
   background: var(--paper);
   border-color: var(--line);
-  opacity: 1;
-  pointer-events: auto;
 }
 .header-search input[type='search']::placeholder { color: var(--ink-faint); }
 .header-search input[type='search']:focus {
