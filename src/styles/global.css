@@ -451,6 +451,10 @@ img { max-width: 100%; height: auto; }
   .header-search input[type='search'] { width: 100%; }
 }
 
+/* Hide the reference-docs menu while the header search is expanded so
+   the two controls don't crowd each other (especially on narrow screens). */
+.site-header-right:has(.header-search.is-open) .header-refs { display: none; }
+
 /* === Header reference dropdown === */
 
 .header-refs { position: relative; }
