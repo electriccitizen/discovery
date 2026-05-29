@@ -12,10 +12,12 @@ export interface RosterUser {
 }
 
 export const EC_ROSTER: RosterUser[] = [
-  { email: 'tim@electriccitizen.com', name: 'Tim Broeker' },
-  // TEMPORARY: added for one-shot internal-mention email test on prod.
-  // Remove together with the matching acme client_emails entry.
-  { email: 'broeker@gmail.com', name: 'Tim (personal)' },
+  { email: 'tim@electriccitizen.com',   name: 'Tim Broeker' },
+  { email: 'adam@electriccitizen.com',  name: 'Adam' },
+  { email: 'emily@electriccitizen.com', name: 'Emily' },
+  { email: 'dan@electriccitizen.com',   name: 'Dan' },
+  { email: 'brian@electriccitizen.com', name: 'Brian' },
+  { email: 'trent@electriccitizen.com', name: 'Trent' },
 ];
 
 export function findRosterUser(email: string): RosterUser | undefined {

@@ -10,8 +10,7 @@
     "tim@electriccitizen.com"
   ],
   "client_emails": [
-    "client@acme.test",
-    "broeker@gmail.com"
+    "client@acme.test"
   ],
   "client_email_domains": ["acme.test"],
   "status": "Active",
