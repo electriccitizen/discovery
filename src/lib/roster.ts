@@ -18,7 +18,30 @@ export const EC_ROSTER: RosterUser[] = [
   { email: 'dan@electriccitizen.com',   name: 'Dan' },
   { email: 'brian@electriccitizen.com', name: 'Brian' },
   { email: 'trent@electriccitizen.com', name: 'Trent' },
+  // Personal / off-domain addresses that should still receive internal-mention
+  // emails. Adding an entry here grants notification access only — it does NOT
+  // grant portal login (Cloudflare Access remains the perimeter, which is
+  // domain-gated). Use sparingly; treat as a security-adjacent edit.
+  { email: 'broeker@gmail.com',         name: 'Tim (personal)' },
 ];
+
+/**
+ * Is this email allowed to receive notifications for internal (EC-only)
+ * comments? True for any @electriccitizen.com address (the security
+ * primitive `isEC`) OR any address explicitly in EC_ROSTER. The roster
+ * branch lets us notify contractors and personal addresses without
+ * widening the actual EC identity check.
+ *
+ * Used by the comments POST handler when filtering @-mention targets on
+ * internal comments. Must NOT be used as an authorization check for
+ * anything else — it's purely for "do we email this person on internal
+ * mentions" semantics.
+ */
+export function isInternalRecipient(email: string): boolean {
+  const lower = email.toLowerCase();
+  if (lower.endsWith('@electriccitizen.com')) return true;
+  return EC_ROSTER.some((u) => u.email.toLowerCase() === lower);
+}
 
 export function findRosterUser(email: string): RosterUser | undefined {
   const lower = email.toLowerCase();

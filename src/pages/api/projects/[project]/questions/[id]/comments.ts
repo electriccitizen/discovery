@@ -1,13 +1,17 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { canAccessProject, isEC, requireUser } from '../../../../../../lib/access.ts';
+import { canAccessProject, requireUser } from '../../../../../../lib/access.ts';
 import {
   addComment,
   listComments,
   listProjectParticipants,
 } from '../../../../../../lib/db.ts';
 import { getProject } from '../../../../../../lib/projects.ts';
-import { EC_ROSTER, extractMentionEmails } from '../../../../../../lib/roster.ts';
+import {
+  EC_ROSTER,
+  extractMentionEmails,
+  isInternalRecipient,
+} from '../../../../../../lib/roster.ts';
 import { sendMentionEmail } from '../../../../../../lib/email.ts';
 
 function json(data: unknown, status = 200): Response {
@@ -91,7 +95,7 @@ export const POST: APIRoute = async ({ params, request }) => {
   // so a private note can never notify a client.
   const filteredMentions = candidateMentions
     .filter((e) => allowed.has(e))
-    .filter((e) => (wantsInternal ? isEC(e) : true));
+    .filter((e) => (wantsInternal ? isInternalRecipient(e) : true));
 
   const { row, mentioned } = await addComment(
     db,
