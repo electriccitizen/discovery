@@ -6,7 +6,7 @@ import {
   listComments,
   listProjectParticipants,
 } from '../../../../../../lib/db.ts';
-import { getProject } from '../../../../../../lib/projects.ts';
+import { formatProjectTitle, getProject } from '../../../../../../lib/projects.ts';
 import {
   EC_ROSTER,
   extractMentionEmails,
@@ -114,7 +114,7 @@ export const POST: APIRoute = async ({ params, request }) => {
     await sendMentionEmail({
       env,
       projectSlug: project,
-      projectTitle: meta.title,
+      projectTitle: formatProjectTitle(meta),
       questionId,
       author: user,
       bodyExcerpt: trimmedBody,

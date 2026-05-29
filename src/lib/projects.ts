@@ -2,7 +2,8 @@ import { marked } from 'marked';
 
 export interface ProjectMeta {
   slug: string;
-  title: string;
+  title: string;             // project / initiative name, e.g. "Acme Corp" or "EducationUSA"
+  engagement: string;        // type of work, e.g. "Technical Discovery"
   client: { name: string; label: string; primary_contact: string };
   ec_team: string[];
   client_emails: string[];
@@ -10,6 +11,17 @@ export interface ProjectMeta {
   status: string;
   section_order: string[];
   references: { slug: string; title: string }[];
+}
+
+/**
+ * Canonical combined display string for a project. Used wherever we'd
+ * previously dropped the full title into a heading / email subject / tab
+ * title. Surfaces that want to show the parts independently (header
+ * crumb, project list card) should read `title` and `engagement`
+ * directly rather than parsing this string.
+ */
+export function formatProjectTitle(project: ProjectMeta): string {
+  return project.engagement ? `${project.title} — ${project.engagement}` : project.title;
 }
 
 export interface ReferenceDoc {

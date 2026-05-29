@@ -48,6 +48,7 @@ if (!userIsEC && visibleProjects.length === 1) {
         <li>
           <a class="project-card" href={`/${p.slug}`}>
             <h2>{p.meta.title}</h2>
+            {p.meta.engagement && <p class="project-card-engagement">{p.meta.engagement}</p>}
             <dl class="project-meta">
               <div><dt>Client</dt><dd>{p.meta.client.name}</dd></div>
               <div><dt>Status</dt><dd>{p.meta.status}</dd></div>

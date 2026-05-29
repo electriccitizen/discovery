@@ -1,6 +1,7 @@
 {
   "slug": "acme",
-  "title": "Acme Corp — Technical Discovery",
+  "title": "Acme Corp",
+  "engagement": "Technical Discovery",
   "client": {
     "name": "Acme Corp",
     "label": "Acme",

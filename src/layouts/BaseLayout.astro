@@ -21,6 +21,7 @@ const projectSlug = pathSegments[0];
 let projectContext: {
   slug: string;
   title: string;
+  engagement: string;
   references: { slug: string; title: string }[];
 } | null = null;
 
@@ -30,6 +31,7 @@ if (projectSlug && email) {
     projectContext = {
       slug: projectSlug,
       title: project.title,
+      engagement: project.engagement ?? '',
       references: project.references,
     };
   }
@@ -59,6 +61,9 @@ if (projectSlug && email) {
             <>
               <span class="site-header-sep" aria-hidden="true">/</span>
               <a href={`/${projectContext.slug}`} class="site-header-project">{projectContext.title}</a>
+              {projectContext.engagement && (
+                <span class="site-header-engagement">{projectContext.engagement}</span>
+              )}
             </>
           ) : headerCrumb && (
             <>
@@ -78,7 +83,7 @@ if (projectSlug && email) {
                 </svg>
               </summary>
               <div class="header-refs-menu" role="menu">
-                <span class="header-refs-menu-label">{projectContext.title}</span>
+                <span class="header-refs-menu-label">{projectContext.title}{projectContext.engagement ? ` — ${projectContext.engagement}` : ''}</span>
                 <ul>
                   {projectContext.references.map((r) => (
                     <li>

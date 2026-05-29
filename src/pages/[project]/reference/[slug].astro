@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { getProject, getReference } from '../../../lib/projects.ts';
+import { formatProjectTitle, getProject, getReference } from '../../../lib/projects.ts';
 import { canAccessProject, isEC, getAuthEmail } from '../../../lib/access.ts';
 
 const projectSlug = Astro.params.project;
@@ -24,13 +24,13 @@ const userIsEC = isEC(userEmail);
         <>
           <a href="/">Discovery Portal</a>
           <span class="sep">›</span>
-          <a href={`/${projectSlug}`}>{project.title}</a>
+          <a href={`/${projectSlug}`}>{formatProjectTitle(project)}</a>
           <span class="sep">›</span>
           <span>Reference</span>
         </>
       )}
       {!userIsEC && (
-        <a href={`/${projectSlug}`}>← {project.title}</a>
+        <a href={`/${projectSlug}`}>← {formatProjectTitle(project)}</a>
       )}
     </p>
     {userIsEC && (

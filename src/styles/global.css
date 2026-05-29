@@ -244,6 +244,23 @@ img { max-width: 100%; height: auto; }
 }
 .site-header-project:hover { color: var(--navy); text-decoration: underline; }
 
+/* Engagement chip in the header crumb — sits right after the project link,
+ * scaled down so the project name stays primary. Hidden on mobile widths
+ * if it ever causes wrap problems (it shouldn't at typical widths). */
+.site-header-engagement {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-soft);
+  white-space: nowrap;
+}
+
 .site-header-right {
   display: flex;
   align-items: center;
@@ -959,9 +976,17 @@ img { max-width: 100%; height: auto; }
   text-decoration: none;
 }
 .project-card h2 {
-  margin: 0 0 var(--space-3);
+  margin: 0;
   font-size: 1.4rem;
   color: var(--ink);
+}
+.project-card-engagement {
+  margin: 0 0 var(--space-3);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
 }
 
 .project-meta,
@@ -1022,6 +1047,16 @@ img { max-width: 100%; height: auto; }
   transition: border-color 0.15s ease;
 }
 .section-list a:hover { border-color: var(--navy); }
+
+.section-list li.is-complete a {
+  background: var(--paper);
+  opacity: 0.6;
+}
+.section-list li.is-complete a:hover { opacity: 1; }
+.section-list li.is-complete .section-id {
+  background: var(--line);
+  color: var(--ink-muted);
+}
 
 .section-id {
   display: inline-flex;

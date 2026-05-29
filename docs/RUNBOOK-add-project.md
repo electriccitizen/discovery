@@ -66,7 +66,8 @@ can be `[]`).
 ```json
 {
   "slug": "{slug}",
-  "title": "{Client Name} — Technical Discovery",
+  "title": "Project or initiative name",
+  "engagement": "Technical Discovery",
   "client": {
     "name": "Full Client Name Here",
     "label": "Short Label",
@@ -90,6 +91,8 @@ can be `[]`).
 | Field | Notes |
 |-------|-------|
 | `slug` | Must match the directory name. |
+| `title` | Project or initiative name (NOT the type of work) — appears as the prominent name in the header crumb. Examples: `EducationUSA`, `Acme Corp`. |
+| `engagement` | The type of work — appears as a small chip alongside `title`. Examples: `Technical Discovery`, `Site Build`, `Maintenance & Support`. |
 | `client.label` | Short form shown as the comment author label and in the auth role chip. Keep it ≤ 10 chars. |
 | `ec_team` | Currently informational only; EC access is granted by `@electriccitizen.com` domain match in `src/lib/access.ts`. List here is for reference. |
 | `client_emails` | Exact email allowlist. Required for `@mention` autocomplete to surface a client by name before they've posted anything (domain-only allowlists pick up participants from comment/response history once they show up). |

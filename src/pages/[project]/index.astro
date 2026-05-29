@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getIntroHtml, getProject } from '../../lib/projects.ts';
+import { formatProjectTitle, getIntroHtml, getProject } from '../../lib/projects.ts';
 import { listSections, countQuestions } from '../../lib/worksheet.ts';
 import { listRecentActivity, listResponses, type ActivityItem } from '../../lib/db.ts';
 import { canAccessProject, isEC, getAuthEmail } from '../../lib/access.ts';
@@ -111,7 +111,7 @@ function sectionStats(sectionId: string) {
   return { answered, total: section.questions.length };
 }
 ---
-<BaseLayout title={project.title}>
+<BaseLayout title={formatProjectTitle(project)}>
   {userIsEC && (
     <div class="page-meta">
       <p class="breadcrumb"><a href="/">Discovery Portal</a></p>
@@ -199,8 +199,9 @@ function sectionStats(sectionId: string) {
   <ol class="section-list">
     {sections.map((s) => {
       const stats = sectionStats(s.id);
+      const isComplete = stats.total > 0 && stats.answered === stats.total;
       return (
-        <li>
+        <li class={isComplete ? 'is-complete' : undefined}>
           <a href={`/${projectSlug}/section/${s.slug}`}>
             <span class="section-id">{s.id}</span>
             <span class="section-title">{s.title}</span>

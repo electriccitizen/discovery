@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getProject } from '../../lib/projects.ts';
+import { formatProjectTitle, getProject } from '../../lib/projects.ts';
 import { getNotificationPref } from '../../lib/db.ts';
 import { canAccessProject, isEC, getAuthEmail } from '../../lib/access.ts';
 import { env } from 'cloudflare:workers';
@@ -21,7 +21,7 @@ const db = env.DB;
 const pref = db ? await getNotificationPref(db, userEmail, projectSlug) : null;
 const dailyDigestOn = pref?.daily_digest === 1;
 ---
-<BaseLayout title={`Notifications — ${project.title}`}>
+<BaseLayout title={`Notifications — ${formatProjectTitle(project)}`}>
   <div class="page-meta">
     <p class="breadcrumb">
       {userIsEC && (
@@ -30,7 +30,7 @@ const dailyDigestOn = pref?.daily_digest === 1;
           <span class="sep">›</span>
         </>
       )}
-      <a href={`/${projectSlug}`}>{userIsEC ? project.title : `← ${project.title}`}</a>
+      <a href={`/${projectSlug}`}>{userIsEC ? formatProjectTitle(project) : `← ${formatProjectTitle(project)}`}</a>
     </p>
   </div>
 
@@ -47,7 +47,7 @@ const dailyDigestOn = pref?.daily_digest === 1;
         <label for="pref-daily-digest" class="prefs-row-title">Daily digest</label>
         <p class="prefs-row-help">
           One email per day summarizing new comments, responses, and status changes
-          on <strong>{project.title}</strong>. Sent in the morning. No email is sent
+          on <strong>{formatProjectTitle(project)}</strong>. Sent in the morning. No email is sent
           on days with zero activity.
         </p>
       </div>

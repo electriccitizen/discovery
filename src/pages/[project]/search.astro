@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getProject, listReferences } from '../../lib/projects.ts';
+import { formatProjectTitle, getProject, listReferences } from '../../lib/projects.ts';
 import { listSections } from '../../lib/worksheet.ts';
 import { listAllComments, listResponses } from '../../lib/db.ts';
 import { canAccessProject, isEC, getAuthEmail } from '../../lib/access.ts';
@@ -61,7 +61,7 @@ function fmtTime(iso: string | undefined): string {
           <span class="sep">›</span>
         </>
       )}
-      <a href={`/${projectSlug}`}>{userIsEC ? project.title : `← ${project.title}`}</a>
+      <a href={`/${projectSlug}`}>{userIsEC ? formatProjectTitle(project) : `← ${formatProjectTitle(project)}`}</a>
     </p>
   </div>
 
