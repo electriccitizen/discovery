@@ -7,6 +7,7 @@ order: 1
 ### What we currently understand
 
 - Acme is currently hosted on a self-managed VPS with no CDN in front of it.
+- This is a new point!
 - Acme has expressed a preference for a managed Drupal host (Pantheon or Acquia) to reduce ops burden on internal staff.
 - Estimated peak traffic: ~50k pageviews/month.
 
