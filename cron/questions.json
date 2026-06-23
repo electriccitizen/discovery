@@ -410,5 +410,217 @@
       "sectionTitle": "Forms",
       "sectionSlug": "M-forms"
     }
+  },
+  "mndot": {
+    "A1": {
+      "title": "What sign-on system do staff already use for other applications? Do you plan to use this same system for Drupal authentication?",
+      "sectionId": "A",
+      "sectionTitle": "Authentication, Single Sign-On, and User Roles",
+      "sectionSlug": "A-authentication"
+    },
+    "A2": {
+      "title": "Can your current SSO system pass any details at login (e.g. office/district and role)?",
+      "sectionId": "A",
+      "sectionTitle": "Authentication, Single Sign-On, and User Roles",
+      "sectionSlug": "A-authentication"
+    },
+    "A3": {
+      "title": "How do editors work today, and what editor types and roles do you need going forward?",
+      "sectionId": "A",
+      "sectionTitle": "Authentication, Single Sign-On, and User Roles",
+      "sectionSlug": "A-authentication"
+    },
+    "A4": {
+      "title": "Is multi-factor sign-in required?",
+      "sectionId": "A",
+      "sectionTitle": "Authentication, Single Sign-On, and User Roles",
+      "sectionSlug": "A-authentication"
+    },
+    "B1": {
+      "title": "For the editor role, what review process do you want before content goes live (e.g. self-publish, or a review and approval step)?",
+      "sectionId": "B",
+      "sectionTitle": "Editorial Workflow and Governance",
+      "sectionSlug": "B-editorial-workflow"
+    },
+    "B2": {
+      "title": "Should editors be able to edit anywhere, or be limited to their district or office area?",
+      "sectionId": "B",
+      "sectionTitle": "Editorial Workflow and Governance",
+      "sectionSlug": "B-editorial-workflow"
+    },
+    "B3": {
+      "title": "Who owns content across the districts and central offices? Is there a central web team, or is it fully distributed across districts and offices?",
+      "sectionId": "B",
+      "sectionTitle": "Editorial Workflow and Governance",
+      "sectionSlug": "B-editorial-workflow"
+    },
+    "C1": {
+      "title": "Starting from the base list above, which types fit MnDOT as-is, and what additional types are you considering?",
+      "sectionId": "C",
+      "sectionTitle": "Content Model and Structured Content",
+      "sectionSlug": "C-content-model"
+    },
+    "C2": {
+      "title": "Construction projects are built today as standalone microsites (e.g. `/35w94/`, `/i94-mg-clearwater/`). We assume that these become a structured Project content type as a key feature of the new site?",
+      "sectionId": "C",
+      "sectionTitle": "Content Model and Structured Content",
+      "sectionSlug": "C-content-model"
+    },
+    "C3": {
+      "title": "News already tags every release by district (in the central `/news/` feed), with older per-district archives alongside. Should news be one content type with a district field, and do districts still publish their own releases, or is it centralized now?",
+      "sectionId": "C",
+      "sectionTitle": "Content Model and Structured Content",
+      "sectionSlug": "C-content-model"
+    },
+    "C4": {
+      "title": "Reference data like District, Highway, and City appears inconsistently across the current site. We assume these should be managed as standardized taxonomy lists? Are there any other known metadata/taxonomies that you can identify?",
+      "sectionId": "C",
+      "sectionTitle": "Content Model and Structured Content",
+      "sectionSlug": "C-content-model"
+    },
+    "D1": {
+      "title": "Does the construction data API already exist, or will MnDOT build it? At a high level, what will it provide (e.g. project status, location, schedule) and how often does it refresh?",
+      "sectionId": "D",
+      "sectionTitle": "Integrations: Construction Data and Maps",
+      "sectionSlug": "D-integrations"
+    },
+    "D2": {
+      "title": "How should this data show up on the site: a list of project pages, a construction map, or both?",
+      "sectionId": "D",
+      "sectionTitle": "Integrations: Construction Data and Maps",
+      "sectionSlug": "D-integrations"
+    },
+    "D3": {
+      "title": "For the construction map, should it be built and owned in your ArcGIS Online environment (with the new site feeding it project data), or built natively in the new site?",
+      "sectionId": "D",
+      "sectionTitle": "Integrations: Construction Data and Maps",
+      "sectionSlug": "D-integrations"
+    },
+    "D4": {
+      "title": "At a high level, are the specific layers and basemaps a construction map would need already shared publicly (or easily made public) in your ArcGIS Online org, or are they internal, on an Enterprise portal, or licensed in a way that limits sharing?",
+      "sectionId": "D",
+      "sectionTitle": "Integrations: Construction Data and Maps",
+      "sectionSlug": "D-integrations"
+    },
+    "E1": {
+      "title": "We recommend building search on Drupal's Search API with a Solr backend (a dedicated search engine suited to large sites and fast filtering). Will your environment support Solr or a hosted search service, or should we plan around Drupal's built-in database search?",
+      "sectionId": "E",
+      "sectionTitle": "Search",
+      "sectionSlug": "E-search"
+    },
+    "E2": {
+      "title": "Alongside global site search, we'd build a dedicated construction-project finder (filterable by district, highway, status). Does that match how you want projects surfaced?",
+      "sectionId": "E",
+      "sectionTitle": "Search",
+      "sectionSlug": "E-search"
+    },
+    "E3": {
+      "title": "Is there any need to keep or maintain the existing `mn.gov` state search or the Google project search after launch?",
+      "sectionId": "E",
+      "sectionTitle": "Search",
+      "sectionSlug": "E-search"
+    },
+    "E4": {
+      "title": "Beyond the construction-project finder, are there other content or data sets you'd want searchable or browsable in their own right, for example office/staff directories, rest areas, locations, documents and PDFs, or an existing database you'd want indexed?",
+      "sectionId": "E",
+      "sectionTitle": "Search",
+      "sectionSlug": "E-search"
+    },
+    "E5": {
+      "title": "AI-enhanced search was not mentioned in the current scope, but it's an option to consider and might be the strongest lever for increasing self-service levels and addressing issues found in your site feedback data. Would you want us to outline any of these options?",
+      "sectionId": "E",
+      "sectionTitle": "Search",
+      "sectionSlug": "E-search"
+    },
+    "F1": {
+      "title": "We recommend rebuilding intake forms natively in Drupal (Webform module). Does that fit, and are there any forms you'd prefer to keep on an external tool?",
+      "sectionId": "F",
+      "sectionTitle": "Forms and Public Intake",
+      "sectionSlug": "F-forms"
+    },
+    "F2": {
+      "title": "For the report form, where do submissions go today and how are they tracked? (e.g. email, a queue, a case or CRM system?) And how should that work on the new site?",
+      "sectionId": "F",
+      "sectionTitle": "Forms and Public Intake",
+      "sectionSlug": "F-forms"
+    },
+    "F3": {
+      "title": "The current feedback form appears prominently on every page. Is this still desired in the new build?",
+      "sectionId": "F",
+      "sectionTitle": "Forms and Public Intake",
+      "sectionSlug": "F-forms"
+    },
+    "F4": {
+      "title": "Are there any other forms (ombudsman, ADA, commercial-vehicle, tort claims, bike map requests, property sales) that might benefit from any type of integration with other systems?",
+      "sectionId": "F",
+      "sectionTitle": "Forms and Public Intake",
+      "sectionSlug": "F-forms"
+    },
+    "G1": {
+      "title": "Are the above assumptions correct? Are there other systems, internal applications, or integrations your site connects to that wouldn't be visible from the outside?",
+      "sectionId": "G",
+      "sectionTitle": "External Systems and Scope Boundaries",
+      "sectionSlug": "G-external-systems"
+    },
+    "H1": {
+      "title": "How far back do you plan to go with the news migration? The site holds years of news (the current feed plus legacy district archives).",
+      "sectionId": "H",
+      "sectionTitle": "Content Migration",
+      "sectionSlug": "H-content-migration"
+    },
+    "H2": {
+      "title": "For news, do you want us to recommend an assisted import rather than hand-entering everything? Is there other high-volume content to consider such as events?",
+      "sectionId": "H",
+      "sectionTitle": "Content Migration",
+      "sectionSlug": "H-content-migration"
+    },
+    "H3": {
+      "title": "What's the plan for PDFs and other documents? The site links to many (plans, maps, reports), and legacy document accessibility is out of scope per the Q&A.",
+      "sectionId": "H",
+      "sectionTitle": "Content Migration",
+      "sectionSlug": "H-content-migration"
+    },
+    "I1": {
+      "title": "On the new site, do you want tags managed through Google Tag Manager rather than hardcoded as they are today?",
+      "sectionId": "I",
+      "sectionTitle": "Analytics and SEO",
+      "sectionSlug": "I-analytics-seo"
+    },
+    "I2": {
+      "title": "We assume you will continue using Siteimprove. Are you using the new Siteimprove.ai Intelligence Platform, or any of their accessibility checkers?",
+      "sectionId": "I",
+      "sectionTitle": "Analytics and SEO",
+      "sectionSlug": "I-analytics-seo"
+    },
+    "J1": {
+      "title": "GovDelivery (email bulletins and subscriptions): how should the new site work with it, and do you need separate subscription lists (for example, by district or topic) with sign-up embeds on the site?",
+      "sectionId": "J",
+      "sectionTitle": "Additional Technical Questions",
+      "sectionSlug": "J-additional-technical-questions"
+    },
+    "J2": {
+      "title": "Transactional email (form confirmations, password resets, system notices): what should the new site use to send it?",
+      "sectionId": "J",
+      "sectionTitle": "Additional Technical Questions",
+      "sectionSlug": "J-additional-technical-questions"
+    },
+    "J3": {
+      "title": "We assume URL redirects will be handled within Drupal, with your team creating the redirect import file. Does that work?",
+      "sectionId": "J",
+      "sectionTitle": "Additional Technical Questions",
+      "sectionSlug": "J-additional-technical-questions"
+    },
+    "J4": {
+      "title": "We understand the standard is WCAG 2.2 AA (layered on the Minnesota Digital Accessibility Standard: Section 508 and WCAG 2.1 AA), that accessibility is built into our design deliverables and theme prototype, that automated and manual audits happen before launch, and that legacy PDF accessibility is out of scope. Are there other accessibility concerns or considerations we should account for?",
+      "sectionId": "J",
+      "sectionTitle": "Additional Technical Questions",
+      "sectionSlug": "J-additional-technical-questions"
+    },
+    "J5": {
+      "title": "Multilingual support isn't mentioned in the RFP or Q&A, so we're assuming the new site is English-only with no content translation. Is that correct?",
+      "sectionId": "J",
+      "sectionTitle": "Additional Technical Questions",
+      "sectionSlug": "J-additional-technical-questions"
+    }
   }
 }

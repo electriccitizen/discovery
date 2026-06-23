@@ -1,0 +1,22 @@
+{
+  "slug": "mndot",
+  "title": "MnDOT Website Redesign",
+  "engagement": "Technical Discovery",
+  "client": {
+    "name": "Minnesota Department of Transportation",
+    "label": "MnDOT",
+    "primary_contact": "Dan Sagisser"
+  },
+  "ec_team": [
+    "tim@electriccitizen.com"
+  ],
+  "client_emails": ["Daniel.Sagisser@state.mn.us"],
+  "client_email_domains": ["state.mn.us"],
+  "status": "Active",
+  "section_order": [
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"
+  ],
+  "references": [
+    { "slug": "live-site-findings", "title": "MnDOT Live-Site Findings" }
+  ]
+}

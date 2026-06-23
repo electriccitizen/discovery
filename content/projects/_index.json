@@ -7,6 +7,10 @@
     {
       "slug": "acme",
       "active": true
+    },
+    {
+      "slug": "mndot",
+      "active": true
     }
   ]
 }
