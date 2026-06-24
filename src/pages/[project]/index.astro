@@ -219,10 +219,13 @@ function sectionStats(sectionId: string) {
       <h2>Recent activity</h2>
       <ol class="activity-list panel-collapsible" data-collapsed={activity.length > 3 ? 'true' : 'false'}>
         {activity.map((a, i) => (
-          <li class={`activity-item activity-${a.kind} role-${roleClass(a.author_email)}${i >= 3 ? ' panel-overflow-item' : ''}`}>
+          <li class={`activity-item activity-${a.kind} role-${roleClass(a.author_email)}${a.kind === 'comment' && a.internal === 1 ? ' activity-item--internal' : ''}${i >= 3 ? ' panel-overflow-item' : ''}`}>
             <div class="activity-meta">
               <a class="activity-question" href={questionLink(a.question_id)}>{a.question_id}</a>
               <span class={`user-role user-role-${roleClass(a.author_email)}`}>{labelFor(a.author_email)}</span>
+              {a.kind === 'comment' && a.internal === 1 && (
+                <span class="comment-internal-badge" title="Internal — EC team only, not visible to client">INTERNAL</span>
+              )}
               <span class="activity-action">
                 {a.kind === 'comment' ? 'commented' : 'edited response'}
               </span>

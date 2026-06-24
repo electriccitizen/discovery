@@ -276,6 +276,7 @@ export interface ActivityItem {
   author_email: string;
   body: string;
   at: string;
+  internal: number;          // 0 for responses; comment's internal flag otherwise
 }
 
 export async function listRecentActivity(
@@ -287,11 +288,11 @@ export async function listRecentActivity(
   const commentFilter = opts.includeInternal ? '' : ' AND internal = 0';
   const result = await db
     .prepare(
-      `SELECT 'response' AS kind, question_id, updated_by AS author_email, body, updated_at AS at
+      `SELECT 'response' AS kind, question_id, updated_by AS author_email, body, updated_at AS at, 0 AS internal
          FROM responses
          WHERE project_slug = ?1 AND length(body) > 0
        UNION ALL
-       SELECT 'comment'  AS kind, question_id, author_email, body, created_at AS at
+       SELECT 'comment'  AS kind, question_id, author_email, body, created_at AS at, internal
          FROM comments
          WHERE project_slug = ?1${commentFilter}
        ORDER BY at DESC

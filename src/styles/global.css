@@ -2080,7 +2080,8 @@ a.question-id:focus-visible {
  * Toggled by the header button; persisted in localStorage. CSS-only hide;
  * server still filters for non-EC viewers regardless.
  */
-body[data-hide-internal='1'] .comment--internal { display: none; }
+body[data-hide-internal='1'] .comment--internal,
+body[data-hide-internal='1'] .activity-item--internal { display: none; }
 
 /* Icon-button match for .header-bell so the presenter toggle sits in the
  * same visual row at the far right. Two SVGs are rendered in the button;
