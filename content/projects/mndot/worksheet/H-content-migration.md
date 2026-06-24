@@ -7,7 +7,7 @@ order: 8
 ### What we currently understand
 
 - The current site is static HTML with no database or CMS behind it, so there's nothing to migrate automatically. Per the Q&A, migration is manual and not one-to-one.
-- Our role is to produce a migration plan and set up the content types and configuration; your team does the manual content work.
+- Our role is to produce a migration plan that your team can follow when manually adding content after your team finishes the site build.
 - What to keep, rewrite, or drop is decided during Content Strategy (the inventory and audit). This section is about the migration plan and mechanics.
 
 ### Questions for you
