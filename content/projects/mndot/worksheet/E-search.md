@@ -24,9 +24,9 @@ order: 5
 - **Recommendation:** Retire both in favor of the integrated Drupal search, unless a state requirement or another system depends on the `mn.gov` search.
 - *Why we ask:* We want to recommend a single search experience, but only if nothing mandates keeping the state one.
 
-**E4. Beyond the construction-project finder, are there other content or data sets you'd want searchable or browsable in their own right, for example office/staff directories, rest areas, locations, documents and PDFs, or an existing database you'd want indexed?**
-- **Recommendation:** Flag these now so they're built as structured content types (section C) and indexed from the start.
-- *Why we ask:* It tells us which content types to index in Search API and whether any warrant their own faceted finder like the project finder (E2), versus living only in global search.
+**E4. Beyond the construction-project finder, are there other content or data sets you'd want searchable or browsable in their own right, for example office/staff directories, locations, documents and PDFs, etc?**
+- **Recommendation:** Flag these now so they're built as structured data (section C). NOTE: If the data does not exist on the current site, you'll need to add it as structured data in the new site since it cannot be migrated.
+- *Why we ask:* It tells us which content types to document searchable views for, versus living only in global search.
 
 **E5. AI-enhanced search was not mentioned in the current scope, but it's an option to consider and might be the strongest lever for increasing self-service levels and addressing issues found in your site feedback data. Would you want us to outline any of these options?**
 - **Recommendation:** Search API/Solr is still the standard for most gov sites but that is likely to change. If you're interested, we can discuss the options.
