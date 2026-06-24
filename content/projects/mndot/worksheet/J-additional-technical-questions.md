@@ -12,7 +12,7 @@ order: 10
 
 **J1. GovDelivery (email bulletins and subscriptions): how should the new site work with it, and do you need separate subscription lists (for example, by district or topic) with sign-up embeds on the site?**
 - **Recommendation:** Pending, depending on how you plan to use GovDelivery.
-- *Why we ask:* It tells us whether to plan sign-up blocks, multiple lists, and any publish-to-GovDelivery connection.
+- *Why we ask:* It tells us whether to plan a sign-up block that can be used on multiple pages or multiple sign up blocks for different list subscriptions.
 
 **J2. Transactional email (form confirmations, password resets, system notices): what should the new site use to send it?**
 - **Recommendation:** Most of our state clients use the state's SMTP server for this use case.
