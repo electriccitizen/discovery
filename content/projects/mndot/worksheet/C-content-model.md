@@ -32,8 +32,7 @@ order: 3
 - **Recommendation:** Yes. A Project type replaces hand-built microsites with a consistent structure, and it's what would feed the maps integration in section D.
 - *Why we ask:* It's central to the overall content plan, the construction API, and to the maps work.
 
-**C3. News already tags every release by district (in the central `/news/` feed), with older per-district archives alongside. Should news be one content type with a district field, and do districts still publish their own releases, or is it centralized now?**
-- **Recommendation:** One News type with a district field. It formalizes the district tagging you already do, and powers per-district filtering and landing pages.
+**C3. News already tags every release by district (in the central `/news/` feed), with older per-district archives alongside. Do districts still publish their own releases, or is it centralized now with no need for news articles per district.?**
 - *Why we ask:* It determines how news is created and filtered, and whether editors need district-scoped publishing rights (ties to section B).
 
 **C4. Reference data like District, Highway, and City appears inconsistently across the current site. We assume these should be managed as standardized taxonomy lists? Are there any other known metadata/taxonomies that you can identify?**
