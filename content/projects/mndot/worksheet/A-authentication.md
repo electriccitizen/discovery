@@ -24,7 +24,7 @@ order: 1
 
 **A3. How do editors work today, and what editor types and roles do you need going forward?**
 
-- **Recommendation:** A small set of clear roles (e.g. Editor, Section Manager, and Site Manager) rather than one per office or title. If you think you need additional roles, explain below.
+- **Recommendation:** A small set of clear roles (e.g. Editor, Content Manager/Reviewer, and Site Manager) rather than one per office or title. If you think you need additional roles, explain below.
 - *Why we ask:* This shapes the role model we'll recommend. (How those roles review and access content is covered in section B.)
 
 **A4. Is multi-factor sign-in required?**
