@@ -13,7 +13,7 @@ order: 6
 ### Questions for you
 
 **F1. We recommend rebuilding intake forms natively in Drupal (Webform module). Does that fit, and are there any forms you'd prefer to keep on an external tool?**
-- **Recommendation:** Keep external forms only when another system owns the process.
+- **Recommendation:** Keep external forms only when another system owns the process. NOTE: Rebuilding the forms in Drupal means their submission data starts at 0. You'll want to ensure you archive submission data from the existing forms somewhere.
 - *Why we ask:* We need to determine your baseline approach for forms.
 
 **F2. For the report form, where do submissions go today and how are they tracked? (e.g. email, a queue, a case or CRM system?) And how should that work on the new site?**
