@@ -11,8 +11,8 @@ order: 2
 
 ### Questions for you
 
-**B1. For the editor role, what review process do you want before content goes live (e.g. self-publish, or a review and approval step)?**
-- **Recommendation:** A basic moderation workflow (Draft → Needs Review → Published → Archived), with publishing limited to the roles defined in section A.
+**B1. What review process (if any) do you want before content goes live (e.g. self-publish, or a review and approval step)?**
+- **Recommendation:** A basic moderation workflow (Draft → Needs Review → Published → Archived), with publishing limited to the review and manager roles defined in section A.
 - *Why we ask:* This shapes the workflow we recommend and which roles can publish.
 
 **B2. Should editors be able to edit anywhere, or be limited to their district or office area?**
