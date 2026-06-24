@@ -1,4 +1,4 @@
-Welcome to the technical discovery worksheet for the **MnDOT website redesign**. This portal collects the technical decisions we need from your team to produce the build plan and our overall recommenations. Work through the sections at your own pace — your answers save automatically and can be revised any time.
+Welcome to the technical discovery worksheet for the **MnDOT website redesign**. This portal collects the technical decisions we need from your team to produce the build plan and our overall recommendations. Work through the sections at your own pace — your answers save automatically and can be revised any time.
 
 <details class="intro-section">
 <summary>How to use this worksheet</summary>
